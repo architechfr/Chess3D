@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no"/>
+<title>SFT CHESS V5.5 — Le Maître tacticien</title>
+<style>
+
+:root{--bg:#080e17;--panel:#121b29;--panel2:#192333;--line:#2b3445;--muted:#9ca9bb;--text:#f4eee4;--gold:#dbbb74;--green:#7dcdab}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:'DM Sans',system-ui,Arial,sans-serif;background:var(--bg);color:var(--text)}
+body{background:radial-gradient(ellipse at 37% 0%,#1a2d38 0%,#0c1521 40%,#080c15 76%)}
+button,select,input{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.shell{max-width:1500px;margin:auto;min-height:100dvh;padding:20px 26px 24px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #ffffff1a;padding-bottom:13px}
+.brand{display:flex;align-items:center;gap:14px}.brand-mark{width:43px;height:43px;display:grid;place-items:center;border:1px solid #a98b5d;border-radius:12px;background:linear-gradient(145deg,#3a3529,#151c28);font-family:Georgia,serif;font-size:28px;color:#e4ca90;box-shadow:0 6px 22px #0006}.brand h1{font-size:18px;letter-spacing:.22em;margin:0}.brand h1 span{color:#d6b879}.brand small{color:#97a5b9;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.top-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.tag{border:1px solid #3a4b57;color:#c6d5d7;padding:7px 10px;border-radius:999px;font-size:11px;letter-spacing:.04em}.live{width:7px;height:7px;display:inline-block;background:#77ddb6;border-radius:99px;box-shadow:0 0 10px #77ddb677;margin-right:6px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 355px;gap:18px;flex:1;min-height:580px}
+.stage{position:relative;min-height:580px;overflow:hidden;border:1px solid #45546470;border-radius:21px;background:radial-gradient(ellipse at 45% 48%,#30424c 0%,#192633 37%,#0c1520 75%);box-shadow:0 18px 65px #0008, inset 0 0 120px #0007}
+.stage:before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent,transparent 2px,#ffffff04 3px,transparent 4px);pointer-events:none;opacity:.45}
+#gl{display:block;width:100%;height:100%;touch-action:none;cursor:grab;position:absolute;inset:0}#gl:active{cursor:grabbing}
+.stage-top{position:absolute;z-index:3;top:19px;left:21px;pointer-events:none}.eyebrow{font-size:10px;font-weight:700;letter-spacing:.24em;color:#bbad8b;text-transform:uppercase}.stage-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(27px,3.5vw,45px);line-height:1.05;font-weight:600;margin:5px 0 0;text-shadow:0 4px 14px #0009}
+.glass{background:#0b1420d9;border:1px solid #ffffff21;color:#ded6c8;border-radius:9px;padding:8px 12px;font-size:11px;backdrop-filter:blur(8px)}
+.camera-tools{position:absolute;bottom:16px;right:18px;display:flex;gap:7px;z-index:5}.cam-btn{border:1px solid #aab3bd45;background:#101b28db;color:#ece4d7;border-radius:9px;padding:10px 12px;font-size:13px;backdrop-filter:blur(5px)}.cam-btn:hover{background:#36465b}.cam-btn.active{background:linear-gradient(115deg,#d3b77f,#a88954);border-color:#d6bc82;color:#161c20;font-weight:700}.cam-btn.is-disabled{opacity:.42}
+.notice{position:absolute;top:18px;right:17px;z-index:6;background:#0a1620e8;border:1px solid #74968e66;padding:11px 15px;border-radius:12px;max-width:245px;font-size:12px;line-height:1.5;color:#d1e4df;display:none}
+.panel{background:#121b2add;border:1px solid #344052a5;border-radius:19px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 18px 65px #0005}.panel-header{padding:21px 22px 14px;border-bottom:1px solid var(--line)}.label{color:#baae92;font-size:10px;text-transform:uppercase;font-weight:700;letter-spacing:.18em}.panel h2{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:29px;margin:5px 0 7px}.sub{color:var(--muted);font-size:12px;line-height:1.45}.turn{display:flex;align-items:center;gap:8px;margin:12px 0 1px;color:#e5e7e6;font-size:13px}.turn-dot{width:11px;height:11px;border-radius:50%;background:#e7d8bb;border:2px solid #b7a489;box-shadow:0 0 0 3px #faf1d40d}.turn-dot.black{background:#242c3d;border-color:#687791}
+.panel-body{padding:17px 21px 18px;overflow-y:auto;flex:1}.section{margin-bottom:18px}.section-title{font-size:10px;color:#b5c0ce;text-transform:uppercase;letter-spacing:.16em;font-weight:700;display:flex;justify-content:space-between;margin-bottom:9px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:7px}.mode{background:#172436;border:1px solid #36465a;border-radius:11px;padding:11px 8px;color:#b9c6d4;font-size:12px;text-align:center}.mode.active{border-color:#dbbb74;color:#f1dfb2;background:#383226;box-shadow:inset 0 0 22px #e3bc4b0a}
+.select{display:flex;align-items:center;justify-content:space-between;gap:8px}.select select{background:#1b293a;border:1px solid #394759;color:#f5f0e6;border-radius:8px;padding:9px 10px;width:100%;font-size:12px}
+.teacher{background:linear-gradient(130deg,#25352f,#1b2a30);border:1px solid #648d7c67;border-radius:13px;padding:13px;margin-bottom:15px}.teacher h3{margin:0 0 8px;font-size:12px;color:#c8ead8;display:flex;align-items:center;gap:7px}.teacher p{color:#d8e6dd;font-size:12px;line-height:1.6;min-height:61px;margin:0}.hint-btn{background:none;color:#9ed9bd;border:0;padding:0;text-align:left;font-size:12px;margin-top:8px}
+.prob-title{display:flex;justify-content:space-between;font-size:12px;color:#d1d7e1;margin-bottom:8px}.bar{height:7px;border-radius:20px;background:#303844;overflow:hidden}.fill{height:100%;width:50%;background:linear-gradient(90deg,#ead8b6,#d9b879);transition:width .4s}.bar-labels{display:flex;justify-content:space-between;color:#8190a2;font-size:10px;margin-top:5px}
+.history{background:#0b1320;border:1px solid #293548;border-radius:10px;padding:10px;min-height:62px;max-height:113px;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;color:#bdc8d7;font-size:12px}.history strong{color:#e6d2aa;font-weight:600}.history .empty{grid-column:1/-1;color:#7c899b;font-style:italic}
+.controls{display:flex;gap:7px}.btn{border:1px solid #45556c;background:#1d2a3b;color:#ebebee;padding:10px 9px;border-radius:10px;flex:1;font-size:12px;white-space:nowrap}.btn:hover{background:#304158}.btn.primary{background:linear-gradient(115deg,#d3b77f,#a88954);border-color:#d6bc82;color:#161c20;font-weight:700}.btn:disabled{opacity:.42;cursor:not-allowed}
+.bottom-note{border-top:1px solid #ffffff13;padding:10px 18px;color:#788a9c;font-size:10px;text-align:center}
+.overlay{position:fixed;inset:0;z-index:100;background:#030811ce;display:none;align-items:center;justify-content:center;padding:20px}.modal{background:#1a2734;border:1px solid #9f8e6a;border-radius:19px;box-shadow:0 28px 90px #000c;padding:24px;max-width:380px;text-align:center}.modal h3{font:600 30px Georgia,serif;margin:2px 0 9px}.promotion{display:flex;gap:8px;margin:18px 0}.promotion button{flex:1;font-size:33px;padding:10px;background:#3d4752;border:1px solid #6c7480;border-radius:10px;color:#fff}.promotion button:hover{background:#766342}
+footer{color:#748597;font-size:10px;letter-spacing:.02em;display:flex;justify-content:space-between;gap:15px;padding:0 4px}
+@media(max-width:1020px){main{grid-template-columns:minmax(0,1fr) 320px}.shell{padding:12px;gap:10px} .stage{min-height:520px}}
+@media(max-width:770px){main{display:flex;flex-direction:column;gap:12px}.stage{height:min(108vw,560px);min-height:375px;flex:none}.shell{padding:10px 10px 25px}.panel{overflow:visible}.panel-body{overflow:visible}.stage-top{top:13px;left:13px}.stage-title{font-size:27px}.stage-bottom{bottom:10px;left:9px}.camera-tools{bottom:10px;right:10px}footer{flex-wrap:wrap}header .tag:not(:last-child){display:none}}
+
+/* SFT CHESS · WALNUT EDITION / PREMIUM POLISH V4 */
+:root{--bg:#090e15;--panel:#141d27;--panel2:#1f2c38;--line:#36414c;--muted:#a4afa9;--text:#f4ecdc;--gold:#d8ad6a;--green:#80c7ad}
+body{background:radial-gradient(ellipse at 30% 8%,#233239 0%,#131e29 35%,#090e15 79%)}
+.shell{max-width:1510px;gap:17px}
+header{border-bottom:1px solid #c9a97932;padding:6px 4px 17px}
+.brand-mark{width:49px;height:49px;background:linear-gradient(145deg,#55402b,#141d29 80%);border-color:#d7bb825e;color:#ecd8a8;box-shadow:inset 0 0 15px #daba6730,0 12px 24px #0007}
+.brand h1{font-size:19px;letter-spacing:.24em}.brand h1 span{color:#f0c885}.brand small{color:#b2a48b}
+.tag{border-color:#9b855d63;color:#e1d0b0;background:#19222d7a}
+main{grid-template-columns:minmax(0,1fr) 350px;gap:19px;align-items:start}
+.board-column{min-width:0;display:flex;flex-direction:column;gap:9px}
+.stage{min-height:635px;border:1px solid #806c546b;border-radius:19px;background:radial-gradient(ellipse at 50% 46%,#3b4344 0%,#202b32 42%,#0b131d 87%);box-shadow:0 24px 80px #0009,inset 0 0 100px #0006;isolation:isolate}
+.stage:before{opacity:.28}
+.stage:after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 70px #070b137a,inset 0 1px #e1c88c2a}
+.stage-top{left:27px;top:23px;z-index:2}
+.eyebrow{font-size:10px;color:#dcc397;letter-spacing:.27em}
+.stage-title{font-size:clamp(27px,3vw,39px);color:#fbf1e0;letter-spacing:-.018em}
+.edition-stamp{position:absolute;bottom:22px;left:24px;z-index:2;pointer-events:none;color:#c4b59c9c;font-size:9px;letter-spacing:.18em;font-weight:700;text-shadow:0 2px 10px #000}
+.board-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:61px;padding:8px 12px 8px 18px;border-radius:14px;border:1px solid #ab90664b;background:linear-gradient(130deg,#1b2934,#101a25);box-shadow:0 9px 24px #0004}
+.toolbar-label{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.13em;color:#dbbd88;white-space:nowrap}
+.toolbar-label>small{margin-left:6px;color:#9da8aa;font-size:10px;font-weight:400;letter-spacing:0}
+.camera-tools{position:static;display:flex;gap:6px;flex-wrap:nowrap;z-index:auto}
+.cam-btn{display:grid;place-items:center;min-width:43px;height:42px;padding:0 8px;border-radius:10px;border-color:#b4a08550;background:linear-gradient(160deg,#293845,#1a2531);color:#e9dec9;font-size:17px;box-shadow:inset 0 1px #ffffff10;touch-action:manipulation}
+.cam-btn:hover{background:#344656}.cam-btn.active{background:linear-gradient(135deg,#dbb87d,#a57c43);border-color:#f0cf94;box-shadow:0 0 0 2px #e7bc6d21}
+.panel{background:linear-gradient(157deg,#1d2a35 0%,#131b29 42%,#101824 100%);border:1px solid #b89b6a40;border-radius:19px;box-shadow:0 23px 60px #0006}
+.panel-header{padding:22px 22px 17px;border-bottom:1px solid #af96634a;background:linear-gradient(130deg,#ffffff07,transparent)}
+.label{color:#cfb481;letter-spacing:.18em}
+.panel h2{font-size:30px;color:#f5eadd;margin:7px 0 8px}
+.panel-body{padding:20px 20px 20px}.section{margin-bottom:20px}
+.section-title{color:#c7bba8;font-size:10px;letter-spacing:.15em;margin-bottom:10px}
+.howto{display:flex;align-items:center;gap:10px;background:#132027aa;border:1px solid #61857744;border-radius:11px;padding:10px 12px;margin-bottom:18px;color:#dee9df}
+.howto-symbol{font-size:19px;color:#b5d5c3}.howto span:last-child{display:flex;flex-direction:column;gap:4px;min-width:0}
+.howto strong{font-size:11px;letter-spacing:.015em;font-weight:600}
+.howto small{font-size:10px;line-height:1.4;color:#a1bbb3}
+.mode{background:#172532;border:1px solid #5261719c;border-radius:10px;padding:12px 8px;color:#dde4e7;transition:background .17s,border-color .17s}
+.mode.active{border-color:#d9b374;background:linear-gradient(135deg,#493c2c,#272a2c);color:#f4ddb0;box-shadow:inset 0 0 18px #dfb86617}
+.select select{background:#233340;border-color:#63707778;min-height:42px}
+.teacher{background:linear-gradient(138deg,#243c3a,#1a2d32 80%);border-color:#88b8a36a;padding:15px;margin-bottom:20px;box-shadow:inset 0 1px #ffffff0b}
+.teacher h3{color:#a9d9c2}.teacher p{color:#e1ebe5;min-height:44px}
+.hint-btn{margin-top:11px;color:#c3e8d6;font-weight:600}
+.prob-title{color:#b9c9c8}.bar{height:8px;border-radius:8px;background:#34414f}.fill{background:linear-gradient(90deg,#f3e3c1,#d3ae70)}
+.history{background:#0e1823;border-color:#40505e;min-height:72px}
+.btn{border-color:#687b8880;background:#253643;border-radius:10px;min-height:43px;color:#f4f0e9}
+.btn.primary{background:linear-gradient(125deg,#e6c38b,#b1874e);border-color:#ecc98b}
+.bottom-note{color:#92a1a8;border-top-color:#d3ad6540;padding:13px}
+.notice{border:1px solid #d1ad6f8f;background:#121c26e9;color:#e4edec}
+@media(max-width:1020px){.stage{min-height:540px}.toolbar-label>small{display:none}}
+@media(max-width:770px){
+ .shell{padding:10px 11px 22px;gap:12px}
+ header{padding:3px 2px 11px}.brand-mark{width:43px;height:43px}.brand h1{font-size:17px}
+ main{display:flex;flex-direction:column;gap:13px;min-height:0}
+ .board-column{width:100%}
+ .stage{width:100%;height:clamp(455px,120vw,605px);min-height:0;border-radius:16px}
+ .stage-top{top:15px;left:17px}.stage-title{font-size:28px}.eyebrow{font-size:9px}
+ .edition-stamp{bottom:15px;left:13px;font-size:8px;letter-spacing:.13em}
+ .board-toolbar{min-height:57px;padding:7px 8px 7px 11px;gap:6px}
+ .toolbar-label{gap:5px;font-size:10px;letter-spacing:.08em}.toolbar-label>small{display:none}
+ .camera-tools{gap:5px}.cam-btn{width:42px;min-width:0;height:40px;padding:0 6px;font-size:17px}
+ .panel{width:100%}.panel-header{padding:19px 20px 15px}.panel-body{padding:16px 18px 20px}.panel h2{font-size:29px}
+ .howto{padding:10px 12px}.howto small{font-size:10px}
+ footer{font-size:9px;line-height:1.5}
+}
+@media(max-width:380px){.toolbar-label span{display:none}.cam-btn{width:42px}.stage{height:455px}}
+
+
+/* V5.4: fold camera controls away while continuing to allow zoom and pan. */
+.compact-controls{display:none;align-items:center;justify-content:flex-end;gap:6px}
+.board-toolbar:not(.camera-is-locked) #camCollapse{display:none}
+.compact-btn{min-width:42px;height:36px;border:1px solid #b69f6c55;background:#1b2a36;color:#e9d5ab;font-size:20px;border-radius:9px}
+.board-toolbar.is-compact{min-height:39px;padding:3px 7px;margin-top:-3px;justify-content:flex-end;border-color:transparent;background:transparent;box-shadow:none}
+.board-toolbar.is-compact .toolbar-label,.board-toolbar.is-compact .camera-tools{display:none!important}
+.board-toolbar.is-compact .compact-controls{display:flex}
+.tactical-brief{margin-top:10px;padding:9px 11px;border-left:3px solid #d3aa67;border-radius:6px;background:#152c349a;color:#e0e7dd;font-size:12px;line-height:1.5}
+.tactical-brief:empty{display:none}
+/* V5 / Tournament view, mentor and responsive game-first interface */
+:root{--gold:#e5bf79;--green:#a8dabc;--panel:#101c28;--text:#f8f0df}
+html,body{overscroll-behavior-y:contain}
+.shell{max-width:1620px}
+.board-column{min-width:0}
+.stage{background:radial-gradient(ellipse at 50% 60%,#233541 0%,#101b29 58%,#070f19 100%)}
+.stage-top{top:15px;left:20px;opacity:.83}
+.stage-title{font-size:clamp(21px,2.4vw,30px)}
+.edition-stamp{opacity:.55}
+.board-toolbar{gap:14px}
+.camera-tools{gap:6px}
+.cam-btn{min-width:43px}
+.cam-btn.fs{background:linear-gradient(140deg,#e7c888,#a67a48);color:#16232b;font-size:19px}
+.board-label-layer,.mentor-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.coord-cell{position:absolute;color:#d7c8a7;opacity:.80;font-size:10px;font-weight:800;line-height:1;letter-spacing:-.02em;text-shadow:0 1px 2px #000,0 0 5px #000;transform:translate(-50%,-50%);white-space:nowrap}
+.coord-cell.dark{color:#f9e6c3}.coord-cell.dim{opacity:.0}
+.mentor-overlay{overflow:visible;z-index:4}
+.mentor-point{position:absolute;z-index:4;display:none;transform:translate(-50%,-50%);padding:4px 7px;background:#0e2229df;border:1px solid #b7e5c5;border-radius:6px;font-size:13px;font-weight:800;color:#e7ffe8;box-shadow:0 2px 13px #000b;white-space:nowrap}
+.mentor-point.to{background:#246448df;border-color:#edda96;color:#fff}
+.mentor-arrow{stroke:#91eac4;stroke-width:5;stroke-linecap:round;fill:none;filter:drop-shadow(0 2px 3px #000)}
+.academy-dock{border:1px solid #b69c6a65;border-radius:15px;margin-top:10px;background:linear-gradient(120deg,#243b3b,#182532 70%);padding:13px 15px;box-shadow:0 12px 40px #0003}
+.mentor-top{display:flex;gap:10px;align-items:flex-start}
+.mentor-avatar{display:grid;place-items:center;flex:0 0 41px;height:41px;border-radius:12px;background:linear-gradient(140deg,#e9d09b,#836541);color:#1c2831;font-size:25px}
+.mentor-content{min-width:0;flex:1}.mentor-name{font-weight:800;letter-spacing:.07em;color:#edd29d;font-size:11px;text-transform:uppercase}
+#coach{min-height:0;margin:4px 0 0;color:#edf4e9;font-size:13px;line-height:1.48}
+.mentor-controls{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.mbtn{padding:9px 11px;border-radius:9px;border:1px solid #849a95a6;background:#213a3a;color:#eaf7ed;font-size:12px;font-weight:650;min-height:37px}
+.mbtn.primary{background:#d9b776;color:#202934;border-color:#ebca8a}
+.mbtn:disabled{opacity:.45}
+.mentor-options{display:none;gap:9px;margin-top:12px;padding-top:12px;border-top:1px solid #b0d1bd42;align-items:center;flex-wrap:wrap}
+.mentor-options.open{display:flex}
+.mentor-options label{font-size:11px;color:#cbdad2;display:flex;flex-direction:column;gap:5px;flex:1;min-width:120px}
+.mentor-options select{padding:9px 6px;border-radius:7px;background:#13222e;border:1px solid #8fa6a15e;color:#f4eddc;min-width:0;width:100%;font-size:12px}
+#coach{white-space:pre-line}
+.warning-box{font-size:12px;line-height:1.55;margin-top:10px;border:1px solid #c85b59;border-radius:10px;background:linear-gradient(115deg,#4c2226,#2b2228);color:#ffe2d9;padding:10px 12px}
+.glossary-panel{margin-top:10px;padding:13px;border:1px solid #d1b57b88;border-radius:12px;background:#111f2c;color:#eee5d5}
+.glossary-panel[hidden]{display:none}
+.glossary-panel>strong{display:block;margin-bottom:12px;color:#f0d19b;font-size:13px}
+.glossary-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.glossary-grid>div{padding:10px;border-radius:8px;background:#ffffff09;line-height:1.45;font-size:12px}
+.glossary-grid b{color:#e5c58b}
+@media(max-width:770px){.glossary-grid{grid-template-columns:1fr}}
+.lesson-feedback{display:none;font-size:12px;line-height:1.45;background:#304b3d;border:1px solid #91bd9577;padding:10px 12px;margin-top:10px;border-radius:9px;color:#edffe8}
+.mentor-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+#nextLesson{display:none}
+#fullbtn{margin-left:3px}
+.stage:focus-within{outline:none}
+.panel h2{font-size:25px}
+.panel-body{padding:15px}
+.panel-header{padding:18px}
+.howto{display:none}
+@media(max-width:770px){
+ .shell{padding:7px 8px 12px}
+ header{padding:0 3px 7px}
+ .stage{height:min(100vw,510px);min-height:0}
+ .stage-title{font-size:20px}.eyebrow{font-size:8px}
+ .stage-top{left:14px;top:11px}.edition-stamp{font-size:7px}
+ .board-toolbar{padding:7px 9px;gap:4px}
+ .toolbar-label{display:none}
+ .camera-tools{width:100%;justify-content:space-between}
+ .cam-btn{min-width:0;flex:1;max-width:75px;height:41px}
+ .academy-dock{padding:11px 12px;margin-top:8px}
+ .mentor-avatar{flex-basis:35px;height:35px;font-size:22px}
+ #coach{font-size:12.5px}.mentor-controls{gap:5px}.mbtn{font-size:11px;padding:8px 9px}
+ .panel-header{padding:14px 16px}.panel h2{font-size:24px}
+ .panel-body{padding:14px}
+ .coord-cell{font-size:9px}
+}
+.mentor-details{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px}
+.mentor-card{padding:13px;border:1px solid #8baaa04d;border-radius:12px;background:#111f2c99;display:flex;flex-direction:column;gap:8px}
+.mentor-card strong{color:#dec792;font-size:11px;letter-spacing:.035em}
+.mentor-card span{font-size:12px;line-height:1.55;color:#cde0d9}
+.immersive .mentor-details{display:grid}
+@media(max-width:400px){.mentor-details{grid-template-columns:1fr}}
+/* CSS fallback when the browser denies the native Fullscreen API */
+.shell.immersive{position:fixed;inset:0;width:100%;height:100dvh;max-width:none;margin:0;padding:0;z-index:1000;background:#080f18;display:flex;flex-direction:column;overflow:hidden}
+.immersive>header,.immersive>footer,.immersive .panel{display:none!important}
+.immersive main{display:flex;flex:1;min-height:0;overflow:hidden;margin:0;padding:0}
+.immersive .board-column{display:flex;flex-direction:column;flex:1;min-height:0;align-items:center;justify-content:flex-start;width:100%;}
+.immersive .stage{width:min(100vw,calc(100dvh - 180px));height:min(100vw,calc(100dvh - 180px));min-height:0!important;max-height:none;border:0;border-radius:0;flex:0 0 auto}
+.immersive .board-toolbar{width:100%;min-height:52px;border-radius:0;margin:0;padding:5px 12px;flex:0 0 auto}
+.immersive .camera-tools{justify-content:center}
+.immersive .academy-dock{width:100%;border-radius:0;margin:0;border-left:0;border-right:0;flex:1;min-height:0;overflow-y:auto;padding:12px 14px}
+.immersive .mentor-options.open{max-height:42vh;overflow:auto}
+.immersive .mentor-avatar{display:none}
+.immersive .mentor-top{gap:0}
+.immersive .mentor-controls{margin-top:5px}
+.immersive .stage-top,.immersive .edition-stamp{display:none}
+.immersive .coord-cell{font-size:11px}
+@media(orientation:landscape) and (max-height:600px){
+ .immersive .board-column{flex-direction:row;align-items:stretch;justify-content:center;flex-wrap:wrap}
+ .immersive .stage{height:calc(100dvh - 58px);width:min(calc(100dvh - 58px),calc(100vw - 290px));flex:0 0 auto}
+ .immersive .board-toolbar{width:63px;height:calc(100dvh - 58px);padding:5px}
+ .immersive .camera-tools{flex-direction:column;justify-content:space-evenly;height:100%}
+ .immersive .cam-btn{max-width:50px;min-height:35px}
+ .immersive .academy-dock{height:calc(100dvh - 58px);width:min(240px,34vw);overflow:auto;margin:0;padding:9px;flex:0 0 auto}
+ .immersive .mentor-controls{flex-wrap:wrap}
+}
+/* V5.5 : accents tactiques visibles, sans recouvrir les figurines */
+.mentor-value{font-size:11px;color:#e4c996;line-height:1.45;margin-top:8px;padding:8px 10px;border-left:3px solid #be9b63;background:#a8853a0d;border-radius:4px}
+.threat-arrow{stroke:#f16a60;stroke-width:4;filter:drop-shadow(0 1px 4px #000a)}
+.tactical-brief{margin-top:8px;font-size:12px;line-height:1.55;color:#e5e9d9}
+</style>
+</head>
+<body>
+<div class="shell">
+<header><div class="brand"><div class="brand-mark">♞</div><div><h1>SFT <span>CHESS</span></h1><small>Sales Fils · L'Académie</small></div></div><div class="top-right"><span class="tag"><span class="live"></span>VRAIE 3D · WEBGL</span><span class="tag">PARTIES LOCALES</span></div></header>
+<main>
+<div class="board-column"><section class="stage" id="stage" aria-label="Échiquier 3D interactif"><canvas id="gl" aria-label="Jeu d'échecs 3D : toucher une pièce puis une destination"></canvas><div class="board-label-layer" id="boardLabels" aria-hidden="true"></div><svg class="mentor-overlay" id="mentorSvg" aria-hidden="true"><defs><marker id="mentorArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#91eac4"/></marker><marker id="threatArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#f16a60"/></marker></defs><path id="mentorPath" class="mentor-arrow" marker-end="url(#mentorArrowHead)" style="display:none"/><path id="threatPath" class="mentor-arrow threat-arrow" marker-end="url(#threatArrowHead)" style="display:none"/></svg><div id="mentorFrom" class="mentor-point"></div><div id="mentorTo" class="mentor-point to"></div><div class="stage-top"><div class="eyebrow">L'ART DE LA STRATÉGIE</div><div class="stage-title">Chaque coup compte.</div></div><div class="notice" id="notice"></div><div class="edition-stamp" aria-hidden="true">ATELIER · ÉDITION NOYER & LAITON</div></section><nav class="board-toolbar" aria-label="Commandes de caméra"><div class="toolbar-label">◈ <span>CAMÉRA</span><small>🔒 garde ton angle · 🤏 zoome · glisse pour explorer · ⌂ revient à ta vue</small></div><div class="compact-controls" aria-label="Caméra simplifiée"><button class="compact-btn" id="homeMini" aria-label="Revenir à ma vue mémorisée" title="Ma vue">⌂</button><button class="compact-btn" id="fullMini" aria-label="Basculer le plein écran" title="Plein écran">⛶</button><button class="compact-btn" id="camExpand" aria-label="Afficher les réglages caméra" title="Réglages de caméra">⚙</button></div><div class="camera-tools"><button class="cam-btn" id="rotate" title="Tourner le plateau" aria-label="Tourner le plateau">↻</button><button class="cam-btn" id="camCollapse" title="Masquer les outils caméra" aria-label="Masquer les outils de caméra">▾</button><button class="cam-btn" id="lockcam" title="Verrouiller la caméra" aria-label="Verrouiller la caméra" aria-pressed="false">🔓</button><button class="cam-btn" id="resetcam" title="Retour à ma vue (ou caméra initiale)" aria-label="Retour à ma vue">⌂</button><button class="cam-btn" id="zoomout" title="Éloigner" aria-label="Zoom arrière">−</button><button class="cam-btn" id="zoomin" title="Rapprocher" aria-label="Zoom avant">+</button><button class="cam-btn" id="viewbtn" title="Alterner vue de jeu et vue 3D" aria-label="Passer en vue cinématique">◩</button><button class="cam-btn fs" id="fullbtn" title="Plein écran" aria-label="Passer en plein écran">⛶</button></div></nav>
+<section class="academy-dock" aria-label="Maître d'échecs interactif"><div class="mentor-top"><div class="mentor-avatar">♛</div><div class="mentor-content"><div class="mentor-name">✦ Le Maître tacticien <span id="mentorMode">· Conseils en direct</span></div><p id="coach" aria-live="polite">Bienvenue ! Apprenons les échecs ensemble. Tu peux commencer un cours ou jouer librement.</p></div></div>
+<div class="mentor-controls"><button class="mbtn primary" id="hint">💡 Un indice</button><button class="mbtn" id="showMove">↗ Voir le coup</button><button class="mbtn" id="whyBtn">❔ Pourquoi ?</button><button class="mbtn" id="lessonMenu">📚 Cours</button><button class="mbtn" id="glossaryBtn" aria-expanded="false">📖 Les mots</button><button class="mbtn" id="nextLesson">Leçon suivante →</button></div>
+<div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
+<div class="glossary-panel" id="glossaryPanel" hidden>
+ <strong>Le dictionnaire du Maître — les mots expliqués simplement</strong>
+ <div class="glossary-grid">
+ <div><b>Roquer</b> : déplacer le roi de deux cases vers une tour ; la tour vient juste de l’autre côté du roi. Le roi et la tour ne doivent jamais avoir bougé, les cases intermédiaires sont vides et le roi ne peut pas être ou passer en échec.</div>
+ <div><b>Valeur des pièces</b> : pion 1, cavalier 3, fou 3, tour 5, dame 9. Une reprise peut changer le bilan d'un échange.</div>
+ <div><b>Échange</b> : une pièce en prend une autre, puis l'adversaire reprend. Il faut comparer ce qui est gagné et perdu.</div>
+ <div><b>Échec</b> : une pièce adverse menace ton roi. Tu dois immédiatement le protéger.</div>
+ <div><b>Échec et mat</b> : le roi est menacé et aucun coup légal ne peut le sauver. La partie est gagnée.</div>
+ <div><b>Pat</b> : aucun coup autorisé, mais le roi n’est pas en échec : c’est une partie nulle.</div>
+ <div><b>En prise</b> : une pièce peut être capturée par l’adversaire au prochain tour.</div>
+ <div><b>Capturer</b> : prendre une pièce adverse en se déplaçant sur sa case.</div>
+ <div><b>Protéger une pièce</b> : une pièce amie pourrait reprendre l’adversaire s’il la capturait.</div>
+ <div><b>Contrôler le centre</b> : menacer ou occuper les quatre cases du milieu (d4, e4, d5, e5).</div>
+ <div><b>Développer</b> : faire sortir une pièce de sa case de départ pour qu’elle participe au jeu.</div>
+ <div><b>Fourchette</b> : un seul coup attaque au moins deux pièces adverses en même temps.</div>
+ <div><b>Promotion</b> : un pion qui atteint l’autre bout du plateau devient dame, tour, fou ou cavalier.</div>
+ <div><b>Coup légal</b> : déplacement autorisé par les règles qui ne laisse pas ton roi en échec.</div>
+ <div><b>Colonne / rangée</b> : ligne verticale (a à h) / ligne horizontale (1 à 8).</div>
+ <div><b>Diagonale</b> : suite de cases qui se touchent par les coins. Les fous s’y déplacent.</div>
+ </div>
+</div>
+<div class="mentor-options" id="mentorOptions"><label>Pour qui ?<select id="studentType"><option value="child">Enfant · simple et amusant</option><option value="adult" selected>Adulte · clair et précis</option></select></label><label>Exercice<select id="lessonSelector"></select></label><button class="mbtn primary" id="startLesson">Commencer l'exercice</button><button class="mbtn" id="freePlay">Jouer librement</button><button class="mbtn" id="coordsToggle" aria-pressed="false">Repères : gravure</button><span id="lessonProgress" style="font-size:11px;color:#cce6cd"></span></div><div class="lesson-feedback" id="lessonFeedback"></div><div class="mentor-details" aria-label="Tableau du Maître"><div class="mentor-card"><strong>♟ Ce que je vois</strong><span id="mentorAssessment">Position de départ : vingt coups possibles. Le centre attend ses premiers défis.</span></div><div class="mentor-card"><strong>✦ Réflexe du joueur</strong><span id="mentorQuestion">Avant de jouer, pense à la sécurité de ton roi et à tes pièces non protégées.</span></div></div></section>
+</div>
+<aside class="panel"><div class="panel-header"><div class="label">SFT CHESS · PARTIE N° 001</div><h2>La table des maîtres</h2><div class="sub" id="statusText">Une nouvelle partie commence.</div><div class="turn"><span class="turn-dot" id="turnDot"></span><span id="turnText">Aux Blancs de jouer</span></div></div>
+<div class="panel-body"><div class="howto"><span class="howto-symbol">◇</span><span><strong>Toucher pour jouer</strong><small>Un doigt : orienter · Deux doigts : zoomer · Cadenas : figer la vue</small></span></div><div class="section"><div class="section-title">MODE DE JEU</div><div class="modes"><button class="mode active" id="modeAI">♟ Contre l'IA</button><button class="mode" id="modeLocal">♟ Deux joueurs</button></div></div>
+<div class="section" id="aiOptions"><div class="section-title">PERSONNALITÉ DE L'IA</div><div class="select"><select id="difficulty"><option value="apprenti">L'Apprenti · Débutant</option><option value="club" selected>Le Club · Intermédiaire</option><option value="tacticien">Le Tacticien · Plus exigeant</option></select></div></div>
+
+<div class="section"><div class="prob-title"><span>Équilibre indicatif (pas une probabilité de victoire)</span><span id="evalText">50 / 50</span></div><div class="bar"><div class="fill" id="evalFill"></div></div><div class="bar-labels"><span>BLANCS</span><span>NOIRS</span></div></div>
+<div class="section"><div class="section-title">HISTORIQUE <span id="plyCount">0 coup</span></div><div class="history" id="history"><span class="empty">Les coups apparaîtront ici.</span></div></div>
+<div class="controls"><button class="btn primary" id="newgame">↻ Nouvelle partie</button><button class="btn" id="undo">↶ Annuler</button><button class="btn" id="export">↓ PGN</button></div>
+</div><div class="bottom-note">Règles classiques · roque · prise en passant · promotion · mat · pat</div></aside>
+</main><footer><span>© SALES FILS · SFT CHESS — prototype 3D jouable</span><span>Le Maître V5.5 anticipe les captures et reprises à court terme ; Stockfish et jeu en ligne restent à intégrer.</span></footer>
+</div>
+<div class="overlay" id="promoModal"><div class="modal"><div class="label">PROMOTION DU PION</div><h3>Choisis une pièce</h3><div class="sub">Ton pion atteint la dernière rangée.</div><div class="promotion" id="promoChoices"></div></div></div>
+<script>
+'use strict';
+// SFT Chess: self-contained legal chess rules + procedural WebGL 3D renderer.
+const FEN='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+const dirs={n:[-33,-31,-18,-14,14,18,31,33],b:[-17,-15,15,17],r:[-16,-1,1,16],k:[-17,-16,-15,-1,1,15,16,17]};
+const on=i=>i>=0&&i<128&&!(i&0x88),side=p=>!p||p==='.'?0:p===p.toUpperCase()?1:-1;
+const sq=i=>'abcdefgh'[i&7]+(8-(i>>4)),index=s=>(8-Number(s[1]))*16+'abcdefgh'.indexOf(s[0]);
+function parseFen(fen){let f=fen.split(' '),b=Array(128).fill('.');f[0].split('/').forEach((row,r)=>{let c=0;for(let p of row){if(/[1-8]/.test(p))c+=+p;else b[r*16+c++]=p;}});return {b,t:f[1]==='w'?1:-1,c:(f[2].includes('K')?1:0)|(f[2].includes('Q')?2:0)|(f[2].includes('k')?4:0)|(f[2].includes('q')?8:0),ep:f[3]==='-'?-1:index(f[3]),half:+f[4],full:+f[5]};}
+function attacked(s,target,by){for(let f=0;f<128;f++){if(!on(f)||side(s.b[f])!==by)continue;let p=s.b[f].toLowerCase();if(p==='p'){if(target===f-16*by-1||target===f-16*by+1)return true;continue;}for(let d of (dirs[p]||dirs.k)){for(let t=f+d;on(t);t+=d){if(t===target)return true;if(s.b[t]!=='.'||p==='n'||p==='k')break;}}}return false;}
+const checked=(s,color=s.t)=>attacked(s,s.b.indexOf(color===1?'K':'k'),-color);
+function apply(s,m){let [f,t,promo,flag]=m,b=s.b.slice(),piece=b[f],captured=b[t],c=s.c;b[f]='.';b[t]=promo?(s.t===1?promo.toUpperCase():promo):piece;if(flag==='ep')b[t+16*s.t]='.';if(flag==='castle'){let rf=t>f?f+3:f-4,rt=t>f?f+1:f-1;b[rt]=b[rf];b[rf]='.';}if(piece==='K')c&=~3;if(piece==='k')c&=~12;let rb={119:1,112:2,7:4,0:8};if(piece.toLowerCase()==='r')c&=~(rb[f]||0);if(captured.toLowerCase()==='r')c&=~(rb[t]||0);return {b,t:-s.t,c,ep:piece.toLowerCase()==='p'&&Math.abs(t-f)===32?(t+f)/2:-1,half:piece.toLowerCase()==='p'||captured!=='.'||flag==='ep'?0:s.half+1,full:s.full+(s.t===-1?1:0)};}
+function pseudo(s){let out=[];for(let f=0;f<128;f++){if(!on(f)||side(s.b[f])!==s.t)continue;let p=s.b[f].toLowerCase();let add=(t,flag='')=>{if(s.b[t].toLowerCase()==='k')return;if(p==='p'&&((t>>4)===0||(t>>4)===7))for(let q of ['q','r','b','n'])out.push([f,t,q,flag]);else out.push([f,t,'',flag]);};if(p==='p'){let t=f-16*s.t;if(on(t)&&s.b[t]==='.'){add(t);let u=t-16*s.t;if((f>>4)===(s.t===1?6:1)&&s.b[u]==='.')add(u);}for(let d of [-1,1]){let u=t+d;if(!on(u))continue;if(side(s.b[u])===-s.t)add(u);else if(u===s.ep&&s.b[u]==='.'&&s.b[u+16*s.t]===(s.t===1?'p':'P'))add(u,'ep');}}else{for(let d of (dirs[p]||dirs.k))for(let t=f+d;on(t);t+=d){if(side(s.b[t])===s.t)break;add(t);if(s.b[t]!=='.'||p==='n'||p==='k')break;}let home=s.t===1?116:4,rook=s.t===1?'R':'r',bits=s.t===1?[1,2]:[4,8];if(p==='k'&&f===home&&!checked(s)){if((s.c&bits[0])&&s.b[f+3]===rook&&s.b[f+1]==='.'&&s.b[f+2]==='.'&&!attacked(s,f+1,-s.t)&&!attacked(s,f+2,-s.t))add(f+2,'castle');if((s.c&bits[1])&&s.b[f-4]===rook&&s.b[f-1]==='.'&&s.b[f-2]==='.'&&s.b[f-3]==='.'&&!attacked(s,f-1,-s.t)&&!attacked(s,f-2,-s.t))add(f-2,'castle');}}}return out;}
+const legal=s=>pseudo(s).filter(m=>!checked(apply(s,m),s.t));
+function san(s,m){let [f,t,promo,flag]=m,p=s.b[f].toUpperCase(),capture=s.b[t]!=='.'||flag==='ep',str='';if(flag==='castle')str=t>f?'O-O':'O-O-O';else{if(p!=='P'){str=p;let other=legal(s).filter(x=>x[0]!==f&&x[1]===t&&s.b[x[0]]===s.b[f]);if(other.length)str+=!other.some(x=>(x[0]&7)===(f&7))?sq(f)[0]:!other.some(x=>(x[0]>>4)===(f>>4))?sq(f)[1]:sq(f);}else if(capture)str=sq(f)[0];str+=(capture?'x':'')+sq(t)+(promo?'='+promo.toUpperCase():'');}let n=apply(s,m);return str+(checked(n)?legal(n).length?'+':'#':'');}
+function insMaterial(s){let list=[];for(let i=0;i<128;i++)if(on(i)&&s.b[i]!=='.'&&s.b[i].toLowerCase()!=='k')list.push([s.b[i].toLowerCase(),((i>>4)+(i&7))&1]);return !list.length||(list.length===1&&['n','b'].includes(list[0][0]))||(list.every(x=>x[0]==='b')&&new Set(list.map(x=>x[1])).size===1);}
+const poskey=s=>s.b.join('')+'_'+s.t+'_'+s.c+'_'+(s.ep>=0&&legal(s).some(m=>m[3]==='ep')?s.ep:-1);
+function status(history){let s=history.at(-1),moves=legal(s),reps=history.filter(p=>poskey(p)===poskey(s)).length;if(!moves.length)return {done:true,message:checked(s)?'Échec et mat · '+(s.t===1?'Les Noirs':'Les Blancs')+' gagnent':'Partie nulle · Pat'};if(insMaterial(s))return {done:true,message:'Partie nulle · Matériel insuffisant'};if(reps>=5||s.half>=150)return {done:true,message:'Partie nulle · '+(reps>=5?'Répétition':'75 coups')};return {done:false,claim:reps>=3||s.half>=100,message:checked(s)?'Échec ! Le roi est attaqué.':''};}
+// ==== WebGL miniature 3D engine: no external libraries required ====
+const canvas=document.getElementById('gl'),gl=canvas.getContext('webgl',{antialias:true,alpha:false,depth:true});if(!gl){document.getElementById('statusText').textContent='WebGL est indisponible sur ce navigateur.';throw Error('WebGL absent');}
+const VS=`attribute vec3 aPos;attribute vec3 aNorm;attribute vec3 aColor;uniform mat4 uView,uProj,uModel;varying vec3 vNorm,vWorld,vColor;void main(){vec4 world=uModel*vec4(aPos,1.0);vWorld=world.xyz;vNorm=mat3(uModel)*aNorm;vColor=aColor;gl_Position=uProj*uView*world;}`;
+const FS=`precision mediump float;
+varying vec3 vNorm,vWorld,vColor;
+uniform vec3 uTint,uCam;
+uniform float uMaterial,uOpacity,uTime;
+void main(){
+  vec3 N=normalize(vNorm);
+  vec3 V=normalize(uCam-vWorld);
+  vec3 K=normalize(vec3(-0.47,0.90,0.48));
+  vec3 F=normalize(vec3(0.72,0.38,-0.62));
+  float direct=max(dot(N,K),0.0);
+  float fill=max(dot(N,F),0.0);
+  float sky=max(N.y,0.0);
+  float shine=pow(max(dot(N,normalize(V+K)),0.0),uMaterial>0.5?49.0:28.0);
+  float bounce=pow(max(dot(N,normalize(V+F)),0.0),uMaterial>0.5?19.0:12.0);
+  vec3 base=vColor*uTint;
+  float isPiece=step(0.5,uMaterial);
+  float wood=0.5+0.5*sin(vWorld.z*57.0 + sin(vWorld.x*5.5+vWorld.y*3.0)*1.9);
+  wood=0.65*wood+0.35*(0.5+0.5*sin(vWorld.z*117.0+vWorld.x*13.0));
+  base*=mix(0.969+0.061*wood,1.0,isPiece);
+  float fresnel=pow(1.0-max(dot(N,V),0.0),2.6);
+  float light=(0.44+0.14*sky)+0.68*direct+0.18*fill;
+  vec3 gloss=(isPiece>0.5?vec3(0.92,0.78,0.56):vec3(0.53,0.39,0.23))*(shine*0.43+bounce*0.12);
+  vec3 col=base*light+gloss+base*fresnel*(isPiece>0.5?0.17:0.07);
+  col=pow(max(col,vec3(0.0)),vec3(0.93));
+  gl_FragColor=vec4(col,uOpacity);
+}`;
+function shader(type,src){let o=gl.createShader(type);gl.shaderSource(o,src);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(o));return o;}
+const prog=gl.createProgram();gl.attachShader(prog,shader(gl.VERTEX_SHADER,VS));gl.attachShader(prog,shader(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(prog));gl.useProgram(prog);
+let A={pos:gl.getAttribLocation(prog,'aPos'),norm:gl.getAttribLocation(prog,'aNorm'),color:gl.getAttribLocation(prog,'aColor')};let U={view:gl.getUniformLocation(prog,'uView'),proj:gl.getUniformLocation(prog,'uProj'),model:gl.getUniformLocation(prog,'uModel'),tint:gl.getUniformLocation(prog,'uTint'),cam:gl.getUniformLocation(prog,'uCam'),mat:gl.getUniformLocation(prog,'uMaterial'),op:gl.getUniformLocation(prog,'uOpacity'),time:gl.getUniformLocation(prog,'uTime')};
+const mIdentity=()=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+function mTransform(x,y,z,scale=1,rot=0){let c=Math.cos(rot),s=Math.sin(rot);return new Float32Array([c*scale,0,-s*scale,0,0,scale,0,0,s*scale,0,c*scale,0,x,y,z,1]);}
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],sub=(a,b)=>a.map((v,i)=>v-b[i]),norm=a=>{let n=Math.hypot(...a)||1;return a.map(v=>v/n)},dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0);
+function lookAt(eye,target,up=[0,1,0]){let z=norm(sub(eye,target)),x=norm(cross(up,z)),y=cross(z,x);return new Float32Array([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,eye),-dot(y,eye),-dot(z,eye),1]);}
+function perspective(fov,aspect,near,far){let f=1/Math.tan(fov/2),nf=1/(near-far);return new Float32Array([f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0]);}
+const c3=(r,g,b)=>[r,g,b];
+class Mesh{constructor(){this.v=[];} tri(a,b,c,col,n){let face=n||norm(cross(sub(b,a),sub(c,a)));for(let p of [a,b,c])this.v.push(...p,...face,...col);}quad(a,b,c,d,col,n){this.tri(a,b,c,col,n);this.tri(a,c,d,col,n);}box(x,y,z,w,h,d,col){let x0=x-w/2,x1=x+w/2,y0=y-h/2,y1=y+h/2,z0=z-d/2,z1=z+d/2;let V=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]];[[0,3,2,1],[4,5,6,7],[0,4,7,3],[1,2,6,5],[3,7,6,2],[0,1,5,4]].forEach((f)=>this.quad(V[f[0]],V[f[1]],V[f[2]],V[f[3]],col));}
+lathe(profile,col,n=36){for(let i=0;i<profile.length-1;i++){let [r0,y0]=profile[i],[r1,y1]=profile[i+1];for(let j=0;j<n;j++){let a=j*2*Math.PI/n,b=(j+1)*2*Math.PI/n;let p=[r0*Math.cos(a),y0,r0*Math.sin(a)],q=[r0*Math.cos(b),y0,r0*Math.sin(b)],r=[r1*Math.cos(b),y1,r1*Math.sin(b)],s=[r1*Math.cos(a),y1,r1*Math.sin(a)];this.quad(p,s,r,q,col);}}}
+sphere(cx,cy,cz,r,col,lat=10,lon=18){for(let i=0;i<lat;i++){let a=i*Math.PI/lat,b=(i+1)*Math.PI/lat;for(let j=0;j<lon;j++){let c=j*2*Math.PI/lon,d=(j+1)*2*Math.PI/lon;let pt=(t,u)=>[cx+r*Math.sin(t)*Math.cos(u),cy+r*Math.cos(t),cz+r*Math.sin(t)*Math.sin(u)];let p=pt(a,c),q=pt(a,d),s=pt(b,c),t=pt(b,d);this.tri(p,t,s,col,norm(sub(p,[cx,cy,cz])));this.tri(p,q,t,col,norm(sub(q,[cx,cy,cz])));}}}
+cylinder(cx,y,cz,r,h,col,sides=16){for(let i=0;i<sides;i++){let a=2*Math.PI*i/sides,b=2*Math.PI*(i+1)/sides;let p=[cx+r*Math.cos(a),y,cz+r*Math.sin(a)],q=[cx+r*Math.cos(b),y,cz+r*Math.sin(b)],s=[p[0],y+h,p[2]],t=[q[0],y+h,q[2]];this.quad(p,s,t,q,col);this.tri([cx,y+h,cz],t,s,col,[0,1,0]);this.tri([cx,y,cz],p,q,col,[0,-1,0]);}}
+extrudePoly(points,z0,z1,col){let pts=points.slice(),ar=pts.map((_,i)=>i),signed=pts.reduce((s,p,i)=>s+p[0]*pts[(i+1)%pts.length][1]-pts[(i+1)%pts.length][0]*p[1],0);if(signed<0)pts.reverse();for(let iter=0;ar.length>2&&iter<200;iter++){let found=false;for(let j=0;j<ar.length;j++){let ia=ar[(j+ar.length-1)%ar.length],ib=ar[j],ic=ar[(j+1)%ar.length],a=pts[ia],b=pts[ib],c=pts[ic],v=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);if(v<=0)continue;let inside=ar.some(k=>{if(k===ia||k===ib||k===ic)return false;let p=pts[k],d=(a,b,p)=>(p[0]-a[0])*(b[1]-a[1])-(p[1]-a[1])*(b[0]-a[0]);return d(a,b,p)<0&&d(b,c,p)<0&&d(c,a,p)<0;});if(inside)continue;this.tri([a[0],a[1],z1],[b[0],b[1],z1],[c[0],c[1],z1],col,[0,0,1]);this.tri([c[0],c[1],z0],[b[0],b[1],z0],[a[0],a[1],z0],col,[0,0,-1]);ar.splice(j,1);found=true;break;}if(!found)break;}for(let i=0;i<pts.length;i++){let a=pts[i],b=pts[(i+1)%pts.length];this.quad([a[0],a[1],z0],[b[0],b[1],z0],[b[0],b[1],z1],[a[0],a[1],z1],col);}}
+compile(){let data=new Float32Array(this.v),buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);return {buf,count:data.length/9};}}
+function material(base,detail,type){
+let m=new Mesh();
+const ring=(y,r,w=.018)=>m.lathe([[r-w,y],[r,y+.011],[r+.01,y+.025],[r-.015,y+.043]],detail,48);
+// Weighted, stepped, rounded pedestal with two thin metallic rings.
+m.lathe([[0,.025],[.272,.025],[.34,.038],[.376,.087],[.37,.13],[.329,.18],[.287,.204],[.287,.248],[.31,.27],[.31,.301],[.258,.331]],base,48);
+m.lathe([[.35,.07],[.369,.083],[.368,.112],[.35,.125]],detail,48);
+ring(.233,.294,.013);
+if(type==='p'){
+ m.lathe([[.246,.326],[.194,.38],[.147,.50],[.128,.651],[.152,.69],[.173,.711],[.171,.733],[.123,.754]],base,48);
+ ring(.675,.166,.02);m.sphere(0,.904,0,.188,base,16,28);
+}
+if(type==='r'){
+ m.lathe([[.255,.325],[.214,.426],[.202,.51],[.2,.773],[.273,.805],[.303,.856],[.297,.889],[.266,.910],[.238,.910]],base,48);
+ ring(.765,.269);ring(.875,.279,.01);
+ m.cylinder(0,.88,0,.222,.027,detail,40);
+ for(let i=0;i<8;i++){let a=2.0*Math.PI*i/8.0;m.box(Math.cos(a)*.234,.974,Math.sin(a)*.234,.108,.145,.109,base);}
+}
+if(type==='n'){
+ m.lathe([[.25,.326],[.224,.382],[.206,.461],[.201,.523]],base,48);
+ ring(.493,.212);
+ // Longer, unmistakable sculpted horse silhouette (profile along x axis).
+ let head=[[-.20,.505],[.095,.505],[.16,.55],[.18,.642],[.126,.765],[.146,.856],[.205,.952],[.295,1.014],[.375,1.056],[.385,1.133],[.342,1.184],[.255,1.197],[.152,1.171],[.074,1.244],[.033,1.359],[-.034,1.397],[-.079,1.252],[-.162,1.226],[-.215,1.116],[-.254,.992],[-.309,.858],[-.279,.746],[-.201,.663],[-.164,.575]];
+ m.extrudePoly(head,-.172,.172,base);
+ // Raised mane, two ears, bridle detail, carved eyes and nostrils.
+ let mane=[[-.263,.778],[-.246,.925],[-.19,1.07],[-.145,1.185],[-.075,1.267],[-.045,1.24],[-.111,1.141],[-.147,1.027],[-.194,.892],[-.208,.784]];
+ m.extrudePoly(mane,-.19,.19,detail);
+ m.extrudePoly([[-.056,1.25],[-.027,1.427],[.028,1.316]],-.085,.085,base);
+ m.extrudePoly([[.08,1.23],[.132,1.351],[.164,1.22]],-.07,.07,base);
+ m.box(.319,1.076,0,.035,.053,.36,detail);m.sphere(.278,1.073,0,.125,base,11,16);
+ m.sphere(.181,1.135,.179,.034,detail,10,16);
+ m.sphere(.181,1.135,-.179,.034,detail,10,16);
+ m.sphere(.350,1.081,.141,.018,detail,8,12);
+ m.sphere(.350,1.081,-.141,.018,detail,8,12);
+}
+if(type==='b'){
+ m.lathe([[.252,.326],[.211,.44],[.167,.7],[.188,.789],[.23,.822],[.211,.868],[.139,.916],[.158,1.114],[.122,1.239],[.044,1.323],[0,1.343]],base,48);
+ ring(.809,.228);m.sphere(0,1.365,0,.049,detail,10,16);
+}
+if(type==='q'){
+ m.lathe([[.25,.326],[.209,.475],[.179,.852],[.227,1.001],[.274,1.1],[.306,1.151],[.28,1.187],[.211,1.19]],base,48);
+ ring(.946,.229);ring(1.13,.302,.012);
+ for(let i=0;i<8;i++){let a=2*Math.PI*i/8;m.sphere(.257*Math.cos(a),1.252,.257*Math.sin(a),.066,detail,10,16);}
+ m.sphere(0,1.237,0,.12,base,16,24);m.lathe([[.225,1.185],[.24,1.214],[.219,1.233]],detail,48);m.sphere(0,1.376,0,.057,detail,12,18);
+}
+if(type==='k'){
+ m.lathe([[.251,.325],[.204,.472],[.185,.862],[.215,1.066],[.271,1.14],[.27,1.186],[.198,1.221]],base,48);
+ ring(1.085,.263);m.sphere(0,1.241,0,.128,base,12,20);
+ m.box(0,1.46,0,.11,.36,.138,detail);m.box(0,1.505,0,.30,.101,.14,detail);m.sphere(0,1.657,0,.063,base,12,20);
+}
+return m.compile();
+}
+// Geometry library (meshed board, decorative trim, individual chess figures)
+let board=new Mesh(),gold=[.72,.51,.29],cream=[.82,.73,.60],dark=[.17,.12,.105];
+// Multi-level walnut frame and engraved brass moulding.
+board.box(0,-.19,0,9.27,.37,9.27,[.135,.076,.052]);
+board.box(0,-.12,0,9.18,.30,9.18,[.225,.132,.082]);
+board.box(0,-.024,0,9.09,.116,9.09,[.32,.20,.118]);
+// Continuous walnut top border: engraved letters are actually recessed IN wood.
+for(let d of [-4.414,4.414]){
+ board.box(0,.071,d,9.06,.098,.316,[.315,.184,.107]);
+ board.box(d,.071,0,.316,.098,9.06,[.315,.184,.107]);
+}
+board.box(0,.064,0,8.55,.04,8.55,gold);
+board.box(0,.095,0,8.42,.042,8.42,[.15,.10,.082]);
+board.box(0,.115,0,8.235,.033,8.235,[.09,.082,.077]);
+for(let row=0;row<8;row++)for(let col=0;col<8;col++){
+ const light=(row+col)%2===0;
+ const variation=0.97+0.032*Math.sin(1.27*col+2.61*row);
+ let color=(light?cream:dark).map(v=>v*variation);
+ board.box(col-3.5,.151,row-3.5,.995,.065,.995,color);
+}
+for(let d of [-4.17,4.17]){
+ board.box(d,.114,0,.022,.031,8.32,gold);
+ board.box(0,.114,d,8.32,.031,.022,gold);
+}
+for(let x of [-4.29,4.29])for(let z of [-4.29,4.29])board.cylinder(x,.081,z,.045,.016,[.92,.72,.42],12);
+board.box(0,-.329,0,9.17,.024,9.17,gold);
+const boardMesh=board.compile();
+
+// Elegant uppercase roman-serif letters (A–H), recessed in the walnut surface.
+// Small-area 3D displacement with soft edges; no text panels or floating labels.
+const engravingAtlas={"a":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDVQABAAAAAAAAAAAAAAAAAAAAAAAAAAADAFPbCAABAAAAAAAAAAAAAAAAAAAAAAAAAgFM7Pw/AAMAAAAAAAAAAAAAAAAAAAAAAAEADOj/+4kDBAAAAAAAAAAAAAAAAAAAAAAAAgAx9vv/0AUBAAAAAAAAAAAAAAAAAAAAAAAEA4L8+/76MAACAAAAAAAAAAAAAAAAAAAAAAEH3c7r/vx3AwQAAAAAAAAAAAAAAAAAAAADAEH5S8D//8EDAgAAAAAAAAAAAAAAAAAAAAMDo+8Gifz89SMAAgAAAAAAAAAAAAAAAAABAA7wpwRM/Pn8ZgQEAAAAAAAAAAAAAAAAAAQBVflFABHm/v+xAwIAAAAAAAAAAAAAAAAAAwO46xQKCrH//u4YAAEAAAAAAAAAAAAAAAIAIfX/8PLy/P/7/FcBBAAAAAAAAAAAAAAABANv/MafoZ+v/vz/pgMDAAAAAAAAAAAAAAACBMb8OwMDAwbg///mEAABAAAAAAAAAAAAAwAy/N4MBAUHBaz/+fxNAQMAAAAAAAAAAAAEA4b8kAMEAAQDavz3+5oDBAAAAAAAAAAAAwQK2/tDAQMAAgEz+v3/4AoDAgAAAAAAAAAABnb89BsAAgABAAnr//v8bQYAAAAAAAAAACeL+fv8mRsCAgIZevn9/v3yaxcAAAAAAAAD0Pn6/Pn5pQMFA5v3+vz8/Pz5sAMAAAAAAAADAwMDAwMDAAAAAwMDAwMDAwMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","b":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAADl/b5/Pz8+/n5+d61bRUAAgAAAAAAAAAAAAAYTdP+/P/mWlCd+f/81kMAAgAAAAAAAAAAAAAAU/z4/68DAAZ7/Pj/7SABAAAAAAAAAAAABAM1/Pv/sAYHAwnZ//j8dgMAAAAAAAAAAAADADf8+/+wAwMEA5r89/qdAwAAAAAAAAAAAAMANvz7/7ADAwQFjPz1/IQDAAAAAAAAAAAAAwA2/Pv/sQQFBQO6+//pIwEAAAAAAAAAAAADADb8+/+uAwADWvn80z0AAgAAAAAAAAAAAAMANvz8/80eLITtynESAAIAAAAAAAAAAAAAAwA2/P7//+/u+ehsIAMAAQAAAAAAAAAAAAADADb8/f7eQCVRxvz5vFEDAQAAAAAAAAAAAAMANvz7/64DAAAKsP//+ZQFAAAAAAAAAAAAAwA2/Pv/sQUFBgAj8fv6+WUDAAAAAAAAAAADADb8+/+wAwMAAgO8//r90gMAAAAAAAAAAAMANvz7/7ADAwAEBKD8+//uAwAAAAAAAAAAAwA2/Pv/sAMDAAMDp//7/+gDAAAAAAAAAAADADf8+/+wAwMBAwTV//v9xQMAAAAAAAAAAAQDNPz7/68EBwcAU/z7+vliAwAAAAAAAAAAAANg/Pn/0QYDAzXh+//5mAQAAAAAAAAAAAAcX+X+/v7/rnGV9fz83m0GAQAAAAAAAAAAA8n5+/z8/Pz5+fnisWkWAwIAAAAAAAAAAAAAAwMDAwMDAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","c":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAwMDAwMDAwAAAAAAAAAAAAAAAAABAgAHTJ3d+fn58tGTWSkAAAAAAAAAAAAAAgADWMj8+aRgQ0ptuPn871AAAAAAAAAAAAIAF6z8/L8rAwMAAAMDS+r8rwMAAAAAAAACACDL//7BEQAEAwMDBAYDfPvIAwAAAAAAAAMRyf/57CYABAAAAAAAAgIe+9kDAAAAAAAAA5D89vx+AwUAAAAAAAAAAgOozwMAAAAAAAAt9Pz+8R0BAgAAAAAAAAABAQkZAAAAAAAAA4/8+f++AwIAAAAAAAAAAAAAAAAAAAAAAAAD0P75/JUEBAAAAAAAAAAAAAABAQAAAAAAAAPv//r8gQMEAAAAAAAAAAAAAAAAAAAAAAAAA/j/+/yEAwQAAAAAAAAAAAAAAAAAAAAAAAAD8P/7/JoDBAAAAAAAAAAAAAAAAAAAAAAAAAPT//v/vwMBAAAAAAAAAAAAAAAAAAAAAAAAA5f8+//vGQACAAAAAAAAAAAAAAMAAAAAAAAAN/r9+/xlAwQAAAAAAAAAAAABAAAAAAAAAAADpfz4/9QLAwEAAAAAAAAAAQBOAAAAAAAAAAIe4f/4/H8DBgEAAAAAAAUAT/YDAAAAAAAAAwA86v/39lQDAAQEBAQEABLZzAMAAAAAAAAAAwA61/z/9HQOAwMDAwMjuvlXAAAAAAAAAAAAAwAZlO/8/N6Yb2mArvb8pwYAAAAAAAAAAAAAAgADLIPC8vn5+fHYoksDAQAAAAAAAAAAAAAAAAAAAwMDAwMDAwMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","d":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMDAwMDAwMDAwMDAAAAAAAAAAAAAAAAAAPd+fv8/Pr58vD34aJXCwACAQAAAAAAAAAAACiW/Pz+41EnKFK+/PzRWgMBAQAAAAAAAAAAAAbe/v2hAwAAAAZ8+f/5lwcDAQAAAAAAAAADBMf//JsGBgIEAwaF/Pj5mgMDAAAAAAAAAAEDyP/8nAMEAAABBAa///f6WwAAAAAAAAAAAQPI//ycAwQAAAADADr7+/7aDwAAAAAAAAABA8j//JwDBAAAAAACA8X/+vxeAQAAAAAAAAEDyP/8nAMEAAAAAAQDgPz4/qwDAAAAAAAAAQPI//ycAwQAAAAAAwBR/Pv/1QMAAAAAAAABA8j//JwDBAAAAAADADv8/f/mAwAAAAAAAAEDyP/8nAMEAAAAAAIANPz+/+YDAAAAAAAAAQPI//ycAwQAAAAAAwA7/Pz/1AMAAAAAAAABA8j//JwDBAAAAAADAFH8+f6sAwAAAAAAAAEDyP/8nAMEAAAAAAQEfvz5/GEDAAAAAAAAAQPI//ycAwQAAAAAAgPD//3jEwAAAAAAAAABA8j//JwDBAAAAAMBNfr6/HADAAAAAAAAAAEDyP/8nAQEAAABBQa2/f+/CwMAAAAAAAAAAgTH//+jAwcDBAQGc/z/2CEBAgAAAAAAAAAABt3//tgKAwADBmr5/M4oAAIAAAAAAAAAACGM/P3+/79gSGO8/PeaFgADAAAAAAAAAAAD1/n7/Pz7+fn5+eebPQMAAgAAAAAAAAAAAAADAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","e":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAA5H2+fz8/Pn5+fn5+fn8rAMAAAAAAAAAAAAAFFXd/vz/0U5GRUZFa+rbCAAAAAAAAAAAAAAAA2T89/x9AwAAAAAGdfkdAAAAAAAAAAAAAAQDR/z4/IQGBwMDBQQu9C4AAAAAAAAAAAAAAwBJ/Pj8gwMEAAAAAAIxBgAAAAAAAAAAAAADAEj8+PyDAwQAAAABAAAAAAAAAAAAAAAAAAMASPz4/IMDBAAAAQAAAgAAAAAAAAAAAAAAAwBI/Pj8hQYHAwQBDgAAAAAAAAAAAAAAAAADAEj8+Px7AwEAA1zNBAABAAAAAAAAAAAAAAMASPz6/7NVVlRh4dsDAAEAAAAAAAAAAAAAAwBI/P3//Ozs6/D/wQMBAAAAAAAAAAAAAAADAEj8+PySCw0LEcrgAwAAAAAAAAAAAAAAAAMASPz4/IADAgEBXMsDAAEAAAAAAAAAAAAAAwBI/Pj8hAQFAQEAEAAAAAAAAAAAAAAAAAADAEj8+PyDAwQAAAAAAAABAAAAAAAAAAAAAAMASPz4/IMDBAAAAAEAAAAAAAAAAAAAAAAAAwBJ/Pj8gwMEAAAAAAAACgAAAAAAAAAAAAAEA0b8+PyCBwcDAwMDBAaiAwAAAAAAAAAAAAADbPz3/JUGAAAAAAAFX+IDAAAAAAAAAAAAFlnm/v3/6mdFRUVFSXTvsAMAAAAAAAAAAAOv+fz8/Pz8+fn5+fn5+floAwAAAAAAAAAAAAMDAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","f":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAwMDAwMDAwMDAwMDAwMAAAAAAAAAAAAAA7D5+/z8/Pr5+fn5+fn70AMAAAAAAAAAAAAAGnP5/v3/33NsbG1wtP/sAwAAAAAAAAAAAAAABq7/9/yNBgMDAwMGwfUDAAAAAAAAAAAAAAYGdfz3/IsHCAQECARj9gMAAAAAAAAAAAAABANs/Pf8iwMEAAAAAA1JAAAAAAAAAAAAAAAEA2z89/yLAwQAAAACAAAAAAAAAAAAAAAAAAQDbPz3/IsDBAAAAQAAAwAAAAAAAAAAAAAABANs/Pf8jQcIBAQAKwMAAAAAAAAAAAAAAAAEA2z89/yDBgMDA1PwEgAAAAAAAAAAAAAAAAQDbPz5/8yFiIaQ6OMJAAAAAAAAAAAAAAAABANs/Pv/9c7Ozdj81AYAAAAAAAAAAAAAAAAEA2z89/ySBgMDBqn1CwAAAAAAAAAAAAAAAAQDbPz3/IoFBgUAOdgQAAAAAAAAAAAAAAAABANs/Pf8iwMEAAAADwAAAAAAAAAAAAAAAAAEA2z89/yLAwQAAAEAAAAAAAAAAAAAAAAAAAQDbPz3/IsDBAAAAAEAAAAAAAAAAAAAAAAABANt/Pf8iwMEAAAAAAAAAAAAAAAAAAAAAAAFBmr89/yJBQYAAAAAAAAAAAAAAAAAAAAAAAAGjPz4/7kGAAAAAAAAAAAAAAAAAAAAAAAAG2Hu/v79/JUuBAEAAAAAAAAAAAAAAAAAAAPJ+fz8/Pz7+ewrAAIAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","g":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAwMDAwMDAwAAAAAAAAAAAAAAAAABAQMVZ7z0+fn0zqN1PwUBAAAAAAAAAAAAAgAGbNr88pdpdqr2/Pz5YQMAAAAAAAAAAAIAFrL8/7gfAwMDAyKv//yMAwAAAAAAAAABAhPD//vOEwAFBAQEAAe1+5sDAAAAAAAAAAMDrf/4+TwABAAAAAAEACL2rQMAAAAAAAAAAFn89/6pAwQAAAAAAAACAEY4AAAAAAAAAAAL1f77/EMBAwAAAAAAAAABAAAAAAAAAAAAAFH8/P/hDAABAAAAAAAAAAADAgAAAAAAAAADnvv5/7UDAgAAAAAAAAAAAAAAAAAAAAAAAAPJ//n8mwMEAAAAAAAEBAQEBAQEAAAAAAAAA9z/+vyRAwQAAAAAAAMDAwMDAwMAAAAAAAAD2v/6/JcDBAAAAQAMhJCJi4qMgwMAAAAAAAPA//n/rQMDAAABABCs9fz8/PypAwAAAAAAA4n8+v/RBQEAAAAAAAMb1vn4hAYAAAAAAAAAM/j9/vcnAQIAAAAABgOj/vxXAgAAAAAAAAADqP33/H4DBAAAAAADBKT+/F8CAAAAAAAAAAEk6v385xoBAgAAAAMEpf/8VQAAAAAAAAAAAwBN9/7+rQYBBQMDBQPB/viMBAAAAAAAAAAAAwBP6//8lwgDAAADPfX//L8FAAAAAAAAAAAAAwAsrff80WpDVJv3/NN7FQEAAAAAAAAAAAAAAwADQJXe+fn54qNSDQMAAAAAAAAAAAAAAAAAAAAAAwMDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","h":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMDAwMDAwAAAAAAAwMDAwMDAwAAAAAAAAOx+fr8+/n2MgAEABnn+fr8+/nRAwAAAAAAAB+U/Pv+00MFAQABAzfF/vr/risAAAAAAAAAABj1/fxUAAMAAAADADj8/PwzAAAAAAAAAAABF+v//DkDAwAAAAICI/f/+ykCAAAAAAAAAAAW7P/8OwADAAAAAgAl9//7KQAAAAAAAAAAABbs//w6AAMAAAACACT3//spAAAAAAAAAAAAFuz//DoAAwAAAAIAJPf/+ykAAAAAAAAAAAAW7P/8PQQHBAQEBgQo9//7KQAAAAAAAAAAABbs//wuAwMDAwMDAxf3//spAAAAAAAAAAAAFuz//JV1d3V1dXZ1ivn/+ykAAAAAAAAAAAAW7P/+/Pn5+fn5+fn8/v/8KQAAAAAAAAAAABbs//xxS01LS0tMS2H3//spAAAAAAAAAAAAFuz//C4AAAAAAAAAF/f/+ykAAAAAAAAAAAAW7P/8PQMGAwMDBQMn9//7KQAAAAAAAAAAABbs//w6AAMAAAACACT3//spAAAAAAAAAAAAFuz//DoAAwAAAAIAJPf/+ykAAAAAAAAAAAAW7P/8OgADAAAAAgAl9//7KQAAAAAAAAAAARfs//w5AwMAAAACAiP3//sqAQAAAAAAAAAAHPb9/HEDAgAAAAMAOPz8/DEAAAAAAAAAACKZ/Pv+6lIIAQABAzLC//r+piQAAAAAAAADy/n6/Pz89lcCBQAg6fn7/Pv50gMAAAAAAAADAwMDAwMDAAAAAAADAwMDAwMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","1":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAABv9fv/TwADAAAAAAAAAAAAAAAAAAEDAgAVo////P9PAAMAAAAAAAAAAAAAAAAAAAAAWOD/8f/8/08AAwAAAAAAAAAAAAAAAAATV7///4Se//j/TwADAAAAAAAAAAAAAAAAAOb///+hAKT/+P9PAAMAAAAAAAAAAAAAAAAAhffxiAABp//4/08AAwAAAAAAAAAAAAAAAAAAIhwAAwCl//j/TwADAAAAAAAAAAAAAAAAAAIAAAMDAKX/+P9PAAMAAAAAAAAAAAAAAAAAAAICAAMApf/4/08AAwAAAAAAAAAAAAAAAAAAAAAAAwCl//j/TwADAAAAAAAAAAAAAAAAAAAAAAADAKX/+P9PAAMAAAAAAAAAAAAAAAAAAAAAAAMApf/4/08AAwAAAAAAAAAAAAAAAAAAAAAAAwCl//j/TwADAAAAAAAAAAAAAAAAAAAAAAADAKX/+P9PAAMAAAAAAAAAAAAAAAAAAAAAAAMApf/4/08AAwAAAAAAAAAAAAAAAAAAAAAAAwCl//j/TwADAAAAAAAAAAAAAAAAAAAAAAADAKX/+P9PAAMAAAAAAAAAAAAAAAAAAAAAAAMApf/4/08AAwAAAAAAAAAAAAAAAAAAAAAAAwCl//j/TwADAAAAAAAAAAAAAAAAAAAAAAADAaX/+P9PAAMAAAAAAAAAAAAAAAAAAAMEBAcAqf/4/08BCAQEAAAAAAAAAAAAAAAAAAAAABHf/vr/mQAAAAAAAAAAAAAAAAAAAABciYea4P/+//7/v42JeAAAAAAAAAAAAAAAALn//////v/////////yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","2":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACABZ6w+v//+/GfRgAAgAAAAAAAAAAAAAAAAA73////9nV/v//40sAAgAAAAAAAAAAAAAAH+3/+9c1AgEsz/v//DUBAAAAAAAAAAAAAACG//r9PAACAgA0/Pn/tgAAAAAAAAAAAAAAAKz7/dUBAwEBAgDV//7rFAAAAAAAAAAAAAAAdf//sAADAAACAbr///UlAAAAAAAAAAAAAAAGedSLAAQAAAIAvP//6xUAAAAAAAAAAAAAAAAAAAcAAAAAAALV//7BAAAAAAAAAAAAAAAAAQMAAAAAAAIBIPj9/2AAAAAAAAAAAAAAAAAAAAEBAAAABABy///TBgIAAAAAAAAAAAAAAAAAAAAAAAECC+H9/DgAAwAAAAAAAAAAAAAAAAAAAAAABACM//9vAAMAAAAAAAAAAAAAAAAAAAAAAAQARvv/lgAEAAAAAAAAAAAAAAAAAAAAAAACACDm/68BAwEAAAAAAAAAAAAAAAAAAAAAAgENy/+9CAEBAAAAAAAAAAAAAAAAAAAAAAEDA7P/xg4AAgAAAQIAAAAAAAAAAAAAAAABBACe/9EVAAIAAAAAAAAAAAAAAAAAAAAAAAQAh//bHgADAAABARkpAAAAAAAAAAAAAAAFAHL/5ikABAEBAQQAx/gAAAAAAAAAAAAAAABZ/+kvAAAAAAAAACb86AAAAAAAAAAAAAAATfjzUAkVERERERM2yv/eAAAAAAAAAAAAAADt//jm8O7u7u7u7v///9wAAAAAAAAAAAAAAO/+//////////////v/1gAAAAAAAAAAAAAA7v/+/v7+/v7+/v7//f/QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","3":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACADy08f/////wskAAAgAAAAAAAAAAAAAAAABb+P//4Kin3f///HwAAgAAAAAAAAAAAAAAJvn//LkOAAAJq/76/1UAAAAAAAAAAAAAAAB3/vz6JwAGBgAc9vz9xQEAAAAAAAAAAAAAAIH//NABAQAAAgDN///nDwAAAAAAAAAAAAAAKeD/wQADAAACAbv//+cQAAAAAAAAAAAAAAAAFGFTAAEAAAEAyf/9zAEAAAAAAAAAAAAAAAEAAAAAAAADAhfz+/9xAAAAAAAAAAAAAAAAAAEEAwQEBAEAkP7/xwgCAAAAAAAAAAAAAAAAAAAAAAAACIH//70UAAEAAAAAAAAAAAAAAAAAAAJsfZXW/8xWAAACAAAAAAAAAAAAAAAAAAEABvn/////0Y5GAAABAAAAAAAAAAAAAAAAAAACR1Nhk+H///+uEAAAAAAAAAAAAAAAAAAAAAAAAAAAD5H/+f+8BQAAAAAAAAAAAAAAAAAAAAMEBAQAAKj/9/9kAAAAAAAAAAAAAAAAAAAAAAAAAAQCL/38/bsAAAAAAAAAAAAAAAIBAAAAAAAAAQAP6///1wAAAAAAAAAAAAAAAAAEAAAAAAABAA/q///UAAAAAAAAAAAAAAAqxF4BBAAAAAIBIfn9/rYAAAAAAAAAAAAAAMD/lQAGAQABBwBf//n/bAAAAAAAAAAAAAAA4PrtIAAAAAAAEtz7/90OAAAAAAAAAAAAAACT//7VQggADEbO///2OwAAAAAAAAAAAAAAAAuu////4dHm////xTUAAwAAAAAAAAAAAAAAAABit+L///zYolICAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","4":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADADr4/P/TAAAAAAAAAAAAAAAAAAAAAAAAAQMDyP/6/9MAAAAAAAAAAAAAAAAAAAAAAAAEAHb/6/7/0wAAAAAAAAAAAAAAAAAAAAAAAgEf98Kn///TAAAAAAAAAAAAAAAAAAAAAAADALP/Nqj//9MAAAAAAAAAAAAAAAAAAAAAAwBV/7IAw///0wAAAAAAAAAAAAAAAAAAAAICEeT3JgHL///TAAAAAAAAAAAAAAAAAAAABACW/30AAM3//9MAAAAAAAAAAAAAAAAAAAMAO//TBwIA0P//0wAAAAAAAAAAAAAAAAABAwbR/z8AAwDR///TAAAAAAAAAAAAAAAAAAMAev+bAAQAANH//9MAAAAAAAAAAAAAAAACASb25xMCAgAA0f//0wAAAAAAAAAAAAAAAAQAuv9aAAQAAADR///TAAAAAAAAAAAAAAAAAFv/vAMHBQQEBNL//9QEBAQEAAAAAAAAAAAX6OgRAAAAAAAAzv//0AAAAAAAAAAAAAAAAKf+zHp/fX5+fn7o///pfn1+bwAAAAAAAAAA////////////////////////AAAAAAAAAABpdHJwcG9vb29v5f//5m9vb2IAAAAAAAAAAAAAAAAAAAAAAADO///QAAAAAAAAAAAAAAAABAQEBAQEBAQEBdH//9MFBAQEAAAAAAAAAAAAAAAAAAACBQMA1v//2AADBAAAAAAAAAAAAAAAAAAAAAAAADf4/v74OAAAAAAAAAAAAAAAAAAAAAIASomm8f/+/v/xqYEPAAAAAAAAAAAAAAAABACV/////////////x4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","5":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACOH//P7+/v7+/vv/nQAAAAAAAAAAAAAAAAAU8f//////////+v+lAAAAAAAAAAAAAAAAACP9/O3u7u7u7u///6wAAAAAAAAAAAAAAAAANP+9ERMRERETElj9sAAAAAAAAAAAAAAAAABG/6EAAAAAAAAAAPbQAAAAAAAAAAAAAAAAAFz/jQEFAQEBAQICSkkAAAAAAAAAAAAAAAAAcv92AAQAAAAAAAAAAAAAAAAAAAAAAAAAAACI/2IECAQEBAMBAAMDAAAAAAAAAAAAAAAAAKD/QwAAAAAAAAADAQAAAAAAAAAAAAAAAAAAtf1eWYGNiXNJEgAAAQAAAAAAAAAAAAAAAAHT///////////niAwAAQAAAAAAAAAAAAAAA7jUhVNDSGy/////zRYBAAAAAAAAAAAAAAAAAwIAAAAAAAB5//f/ugMAAAAAAAAAAAAAAAAAAAQEAwMEAwCw//j/VAAAAAAAAAAAAAAAAAEBAAAAAAAEAkv/+f6tAAAAAAAAAAAAAAAAAAAAAAAAAAIAJ/3+/9UAAAAAAAAAAAAAAAEEAgAAAAAAAgAf+f//3gAAAAAAAAAAAAAAAAAAAAAAAAACACr+/v/SAAAAAAAAAAAAAAARhk0CAwAAAAQCS//5/qgAAAAAAAAAAAAAAKb/qQAHAwIDBgCj//n/UwAAAAAAAAAAAAAA2vn0OQAAAAAAUvv4/8MEAAAAAAAAAAAAAACR//3teTorRpX6/P/lIgAAAAAAAAAAAAAAAA6x////////////tyIAAgAAAAAAAAAAAAAAAABctt/3//bap04AAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","6":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIADYfm/////+F0AAIAAAAAAAAAAAAAAAACACfP//+3haH5//+HAAAAAAAAAAAAAAAAAgEb5P/1UAAAAF///f4sAAAAAAAAAAAAAAACALf//3cABQUDAtr9/0IAAAAAAAAAAAAAAABG//7mCwMBAAMAtf+yCQAAAAAAAAAAAAAAALP+/5kABAAAAQA8SAIAAAAAAAAAAAAAAAAd8v7/WAEEAAAAAAAAAAAAAAAAAAAAAAAAAFr//f0tAwYCAgMEBQMBAAAAAAAAAAAAAAAAkP//8BUAAAAAAAAAAwAAAAAAAAAAAAAAAAC2///aADOLu8SufyoAAgAAAAAAAAAAAAAAAM///9ed////////+X8AAwAAAAAAAAAAAAAA2v/9//+aNh0ulv79/3oAAAAAAAAAAAAAAADb//3wTAAAAAAAov76+iwAAAAAAAAAAAAAANX//8YABAMBBQIs/fz/jwAAAAAAAAAAAAAAxv//0QMAAAABAAfh//7KAAAAAAAAAAAAAACr///fBgABAAABAMr//+AAAAAAAAAAAAAAAIP///EWAAEAAAEAxf//4QAAAAAAAAAAAAAAS//9/zMAAgAAAQDL///PAAAAAAAAAAAAAAAQ5/7/aAEEAAEABt///qMAAAAAAAAAAAAAAACV//+9AAUBAwMk+v7/VAAAAAAAAAAAAAAAASP4/f1IAAICAIL//9QIAAAAAAAAAAAAAAADAG3//+dEAQRa9P//QAAAAAAAAAAAAAAAAAADAHb3///X3f//6lIAAwAAAAAAAAAAAAAAAAADADel5P//2ZMkAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","7":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADF//39/f38/Pz8/P3////6AAAAAAAAAAAAAMz//f/////////////9/tIAAAAAAAAAAAAA0v//2NDQ0NDQ0NDO9f3/awAAAAAAAAAAAADX/lgCAAAAAAAAABfv/+sVAAAAAAAAAAAAAOThAAABAQEBAAUAdP//nwAAAAAAAAAAAAAA+dMBAgAAAAABAQTU//9BAQAAAAAAAAAAAABBMwABAAAAAAMAQf//2AUBAAAAAAAAAAAAAAAAAAAAAAAAAwCk//9+AAQAAAAAAAAAAAAAAwIAAAAAAAEAGPL/+SQAAgAAAAAAAAAAAAAAAAAAAAAABABw//65AAIAAAAAAAAAAAAAAAAAAAAAAAABAtD+/1oABAAAAAAAAAAAAAAAAAAAAAAAAwA9///oDgABAAAAAAAAAAAAAAAAAAAAAAADAKH//5YAAwAAAAAAAAAAAAAAAAAAAAAAAQAW8P//OAADAAAAAAAAAAAAAAAAAAAAAAAEAGz//s8CAQAAAAAAAAAAAAAAAAAAAAAAAAECzv7/cgAEAAAAAAAAAAAAAAAAAAAAAAADADr///UcAAIAAAAAAAAAAAAAAAAAAAAAAAMAnf/+rgACAAAAAAAAAAAAAAAAAAAAAAABABTv//9OAQQAAAAAAAAAAAAAAAAAAAAAAAQAaf//4QkAAQAAAAAAAAAAAAAAAAAAAAAAAQHL/v+LAAQAAAAAAAAAAAAAAAAAAAAAAAMANv7+/S8AAwAAAAAAAAAAAAAAAAAAAAAAAwCc///DAAIAAAAAAAAAAAAAAAAAAAAAAAEAE+z+/2cABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","8":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAspu3/////7aAfAAIAAAAAAAAAAAAAAAIAV/D//8OJjMv//+MzAAIAAAAAAAAAAAAAATL+//51AAAAAI7//+IQAQAAAAAAAAAAAAAAq//+xgADBQUAAtz9/20AAAAAAAAAAAAAABHo/v97AQUAAAQAlf/+rwAAAAAAAAAAAAAAKvj9/2kBBAAABAF8///BAAAAAAAAAAAAAAAk9f7/hQAFAAAEAYv//bQAAAAAAAAAAAAAAAfa/f7dCAAEAQQAwf3/dQAAAAAAAAAAAAAAAHz/9/+yDwADAEL5/9gRAQAAAAAAAAAAAAACCcX/+P/YUARM8v/FHQACAAAAAAAAAAAAAAEAEr//+///1P/pcQgAAQAAAAAAAAAAAAAAAAIBAIP6/////c43AAACAAAAAAAAAAAAAAABAABJvP/q8/////+jEgACAAAAAAAAAAAAAAEGmP//tRgikvb/+v/VHwAAAAAAAAAAAAAAAqr//78EAAAALLv/9//PCwAAAAAAAAAAAABm//v5KwAEAQQAAaf/+P91AAAAAAAAAAAAAMr9/8gAAgAAAAMADej+/cYAAAAAAAAAAAAA5v//pgEDAAAAAAQAqv//2QAAAAAAAAAAAADg//+rAAMAAAAABAGj//7JAAAAAAAAAAAAALP+/9oBAwEAAAIEANT//5MAAAAAAAAAAAAASv/6/1wAAQICAABh//z6LAAAAAAAAAAAAAAAmf/+8FoGAAALafb//3AAAAAAAAAAAAAAAAICivf//9+6vun//+VjAAMAAAAAAAAAAAAAAAAAM5PR+v//7bx1GQACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"};
+const engraveW=26,engraveH=30,engravingMasks={};
+for(const [ch,b64] of Object.entries(engravingAtlas)){
+  const raw=atob(b64);engravingMasks[ch]=Uint8Array.from(raw,c=>c.charCodeAt(0));
+}
+const engravedWood=[.315,.184,.107],engravedDark=[.042,.027,.016];
+function blend3(a,b,t){return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];}
+function engravedCharacter(m,ch,cx,cz,rot){
+ const mask=engravingMasks[ch],C=Math.cos(rot),S=Math.sin(rot);
+ // Rotate all four coordinate strips with the frame itself.
+ const X=(x,z)=>cx+x*C+z*S,Z=(x,z)=>cz-x*S+z*C;
+ const vertex=(x,z,depth)=>[X(x,z),.1220-.0012*depth,Z(x,z)];
+ const nx=engraveW-1,nz=engraveH-1;
+ const depthAt=(i,j)=>Math.pow(mask[Math.max(0,Math.min(engraveH-1,j))*engraveW+Math.max(0,Math.min(engraveW-1,i))]/255,1.08);
+ // Uppercase engraving: centered in the continuous wood margin; game notation remains lowercase.
+ const x0=-.146,x1=.146,z0=-.130,z1=.130;
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){
+   const da=depthAt(i,j),db=depthAt(i,j+1),dc=depthAt(i+1,j+1),dd=depthAt(i+1,j);
+   const x=x0+(x1-x0)*i/nx,xx=x0+(x1-x0)*(i+1)/nx;
+   const z=z0+(z1-z0)*j/nz,zz=z0+(z1-z0)*(j+1)/nz;
+   const ink=(da+db+dc+dd)/4;
+   const color=blend3(engravedWood,engravedDark,.91*Math.pow(ink,.82));
+   // Face winding gives visible surface with back-face culling active.
+   m.quad(vertex(x,z,da),vertex(x,zz,db),vertex(xx,zz,dc),vertex(xx,z,dd),color);
+ }
+}
+let engravedFrame=new Mesh();
+for(let i=0;i<8;i++){
+ const pos=i-3.5,rank=String(8-i),letter='abcdefgh'[i];
+ engravedCharacter(engravedFrame,letter,pos,4.414,0);
+ engravedCharacter(engravedFrame,letter,pos,-4.414,Math.PI);
+ engravedCharacter(engravedFrame,rank,-4.414,pos,-Math.PI/2);
+ engravedCharacter(engravedFrame,rank,4.414,pos,Math.PI/2);
+}
+const engraveMesh=engravedFrame.compile();
+
+let floor=new Mesh();floor.box(0,-.438,0,18,.08,18,[.055,.061,.071]);let floorMesh=floor.compile();
+let glowing=new Mesh();glowing.box(0,.198,0,1.015,.008,1.015,[.22,.72,.54]);let selectMesh=glowing.compile();
+let dest=new Mesh();dest.cylinder(0,.205,0,.14,.008,[.20,.8,.6],24);let destMesh=dest.compile();
+let dangerSpot=new Mesh();dangerSpot.cylinder(0,.223,0,.175,.028,[.88,.08,.13],28);dangerSpot.sphere(0,.27,0,.078,[1,.23,.17],10,14);let dangerSpotMesh=dangerSpot.compile();
+// Orange ring: a capture is possible. Red outer ring: immediate legal recapture.
+let captureHalo=new Mesh();captureHalo.lathe([[.36,.220],[.42,.221],[.454,.234],[.455,.248],[.405,.248],[.365,.235]],[1,.51,.08],48);let captureHaloMesh=captureHalo.compile();
+let captureRisk=new Mesh();captureRisk.lathe([[.464,.222],[.485,.226],[.493,.245],[.472,.257]],[.97,.14,.15],48);let captureRiskMesh=captureRisk.compile();
+let riskRing=new Mesh();riskRing.cylinder(0,.216,0,.38,.012,[.87,.14,.15],32);let riskRingMesh=riskRing.compile();
+let last=new Mesh();last.box(0,.2,0,.99,.006,.99,[.70,.54,.24]);let lastMesh=last.compile();
+let shadow=new Mesh();shadow.cylinder(0,.195,0,.353,.003,[.042,.037,.037],32);let shadowMesh=shadow.compile();
+let pieceMeshes={};for(let p of ['p','r','n','b','q','k'])pieceMeshes[p]=material([.95,.95,.91],[.74,.56,.30],p);
+let camera={az:.12,el:1.22,dist:13.0,target:[0,.30,0]},view,eye,projection;
+function updateCamera(){let {az,el,dist}=camera;eye=[Math.sin(az)*Math.cos(el)*dist,Math.sin(el)*dist+camera.target[1],Math.cos(az)*Math.cos(el)*dist];view=lookAt(eye,camera.target);projection=perspective(Math.PI/4,Math.max(.4,canvas.clientWidth/canvas.clientHeight),.1,100);}
+function renderMesh(mesh,model,tint=[1,1,1],mat=0,opacity=1){gl.bindBuffer(gl.ARRAY_BUFFER,mesh.buf);for(let [a,offset] of [[A.pos,0],[A.norm,3],[A.color,6]]){gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,3,gl.FLOAT,false,36,offset*4);}gl.uniformMatrix4fv(U.model,false,model);gl.uniform3fv(U.tint,tint);gl.uniform1f(U.mat,mat);gl.uniform1f(U.op,opacity);gl.drawArrays(gl.TRIANGLES,0,mesh.count);}
+function pieceTint(ch){return ch===ch.toUpperCase()?[.99,.90,.76]:[.42,.46,.54];}
+function loc(i){return [(i&7)-3.5,(i>>4)-3.5];}
+let gameHistory=[parseFen(FEN)],movesSAN=[],lastMove=null,selected=-1,legalTargets=[],hovered=-1,mode='ai',anim=[],busy=false,pending=null,aiTimer=null,coachMove='',cameraLocked=false;
+let cameraPreset=null,captureTargets=[],dangerTargets=[],dangerPending='',dangerMessage='',lastPlayerThreat=null;
+let current=()=>gameHistory.at(-1),motion=()=>legal(current());
+
+const coordRoot=document.getElementById('boardLabels'),coordNodes=[];
+for(let i=0;i<128;i++)if(on(i)){let el=document.createElement('span');el.className='coord-cell'+(((i>>4)+(i&7))%2===0?'':' dark');el.textContent=sq(i);el.dataset.square=sq(i);coordRoot.append(el);coordNodes.push({i,el});}
+let showCoords=false,mentorArrow=null,threatArrow=null,currentThreats=[],lastOverlayUpdate=0;
+function project3D(x,y,z){
+ const v=[x,y,z,1];let a=[0,0,0,0],b=[0,0,0,0];for(let j=0;j<4;j++){a[j]=view[j]*v[0]+view[j+4]*v[1]+view[j+8]*v[2]+view[j+12]*v[3];}
+ for(let j=0;j<4;j++){b[j]=projection[j]*a[0]+projection[j+4]*a[1]+projection[j+8]*a[2]+projection[j+12]*a[3];}
+ if(b[3]<=0)return null;
+ return {x:(b[0]/b[3]+1)*canvas.clientWidth/2,y:(1-b[1]/b[3])*canvas.clientHeight/2};
+}
+function squareOnScreen(i,corner=false){const [x,z]=loc(i);return project3D(x+(corner?-.34:0),corner?.235:.67,z+(corner?.35:0));}
+function updateMentorOverlay(t){if(t-lastOverlayUpdate<70)return;lastOverlayUpdate=t;
+ for(const {i,el} of coordNodes){let col=i&7,row=i>>4;
+ if(!showCoords){el.style.display='none';continue;}
+ let p=squareOnScreen(i,true);
+ el.textContent=sq(i);if(!p){el.style.display='none';continue;}el.style.display='block';el.style.left=p.x+'px';el.style.top=p.y+'px';}
+ const path=document.getElementById('mentorPath'),svg=document.getElementById('mentorSvg'),from=document.getElementById('mentorFrom'),to=document.getElementById('mentorTo');
+ const redPath=document.getElementById('threatPath');
+ if(threatArrow){let p=squareOnScreen(threatArrow[0]),q=squareOnScreen(threatArrow[1]);if(p&&q){let dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy)||1;redPath.style.display='';redPath.setAttribute('d',`M ${p.x+dx/len*18} ${p.y+dy/len*18} L ${q.x-dx/len*23} ${q.y-dy/len*23}`);}else redPath.style.display='none';}else redPath.style.display='none';
+ svg.setAttribute('viewBox',`0 0 ${canvas.clientWidth} ${canvas.clientHeight}`);
+ if(!mentorArrow){path.style.display='none';from.style.display='none';to.style.display='none';return;}
+ const p=squareOnScreen(mentorArrow[0]),q=squareOnScreen(mentorArrow[1]);if(!p||!q)return;
+ const dx=q.x-p.x,dy=q.y-p.y,dl=Math.hypot(dx,dy)||1,ux=dx/dl,uy=dy/dl;
+ path.style.display='';path.setAttribute('d',`M ${p.x+ux*14} ${p.y+uy*14} L ${q.x-ux*23} ${q.y-uy*23}`);
+ for(const [node,pt,sqi] of [[from,p,mentorArrow[0]],[to,q,mentorArrow[1]]]){node.textContent=sq(sqi).toUpperCase();node.style.display='block';node.style.left=pt.x+'px';node.style.top=(pt.y-33)+'px';}
+}
+function showHintArrow(m){mentorArrow=m?[m[0],m[1]]:null;lastOverlayUpdate=0;}
+function showThreatArrow(m){threatArrow=m?[m[0],m[1]]:null;lastOverlayUpdate=0;}
+
+let sftLastFrame=0,sftFrameSignature='';function render(t){requestAnimationFrame(render);
+  const newSignature=[camera.az.toFixed(3),camera.el.toFixed(3),camera.dist.toFixed(3),camera.target[0].toFixed(3),camera.target[2].toFixed(3),dangerTargets.map(d=>d.to).join(','),captureTargets.map(d=>d.to+':'+d.danger).join(','),lastPlayerThreat?.target||-1,canvas.clientWidth,canvas.clientHeight,selected,legalTargets.join(','),lastMove?.join(','),gameHistory.length,current().b.join(''),showCoords,mentorArrow?.join(','),threatArrow?.join(','),currentThreats.map(x=>x.to).join(','),anim.length].join('|');
+  if(!anim.length&&newSignature===sftFrameSignature)return;
+  if(t-sftLastFrame<33)return;
+  sftLastFrame=t;sftFrameSignature=newSignature;
+  let w=canvas.clientWidth,h=canvas.clientHeight,dpi=Math.min(window.devicePixelRatio||1,1.7);if(canvas.width!==Math.round(w*dpi)||canvas.height!==Math.round(h*dpi)){canvas.width=Math.max(2,Math.round(w*dpi));canvas.height=Math.max(2,Math.round(h*dpi));gl.viewport(0,0,canvas.width,canvas.height);}updateCamera();gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);gl.clearColor(.052,.062,.078,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(prog);gl.uniformMatrix4fv(U.view,false,view);gl.uniformMatrix4fv(U.proj,false,projection);gl.uniform3fv(U.cam,eye);gl.uniform1f(U.time,t*.001);let id=mIdentity();renderMesh(floorMesh,id);renderMesh(boardMesh,id);renderMesh(engraveMesh,id);
+if(lastMove){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);renderMesh(lastMesh,mTransform(...[...loc(lastMove[0]).slice(0,1),0,...loc(lastMove[0]).slice(1)]),[1,1,1],0,.48);renderMesh(lastMesh,mTransform(...[...loc(lastMove[1]).slice(0,1),0,...loc(lastMove[1]).slice(1)]),[1,1,1],0,.48);gl.disable(gl.BLEND);}
+if(selected>=0){let [x,z]=loc(selected);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);renderMesh(selectMesh,mTransform(x,0,z),[1,1,1],0,.55);
+for(let d of legalTargets){if(captureTargets.some(r=>r.to===d)||dangerTargets.some(r=>r.to===d))continue;let [xx,zz]=loc(d);renderMesh(destMesh,mTransform(xx,0,zz),[1,1,1],0,.8);}
+for(const r of dangerTargets){if(captureTargets.some(c=>c.to===r.to))continue;let [xx,zz]=loc(r.to);renderMesh(dangerSpotMesh,mTransform(xx,0,zz),[1,1,1],0,1);}
+for(const r of captureTargets){let [xx,zz]=loc(r.to);renderMesh(captureHaloMesh,mTransform(xx,0,zz),[1,1,1],0,1);if(r.danger)renderMesh(captureRiskMesh,mTransform(xx,0,zz),[1,1,1],0,1);}
+gl.disable(gl.BLEND);}
+if(lastPlayerThreat){let [xx,zz]=loc(lastPlayerThreat.target);renderMesh(riskRingMesh,mTransform(xx,0,zz),[1,1,1],0,1);}
+if(mode!=='lesson'&&(mode==='local'||current().t===1)){for(const threat of currentThreats.slice(0,3)){let [xx,zz]=loc(threat.to);renderMesh(riskRingMesh,mTransform(xx,0,zz),[1,1,1],0,1);}}let s=current();for(let i=0;i<128;i++){if(!on(i)||s.b[i]==='.')continue;let ch=s.b[i],p=ch.toLowerCase(),[x,z]=loc(i),a=anim.find(q=>q.to===i&&q.piece===ch);let y=.18;if(a){let k=Math.min(1,(t-a.t)/370);let ease=1-Math.pow(1-k,3);let [fx,fz]=loc(a.from);x=fx+(x-fx)*ease;z=fz+(z-fz)*ease;y+=.35*Math.sin(Math.PI*ease);if(k>=1)anim.splice(anim.indexOf(a),1);}renderMesh(shadowMesh,mTransform(x,0,z),[1,1,1],0,.98);renderMesh(pieceMeshes[p],mTransform(x,y,z,.74,ch===ch.toUpperCase()?Math.PI:0),pieceTint(ch),1);}
+updateMentorOverlay(t);}
+function screenSquare(cx,cy){let rect=canvas.getBoundingClientRect(),ndcX=((cx-rect.left)/rect.width)*2-1,ndcY=1-((cy-rect.top)/rect.height)*2;let camZ=norm(sub(eye,camera.target)),camX=norm(cross([0,1,0],camZ)),camY=cross(camZ,camX),tan=Math.tan(Math.PI/8),aspect=rect.width/rect.height;let ray=norm(camX.map((v,i)=>-camZ[i]+v*ndcX*tan*aspect+camY[i]*ndcY*tan));if(ray[1]>=-.0001)return -1;let r=(.22-eye[1])/ray[1],x=eye[0]+ray[0]*r,z=eye[2]+ray[2]*r,c=Math.floor(x+4),row=Math.floor(z+4);if(c<0||c>7||row<0||row>7)return -1;return row*16+c;}
+function announce(text){let n=document.getElementById('notice');n.textContent=text;n.style.display='block';clearTimeout(n._time);n._time=setTimeout(()=>n.style.display='none',2100);}
+const pname={p:'pion',n:'cavalier',b:'fou',r:'tour',q:'dame',k:'roi'},value={p:1,n:3.15,b:3.3,r:5.1,q:9.2,k:0};
+function evalPos(s){let score=0;for(let i=0;i<128;i++){if(!on(i)||s.b[i]==='.')continue;let p=s.b[i],v=value[p.toLowerCase()],x=i&7,z=i>>4,centre=(3.5-Math.abs(3.5-x))+(3.5-Math.abs(3.5-z)),bonus=(p.toLowerCase()==='p'?.026:p.toLowerCase()==='n'?.045:.018)*centre;score+=side(p)*(v+bonus);}return score;}
+function aiScore(s,depth,alpha,beta){let st=legal(s);if(!st.length)return checked(s)?(s.t===1?-999:999):0;if(!depth)return evalPos(s);if(s.t===1){let score=-1e5;for(let m of st){score=Math.max(score,aiScore(apply(s,m),depth-1,alpha,beta));alpha=Math.max(alpha,score);if(alpha>=beta)break;}return score;}let score=1e5;for(let m of st){score=Math.min(score,aiScore(apply(s,m),depth-1,alpha,beta));beta=Math.min(beta,score);if(alpha>=beta)break;}return score;}
+function chooseAI(){let s=current(),ls=legal(s);if(!ls.length)return null;let diff=document.getElementById('difficulty').value,depth=diff==='tacticien'?2:1,temp=diff==='apprenti'?1.7:diff==='club'?.55:.16;let ranked=ls.map(m=>({m,score:-aiScore(apply(s,m),depth,-1e4,1e4)})).sort((a,b)=>b.score-a.score);let top=ranked.slice(0,diff==='apprenti'?10:diff==='club'?5:3);let weights=top.map((o,i)=>Math.exp(Math.max(-40,(o.score-top[0].score)/temp)));let total=weights.reduce((a,b)=>a+b,0),r=Math.random()*total;for(let i=0;i<top.length;i++){r-=weights[i];if(r<=0)return top[i].m;}return top[0].m;}
+function explain(pre,m){let piece=pre.b[m[0]].toLowerCase(),capture=pre.b[m[1]]!=='.'||m[3]==='ep',s=current();let text=m[3]==='castle'?'Excellent : le roque met le roi à l’abri et rapproche la tour du centre.':m[2]?'Ton pion est promu. Une dame est généralement le choix le plus puissant.':checked(s)?'Échec ! Le roi adverse doit maintenant répondre à la menace.':capture?'Une prise ! Mais vérifie toujours que la pièce qui capture ne peut pas être reprise.':piece==='p'?'Ton pion avance. Essaie de contrôler le centre et de libérer tes pièces.':piece==='n'||piece==='b'?'Tu développes une pièce : c’est essentiel en début de partie.':'Pense à la sécurité de ton roi et aux menaces adverses.';let prev=evalPos(pre),next=evalPos(s),delta=(next-prev)*(pre.t===1?1:-1);if(delta<-.85)text='Attention : ce coup semble perdre du matériel. Regarde les pièces attaquées et les captures possibles.';if(gameHistory.length===2&&!capture)text='Bon début ! Pour bien jouer, contrôle le centre et développe rapidement tes cavaliers et tes fous.';return text;}
+
+const lessons=[
+ {name:'1 · Le centre du royaume',fen:FEN,move:'e2e4',topic:'Centre',child:'Mission : ton pion du roi doit s’avancer pour ouvrir le chemin !',adult:'L’objectif est de contrôler le centre et libérer le fou ainsi que la dame.',h1:'Cherche le pion devant ton roi.',h2:'Le pion devant le roi est en e2. Il peut avancer de deux cases au premier coup.',why:'Le centre donne plus de place à tes pièces et limite les possibilités adverses.'},
+ {name:'2 · Le cavalier saute !',fen:FEN,move:'g1f3',topic:'Cavalier',child:'Ton cheval sait sauter par-dessus les pions. À toi !',adult:'Développe le cavalier de l’aile roi vers une case centrale efficace.',h1:'Un cavalier se déplace en L, même s’il doit sauter au-dessus d’un pion.',h2:'Regarde le cavalier juste à côté de la tour en bas à droite.',why:'Le cavalier arrivé en f3 contrôle deux cases centrales et prépare le roque.'},
+ {name:'3 · Une capture au centre',fen:'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2',move:'e4d5',topic:'Capture',child:'Un pion noir s’est avancé. Ton pion peut le croquer en diagonale !',adult:'Trouve la capture de pion au centre et observe la diagonale.',h1:'Un pion avance tout droit, mais capture en diagonale.',h2:'Ton pion blanc situé en e4 attaque le pion noir de la case d5.',why:'Les pions prennent en diagonale, jamais directement devant eux.'},
+ {name:'4 · Le roi au château',fen:'r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4',move:'e1g1',topic:'Roque',child:'Ton roi veut se cacher derrière ses pions. Fais le petit roque !',adult:'Le roi est encore au centre : effectue le petit roque pour le mettre à l’abri.',h1:'Le roque déplace ton roi de deux cases vers la tour.',h2:'Sélectionne le roi blanc en e1, puis la case g1.',why:'Le roque améliore la sécurité du roi et active la tour.'},
+ {name:'5 · Échec et mat en un coup',fen:'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',move:'h5f7',topic:'Mat',child:'La dame peut gagner immédiatement ! Vois-tu le roi noir coincé ?',adult:'Trouve le coup de dame qui donne échec et mat immédiatement.',h1:'Le point f7 n’est défendu que par le roi noir, mais ton fou protège cette case.',h2:'Regarde la diagonale de ta dame, de h5 vers f7.',why:'La dame et le fou unissent leurs forces : le roi noir n’a aucune réponse légale.'},
+ {name:'6 · La fourchette du cavalier',fen:'q3k3/8/8/1N6/8/8/8/4K3 w - - 0 1',move:'b5c7',topic:'Fourchette',child:'Ton cavalier peut attaquer le roi ET la dame d’un seul saut !',adult:'Identifie la case où le cavalier attaque simultanément le roi et la dame.',h1:'Cherche une case qui permettrait au cavalier de donner échec.',h2:'Le cavalier en b5 peut bondir vers c7.',why:'Cette fourchette donne échec au roi en e8 tout en attaquant la dame en a8.'},
+ {name:'7 · La promotion',fen:'7k/P7/8/8/8/8/8/4K3 w - - 0 1',move:'a7a8q',topic:'Promotion',child:'Ton petit pion touche la dernière ligne et devient super puissant !',adult:'Fais avancer le pion jusqu’à la huitième rangée et choisis sa promotion.',h1:'Un pion sur la septième rangée peut être promu en avançant.',h2:'Fais avancer le pion a7 vers a8, puis sélectionne la dame.',why:'Lorsqu’un pion atteint la dernière rangée, il peut devenir dame, tour, fou ou cavalier.'},
+ {name:'8 · Sauve ton cavalier !',fen:'rnbqkbnr/ppp1pppp/8/8/3pP3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 3',move:'c3d5',topic:'Menace',child:'Alerte ! Le pion noir en d4 veut manger ton cavalier en c3. Fais-le sauter en lieu sûr !',adult:'Détecte la menace du pion d4 sur le cavalier c3 et éloigne le cavalier sans perdre de matériel.',h1:'Un pion attaque en diagonale : le pion d4 peut aller vers c3 pour prendre ton cavalier.',h2:'Le cavalier en c3 peut aller en d5. Regarde ce qui défend cette case.',why:'En allant en d5, le cavalier échappe au pion d4. Le pion blanc e4 le défend sur sa nouvelle case.'},
+ {name:'9 · Le pion qui piège le fou',fen:'4k3/8/8/1p6/2p5/3B4/8/4K3 w - - 0 1',move:'d3e2',topic:'Piège',child:'Le pion en c4 est tentant... mais le pion b5 le protège ! Sauve ton fou.',adult:'Ne capture pas le pion c4 avec ton fou d3 : le pion b5 pourrait reprendre le fou. Reviens en e2.',h1:'Repère le pion noir en b5 : quelle case attaque-t-il ?',h2:'Le fou en d3 peut revenir sur la case e2 sans subir de reprise.',why:'Prendre le pion c4 rapporte 1 point, mais le pion b5 pourrait ensuite prendre ton fou de 3 points : perte nette de 2.'},
+ {name:'10 · Le bon échange',fen:'4k3/8/8/1p6/2r5/3B4/8/4K3 w - - 0 1',move:'d3c4',topic:'Échange',child:'Cette fois, ton fou peut prendre une tour ! Même si le pion noir mange ton fou ensuite, compte les points.',adult:'Capture la tour c4 avec le fou d3 : l’échange peut être favorable malgré la reprise du pion b5.',h1:'Ton fou vaut 3 points, la tour 5. Quel échange est intéressant ?',h2:'Le fou en d3 peut capturer la tour en c4 ; le pion noir b5 pourra ensuite reprendre ton fou.',why:'Tu gagnes une tour de 5 points et tu risques de perdre un fou de 3 points : bilan matériel indicatif de +2.'}
+];
+let studentType='adult',activeLesson=-1,lessonFinished=false,hintLevel=0,lessonMistakes=0;
+let progress={};try{progress=JSON.parse(localStorage.getItem('sft_chess_academy_v5')||'{}');}catch(err){}
+function moveKey(m){return sq(m[0])+sq(m[1])+(m[2]||'');}
+function lessonMove(){if(activeLesson<0||lessonFinished)return null;let target=lessons[activeLesson].move;return legal(current()).find(m=>moveKey(m)===target)||null;}
+for(let i=0;i<lessons.length;i++){let opt=document.createElement('option');opt.value=i;opt.textContent=lessons[i].name;document.getElementById('lessonSelector').append(opt);}
+const shortDefinitions=[
+ [/roqu(?:er|e|é|es|é\b)/i,'📖 Roquer : le roi avance de deux cases vers une tour ; la tour passe de l’autre côté pour aider à le protéger.'],
+ [/fourchette/i,'📖 Fourchette : une même pièce attaque au moins deux pièces ennemies à la fois.'],
+ [/(^|[^\p{L}])mat([^\p{L}]|$)/iu,'📖 Échec et mat : le roi ne peut plus échapper à la menace ; la partie est gagnée.'],
+ [/\béchec\b/i,'📖 Échec : ton roi est menacé. Tu dois absolument le sauver.'],
+ [/promotion/i,'📖 Promotion : un pion parvenu à la dernière rangée se transforme en une autre pièce.'],
+ [/dév[ée]lopp/i,'📖 Développer : sortir une pièce de sa case de départ pour la rendre utile.'],
+ [/centre/i,'📖 Le centre : les quatre cases d4, e4, d5 et e5, importantes pour contrôler le jeu.']
+];
+function explainNewTerm(msg){for(const [pattern,definition] of shortDefinitions)if(pattern.test(msg))return msg+'\n'+definition;return msg;}
+function showCoach(msg){document.getElementById('coach').textContent=explainNewTerm(msg);}
+function say(msg){coachMove=msg;showCoach(msg);}
+function dangerNotice(text){let el=document.getElementById('dangerWarning');el.textContent=text;el.style.display=text?'block':'none';}
+function clearDanger(){dangerTargets=[];captureTargets=[];dangerPending='';dangerMessage='';dangerNotice('');}
+// Analyse tactique courte : séquence de prises et de reprises LEGALES sur une même case.
+// Le camp au trait peut refuser de capturer : un échange n'est pas automatiquement perdant.
+const materialScore={p:1,n:3,b:3,r:5,q:9,k:0};
+const mp=p=>materialScore[(p||'.').toLowerCase()]||0;
+function capturePoints(s,m){return m[3]==='ep'?1:mp(s.b[m[1]]);}
+function exchangeGain(s,target,depth=0){
+ if(depth>=9||s.b[target]==='.')return 0;
+ const candidates=legal(s).filter(m=>m[1]===target&&isCapture(s,m));
+ let best=0;
+ for(const m of candidates){
+  const promoted=m[2]?Math.max(0,materialScore[m[2]]-1):0;
+  const gain=capturePoints(s,m)+promoted-exchangeGain(apply(s,m),target,depth+1);
+  if(gain>best)best=gain;
+ }
+ return best;
+}
+// Analyse du tour adverse dans une position où c'est au joueur de jouer.
+// Cette simulation détecte une menace actuelle, pas une certitude que le coup sera joué.
+function tacticalThreats(s){
+ if(checked(s))return [];
+ const other={...s,t:-s.t,ep:-1};
+ const ls=legal(other).filter(m=>isCapture(other,m));
+ const threats=new Map();
+ for(const m of ls){
+  const victim=other.b[m[1]];
+  if(side(victim)!==s.t||victim.toLowerCase()==='k')continue;
+  let net=capturePoints(other,m)-exchangeGain(apply(other,m),m[1]);
+  if(net<=.3)continue;
+  const prev=threats.get(m[1]);
+  if(!prev||net>prev.loss)threats.set(m[1],{to:m[1],from:m[0],by:other.b[m[0]].toLowerCase(),piece:victim.toLowerCase(),points:mp(victim),loss:net,attacker:m});
+ }
+ return [...threats.values()].sort((a,b)=>b.loss-a.loss||b.points-a.points);
+}
+function riskAfterMove(s,m){
+ const next=apply(s,m),piece=next.b[m[1]];
+ if(piece==='.'||piece.toLowerCase()==='k')return null;
+ const captures=legal(next).filter(x=>x[1]===m[1]&&isCapture(next,x));
+ if(!captures.length)return null;
+ let r=null;
+ for(const x of captures){const loss=capturePoints(next,x)-exchangeGain(apply(next,x),m[1]);
+  if(!r||loss>r.loss)r={to:m[1],target:m[1],attacker:x[0],by:next.b[x[0]].toLowerCase(),piece:piece.toLowerCase(),move:moveKey(m),loss};
+ }
+ return r;
+}
+function dangerAfterMove(s,m){
+ const r=riskAfterMove(s,m);
+ return r&&r.loss-capturePoints(s,m)>.35?r:null;
+}
+function analyzeReply(s,m){
+ const next=apply(s,m),captures=legal(next).filter(x=>isCapture(next,x));
+ let worst=null;
+ for(const x of captures){
+  const loss=capturePoints(next,x)-exchangeGain(apply(next,x),x[1]);
+  if(!worst||loss>worst.loss)worst={loss,move:x,to:x[1],from:x[0],piece:next.b[x[1]].toLowerCase(),by:next.b[x[0]].toLowerCase()};
+ }
+ return {gain:capturePoints(s,m)+(m[2]?materialScore[m[2]]-1:0),worst:worst&&worst.loss>.3?worst:null};
+}
+let cachedPosition=null,cachedMoveReport=new Map(),cachedThreatList=null;
+function resetTacticCache(){cachedPosition=null;cachedMoveReport.clear();cachedThreatList=null;}
+function getThreats(s){if(s!==cachedPosition){cachedPosition=s;cachedMoveReport.clear();cachedThreatList=null;}if(!cachedThreatList)cachedThreatList=tacticalThreats(s);return cachedThreatList;}
+function getReport(s,m){if(s!==cachedPosition){cachedPosition=s;cachedMoveReport.clear();cachedThreatList=null;}let k=moveKey(m);if(!cachedMoveReport.has(k))cachedMoveReport.set(k,analyzeReply(s,m));return cachedMoveReport.get(k);}
+function bestTeachingMove(s){
+ const moves=legal(s);if(!moves.length)return null;
+ const threats=getThreats(s),urgent=threats[0];
+ let best=null;
+ for(const m of moves){
+  const after=apply(s,m),reply=getReport(s,m),piece=s.b[m[0]].toLowerCase();
+  const mate=checked(after)&&legal(after).length===0;
+  const loss=reply.worst?reply.worst.loss:0;
+  const center=(3.5-Math.abs((m[1]&7)-3.5))+(3.5-Math.abs((m[1]>>4)-3.5));
+  const development=gameHistory.length<18&&['n','b'].includes(piece)&&((m[0]>>4)===(s.t===1?7:0))?.17:0;
+  // En cas de menace grave, aucun bonus de développement ne doit masquer une perte de pièce.
+  const solves=!!urgent&&(m[0]===urgent.to||(m[1]===urgent.from&&isCapture(s,m)));
+  const persists=!!urgent&&!solves&&after.b[urgent.to]===s.b[urgent.to]&&attacked(after,urgent.to,-s.t);
+  const urgencyBonus=solves?Math.max(2.6,urgent.loss+1):persists?-Math.max(1.8,urgent.loss):0;
+  const score=(mate?1000:0)+reply.gain-loss+urgencyBonus+center*.025+development+(checked(after)?.15:0);
+  if(!best||score>best.score)best={m,score,reply,mate};
+ }
+ return best;
+}
+function threatMessage(threat,child=false){
+ const name=pname[threat.piece],enemy=pname[threat.by],square=sq(threat.to).toUpperCase(),source=sq(threat.from).toUpperCase();
+ const worth=threat.points,loss=Number(threat.loss.toFixed(1));
+ return child?`🚨 Oh ! Ton ${name} en ${square} est en danger : le ${enemy} en ${source} peut le manger ! Le ${name} vaut environ ${worth} point${worth>1?'s':''}. Cherche comment le sauver.`:
+ `🚨 URGENCE : ton ${name} en ${square} est menacé par ${namedPiece(enemy)} en ${source}. Valeur : ${worth} points ; perte matérielle possible après les reprises : environ ${loss} point${loss>1?'s':''}. Cherche à le déplacer, le défendre ou neutraliser l'attaquant.`;
+}
+
+function isCapture(s,m){return s.b[m[1]]!=='.'||m[3]==='ep';}
+function victimName(s,m){let i=m[3]==='ep'?m[1]+16*s.t:m[1];return pname[s.b[i].toLowerCase()]||'pièce';}
+function namedPiece(name){return ['dame','tour','pièce'].includes(name)?'la '+name:'le '+name;}
+function moveOutcome(s,m){let danger=dangerAfterMove(s,m),capture=isCapture(s,m),victim=capture?victimName(s,m):null;
+let cost=value[s.b[m[0]].toLowerCase()]||0,gain=capture?(value[(m[3]==='ep'?'p':s.b[m[1]].toLowerCase())]||0):0;
+return {capture,danger,victim,cost,gain,net:gain-cost};}
+function dangerText(r,s){
+ const square=sq(r.to).toUpperCase(),name=pname[r.piece],attacker=pname[r.by];
+ const m=legal(s).find(x=>moveKey(x)===r.move);
+ const cap=m&&isCapture(s,m),captured=cap?capturePoints(s,m):0;
+ const loss=Number(r.loss.toFixed(1));
+ const balance=cap?`Tu gagnes une pièce de ${captured} point${captured>1?'s':''}, mais tu risques de perdre environ ${loss} point${loss>1?'s':''} lors de la reprise.`:`Tu risques de perdre environ ${loss} point${loss>1?'s':''}.`;
+ return (studentType==='child'?'⚠ Oups ! ':'⚠ Attention ! ')+`Sur ${square}, ${namedPiece(attacker)} peut prendre ton ${name}. `+balance+' Regarde si un autre coup protège mieux tes pièces.';
+}
+function moveOutcomeNet(s,m){let captured=isCapture(s,m)?value[(m[3]==='ep'?'p':s.b[m[1]].toLowerCase())]||0:0;return captured-(value[s.b[m[0]].toLowerCase()]||0);}
+function captureText(s,m){
+ if(!isCapture(s,m))return '';
+ const victim=victimName(s,m),r=riskAfterMove(s,m),points=capturePoints(s,m),square=sq(m[1]).toUpperCase();
+ if(!r)return `🟠 Tu peux capturer ${namedPiece(victim)} sur ${square} (${points} point${points>1?'s':''}). Aucune reprise immédiate légale n'a été trouvée.`;
+ return `🟠 Capture possible sur ${square} (+${points}). ${r.loss>.3?'🔴 Attention :':'↔ Échange :'} ${namedPiece(pname[r.by])} pourra reprendre ta pièce (${r.loss>.3?'perte possible de '+Number(r.loss.toFixed(1))+' point(s)':'échange sans perte nette immédiate calculée'}).`;
+}
+function recomputeDanger(){
+ clearDanger();if(selected<0)return;
+ const s=current(),moves=legal(s).filter(m=>m[0]===selected);
+ dangerTargets=moves.map(m=>dangerAfterMove(s,m)).filter(Boolean);
+ captureTargets=moves.filter(m=>isCapture(s,m)).map(m=>({to:m[1],danger:!!dangerTargets.find(d=>d.move===moveKey(m)),move:moveKey(m)}));
+ if(captureTargets.some(c=>c.danger))dangerNotice('🟠 Pièce à prendre ; cercle rouge = perte possible après reprise. Le Maître calcule qui peut reprendre.');
+ else if(dangerTargets.length)dangerNotice('🔴 Une destination risque de te faire perdre du matériel. Sélectionne-la pour connaître le danger.');
+ else if(captureTargets.length)dangerNotice('🟠 Tu peux prendre une pièce. Vérifie toujours les reprises.');
+}
+function pendingSafety(m){
+ if(mode==='lesson'||mode==='local'||current().t!==1)return false;
+ let s=current(),r=dangerAfterMove(s,m),report=getReport(s,m),best=bestTeachingMove(s);
+ let danger=r;
+ const omitted=report.worst&&report.worst.loss>=2.5&&best&&best.score>(report.gain-report.worst.loss)+1.3;
+ if(!danger&&!omitted)return false;
+ if(dangerPending===moveKey(m)){dangerPending='';return false;}
+ dangerPending=moveKey(m);
+ let msg=danger?dangerText(danger,s):`⚠ Attention : ce coup laisse ton ${pname[report.worst.piece]} en ${sq(report.worst.to).toUpperCase()} menacé. ${namedPiece(pname[report.worst.by])} peut le capturer et te coûter environ ${Number(report.worst.loss.toFixed(1))} points.`;
+ msg+=' Appuie une seconde fois sur la même case si tu veux jouer malgré ce risque.';
+ say(msg);dangerNotice(msg);return true;
+}
+
+function lessonIntro(l){return (studentType==='child'?l.child:l.adult)+' Clique sur les pièces pour essayer. Si tu bloques, demande un indice.';}
+function progressLabel(){let completed=Object.values(progress).filter(Boolean).length;document.getElementById('lessonProgress').textContent=completed+'/'+lessons.length+' leçons réussies';}
+function startLesson(i){i=Number(i);if(!lessons[i])return;cancelAI();mode='lesson';activeLesson=i;hintLevel=0;lessonMistakes=0;lessonFinished=false;gameHistory=[parseFen(lessons[i].fen)];movesSAN=[];lastMove=null;mentorArrow=null;showThreatArrow(null);resetTacticCache();selected=-1;legalTargets=[];clearDanger();lastPlayerThreat=null;document.getElementById('lessonSelector').value=String(i);document.getElementById('lessonFeedback').style.display='none';document.getElementById('nextLesson').style.display='none';document.getElementById('modeAI').classList.remove('active');document.getElementById('modeLocal').classList.remove('active');document.getElementById('aiOptions').style.display='none';say(lessonIntro(lessons[i]));refresh();}
+function stopLesson(){activeLesson=-1;lessonFinished=false;mentorArrow=null;setMode('ai');}
+function displayFeedback(msg,good=false){let e=document.getElementById('lessonFeedback');e.style.display='block';e.style.background=good?'#284d3a':'#4b3d2b';e.textContent=msg;}
+function selectedHint(){
+ if(mode==='lesson')return lessonMove();
+ return bestTeachingMove(current())?.m||null;
+}
+function mentorHint(){
+ const s=current(),m=selectedHint();if(!m){say('La partie est terminée : aucun coup disponible.');return;}
+ hintLevel=Math.min(3,hintLevel+1);
+ const l=mode==='lesson'?lessons[activeLesson]:null,urgent=!l?getThreats(s)[0]:null;
+ if(l){
+  if(hintLevel===1){say(l.h1);showHintArrow(null);showThreatArrow(null);}
+  else if(hintLevel===2){say(l.h2);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(null);}
+  else{say('Observe le trajet sur le plateau. '+l.why);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(m);}return;
+ }
+ if(urgent){
+  if(hintLevel===1){say(studentType==='child'?`Un danger se cache sur le plateau ! Regarde ton ${pname[urgent.piece]} : peut-il se faire manger ?`:`Avant de développer une autre pièce, examine ton ${pname[urgent.piece]} en ${sq(urgent.to).toUpperCase()}. Quel adversaire le menace ?`);showHintArrow(null);showThreatArrow(null);}
+  else if(hintLevel===2){say(threatMessage(urgent,studentType==='child'));showHintArrow(null);showThreatArrow(urgent.attacker);}
+  else{say(threatMessage(urgent,studentType==='child')+` Une réponse raisonnable est de déplacer ${namedPiece(pname[s.b[m[0]].toLowerCase()])} vers ${sq(m[1]).toUpperCase()}. Je montre la flèche verte sur l’échiquier.`);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(m);showThreatArrow(urgent.attacker);}
+  return;
+ }
+ if(hintLevel===1){say('Avant de jouer, regarde les prises possibles, les défenses et les menaces de ton adversaire.');showHintArrow(null);showThreatArrow(null);}
+ else if(hintLevel===2){let piece=pname[s.b[m[0]].toLowerCase()];say(`Regarde ${namedPiece(piece)} en ${sq(m[0]).toUpperCase()}. Que pourrait-il gagner ou protéger ?`);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(null);}
+ else{say(`Je te montre un coup plausible : ${pname[s.b[m[0]].toLowerCase()]} de ${sq(m[0]).toUpperCase()} vers ${sq(m[1]).toUpperCase()}. ${isCapture(s,m)?captureText(s,m):'Vérifie la réponse adverse après ce coup.'} C’est une analyse tactique courte, pas une garantie de meilleur coup.`);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(m);}
+}
+function demonstrate(){
+ const s=current(),m=selectedHint();if(!m)return;
+ selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(m);
+ const t=mode!=='lesson'?getThreats(s)[0]:null;showThreatArrow(t?t.attacker:null);
+ say((t?threatMessage(t,studentType==='child')+' ':'')+`Sur l'échiquier, regarde ${namedPiece(pname[s.b[m[0]].toLowerCase()])} en ${sq(m[0]).toUpperCase()} et la case ${sq(m[1]).toUpperCase()}. La flèche verte montre le trajet.`+(mode==='lesson'?' '+lessons[activeLesson].why:''));
+}
+
+function mentorWhy(){
+ let l=mode==='lesson'?lessons[activeLesson]:null;
+ if(l){let extra={Centre:'Regarde les quatre cases du milieu : d4, e4, d5 et e5. Tes pions les disputent, puis tes pièces profitent de cet espace.',Cavalier:'Le cavalier saute en L : deux cases dans un sens, puis une à côté. Il peut sauter par-dessus les autres pièces, contrairement au fou ou à la tour.',Capture:'Prendre n’est pas toujours gagner ! Après une capture, demande-toi si ton adversaire peut reprendre avec une autre pièce.',Roque:'Le petit roque est autorisé si le roi et la tour n’ont pas bougé, qu’aucune pièce ne se trouve entre eux et que le roi ne traverse pas une case attaquée.',Mat:'Il ne suffit pas de donner échec : pour faire mat, le roi ne doit avoir aucune parade légale. Ici, le fou soutient la dame.',Fourchette:'Le roi doit répondre à un échec immédiatement. Le cavalier pourra ensuite gagner la dame, si elle ne s’échappe pas autrement.',Promotion:'Une dame est souvent la plus forte, mais une promotion en cavalier, tour ou fou peut parfois être meilleure.'}[l.topic]||'';
+ say((studentType==='child'?'Voici l’astuce du maître : ':'Le principe stratégique : ')+l.why+' '+extra);return;
+ }
+ let s=current(),check=checked(s),remaining=legal(s).length;
+ const urgent=getThreats(s)[0];
+ if(!check&&urgent){say(threatMessage(urgent,studentType==='child')+' Une pièce peut être attaquée tout en étant défendue ; ici le calcul des reprises indique une perte possible. Le Maître ne connaît pas encore tous les pièges à plusieurs coups.');showThreatArrow(urgent.attacker);return;}
+ if(check){say('Ton roi est en échec : la priorité absolue est de le sauver. Tu peux le déplacer, capturer la pièce menaçante ou bloquer la ligne d’attaque, si les règles le permettent.');return;}
+ if(movesSAN.length===0){say(studentType==='child'?'Imagine le plateau comme un château : protège ton roi, ouvre des chemins à tes pièces et prends le centre avant de partir à l’aventure.':'Au début : contrôle le centre, développe cavaliers et fous, puis mets ton roi à l’abri grâce au roque. Évite les sorties prématurées de la dame.');return;}
+ let pre=gameHistory[gameHistory.length-2],m=pre?legal(pre).find(x=>sq(x[1])===sq(lastMove?.[1])&&sq(x[0])===sq(lastMove?.[0])):null;
+ if(pre&&m){let p=pre.b[m[0]].toLowerCase();let detail={p:'Les pions se soutiennent en chaîne et dessinent le terrain. Leur mouvement est irréversible : réfléchis aux cases qu’ils abandonnent.',n:'Le cavalier est fort lorsque sa case est protégée et qu’il peut sauter vers le centre. Sur le bord, il attaque moins de cases.',b:'Le fou travaille à longue distance sur une seule couleur de cases. Libère ses diagonales.',r:'La tour est particulièrement utile sur une colonne ouverte, là où les pions ne bouchent plus le passage.',q:'La dame est très puissante, mais aussi précieuse : ne l’expose pas inutilement.',k:'Ton roi doit être protégé dans l’ouverture ; dans une finale, il devient une pièce active.'}[p];say('Dernier déplacement : '+pname[p]+' de '+sq(m[0]).toUpperCase()+' vers '+sq(m[1]).toUpperCase()+'. '+detail+' Il reste '+remaining+' coups légaux à la position actuelle.');return;}
+ say('Observe la position : quelles pièces sont attaquées, lesquelles sont protégées et quelles cases du centre peux-tu contrôler ?');
+}
+document.getElementById('whyBtn').onclick=mentorWhy;
+document.getElementById('hint').onclick=mentorHint;
+document.getElementById('showMove').onclick=demonstrate;
+document.getElementById('lessonMenu').onclick=()=>document.getElementById('mentorOptions').classList.toggle('open');
+document.getElementById('glossaryBtn').onclick=()=>{let panel=document.getElementById('glossaryPanel'),open=panel.hidden;panel.hidden=!open;document.getElementById('glossaryBtn').setAttribute('aria-expanded',String(open));};
+document.getElementById('studentType').onchange=e=>{studentType=e.target.value;if(mode==='lesson'&&!lessonFinished)say(lessonIntro(lessons[activeLesson]));};
+document.getElementById('startLesson').onclick=()=>startLesson(document.getElementById('lessonSelector').value);
+document.getElementById('freePlay').onclick=stopLesson;
+document.getElementById('nextLesson').onclick=()=>startLesson((activeLesson+1)%lessons.length);
+document.getElementById('coordsToggle').onclick=()=>{showCoords=!showCoords;document.getElementById('coordsToggle').textContent='Repères : '+(showCoords?'toutes les cases':'gravure');document.getElementById('coordsToggle').setAttribute('aria-pressed',String(showCoords));lastOverlayUpdate=0;};
+progressLabel();
+
+function commit(m){
+ if(busy||lessonFinished)return;
+ let s=current(),chosen=legal(s).find(x=>x[0]===m[0]&&x[1]===m[1]&&x[2]===m[2]);if(!chosen)return;
+ if(mode==='lesson'&&moveKey(chosen)!==lessons[activeLesson].move){lessonMistakes++;let l=lessons[activeLesson],r=getReport(s,chosen);let trap=isCapture(s,chosen)&&r.worst&&r.worst.loss>r.gain+.3;let extra=trap?`Attention : tu gagnes ${r.gain} point(s), mais la reprise pourrait te coûter ${Number(r.worst.loss.toFixed(1))} point(s). `:'';say(extra+(studentType==='child'?'Essaie encore ! ':'Ce n’est pas le coup recherché. ')+l.h1);displayFeedback('Essaie une autre case : une erreur sert aussi à apprendre.');return;}
+ let text=san(s,chosen),next=apply(s,chosen);hintLevel=0;resetTacticCache();showThreatArrow(null);gameHistory.push(next);movesSAN.push(text);lastMove=[chosen[0],chosen[1]];selected=-1;legalTargets=[];clearDanger();showHintArrow(null);lastPlayerThreat=(s.t===1&&mode!=='lesson')?dangerAfterMove(s,chosen):null;
+ let piece=s.b[chosen[0]];anim.push({from:chosen[0],to:chosen[1],piece:chosen[2]?(s.t===1?chosen[2].toUpperCase():chosen[2]):piece,t:performance.now()});
+ if(chosen[3]==='castle'){let from=chosen[1]>chosen[0]?chosen[0]+3:chosen[0]-4,to=chosen[1]>chosen[0]?chosen[0]+1:chosen[0]-1;anim.push({from,to,piece:s.t===1?'R':'r',t:performance.now()});}
+ if(mode==='lesson'){
+  lessonFinished=true;progress[String(activeLesson)]=true;try{localStorage.setItem('sft_chess_academy_v5',JSON.stringify(progress));}catch(err){}progressLabel();
+  let l=lessons[activeLesson];coachMove=(studentType==='child'?'Bravo, mission réussie ! 🌟 ':'Exercice validé ! ')+l.why;
+  displayFeedback('✓ Réussi'+(lessonMistakes===0?' du premier coup':' après '+lessonMistakes+' tentative(s)')+' ! '+l.why,true);
+  document.getElementById('nextLesson').style.display='inline-flex';hintLevel=0;
+ }else{
+  coachMove=explain(s,chosen);
+  if(lastPlayerThreat)coachMove+=' '+dangerText(lastPlayerThreat,s);
+ }
+ refresh();
+ if(mode==='ai'&&next.t===-1&&!status(gameHistory).done){busy=true;clearTimeout(aiTimer);aiTimer=setTimeout(()=>{busy=false;let ai=chooseAI();if(ai)commit(ai);},560);}
+}
+function selectSquare(i){
+ if(i<0||busy||pending||status(gameHistory).done||lessonFinished)return;
+ let s=current();if(mode==='ai'&&s.t===-1)return;let l=legal(s);
+ if(selected>=0){
+  let candidates=l.filter(m=>m[0]===selected&&m[1]===i);
+  if(candidates.length){
+   if(candidates.length>1){pending=candidates;let choices=document.getElementById('promoChoices');choices.innerHTML='';for(let m of candidates){let b=document.createElement('button');b.textContent=({q:'♛',r:'♜',b:'♝',n:'♞'})[m[2]];b.title=({q:'Dame',r:'Tour',b:'Fou',n:'Cavalier'})[m[2]];b.onclick=()=>{pending=null;document.getElementById('promoModal').style.display='none';commit(m);};choices.appendChild(b);}document.getElementById('promoModal').style.display='flex';return;}
+   if(pendingSafety(candidates[0]))return;
+   commit(candidates[0]);return;
+  }
+ }
+ if(side(s.b[i])===s.t){
+  let prev=selected;selected=selected===i?-1:i;legalTargets=selected<0?[]:l.filter(m=>m[0]===selected).map(m=>m[1]);
+  if(prev!==selected)recomputeDanger();
+  if(selected>=0&&mode!=='lesson'){
+   let urgent=getThreats(s)[0];
+   if(urgent){say(threatMessage(urgent,studentType==='child')+' Les pastilles des mouvements sélectionnés restent visibles.');return;}
+   let name=pname[s.b[selected].toLowerCase()];
+   if(captureTargets.length){let c=legal(s).find(m=>m[0]===selected&&isCapture(s,m));say('Tu as choisi ton '+name+'. Vert : déplacement libre. Orange : pièce que tu peux prendre. Rouge : risque de reprise. '+(c?captureText(s,c):''));}
+   else if(dangerTargets.length) say('Tu as choisi ton '+name+'. Vert : case libre. Rouge : l’adversaire pourra peut-être capturer cette pièce après le coup.');
+   else say('Tu as choisi '+name+' sur '+sq(selected).toUpperCase()+'. Les points verts montrent où il peut aller.');
+  }
+ }else{selected=-1;legalTargets=[];clearDanger();}
+}
+
+function tacticalForecast(s){
+ if(mode==='lesson'||status(gameHistory).done)return '';
+ if(mode==='ai'&&s.t===-1)return 'L’IA réfléchit. Essaie de deviner ce qu’elle veut attaquer.';
+ const moves=legal(s);
+ if(checked(s))return '🚨 Ton roi est en échec : tu dois le sauver avant toute autre idée.';
+ const mate=moves.find(m=>{let n=apply(s,m);return checked(n)&&legal(n).length===0;});
+ if(mate)return `♛ Échec et mat possible en un coup ! Demande un indice pour découvrir quelle pièce peut gagner.`;
+ const threats=getThreats(s);
+ if(threats.length){const t=threats[0];return threatMessage(t,studentType==='child')+(threats.length>1?` Il y a ${threats.length} pièces en danger.`:'');}
+ const safe=moves.filter(m=>isCapture(s,m)&&!dangerAfterMove(s,m));
+ if(safe.length){const m=safe.sort((a,b)=>capturePoints(s,b)-capturePoints(s,a))[0];return '🟠 Prise possible : '+captureText(s,m);}
+ return '🔎 Vérification terminée : aucune perte de matériel immédiate trouvée. À présent, regarde le centre et la sécurité du roi.';
+}
+
+function refresh(){let s=current(),st=status(gameHistory);document.getElementById('turnDot').classList.toggle('black',s.t===-1);document.getElementById('turnText').textContent=lessonFinished?'Exercice réussi':st.done?'Partie terminée':s.t===1?'Aux Blancs de jouer':'Aux Noirs de jouer';document.getElementById('statusText').textContent=mode==='lesson'?'Académie · '+lessons[activeLesson].topic:(st.message||(mode==='ai'?'Mode professeur · contre IA':'Duel local · deux joueurs'));document.getElementById('mentorMode').textContent=mode==='lesson'?'· Exercice '+(activeLesson+1)+'/'+lessons.length:'· Conseils en direct';if(mode!=='lesson'&&(!mode||mode==='local'||s.t===1)){currentThreats=getThreats(s);}else currentThreats=[];
+ const urgent=mode!=='lesson'&&(mode==='local'||s.t===1)&&!st.done?currentThreats[0]:null;
+ showCoach(mode==='lesson'?(coachMove||lessonIntro(lessons[activeLesson])):st.done?'Partie terminée. Analyse tes coups, puis rejoue pour progresser.':urgent?threatMessage(urgent,studentType==='child'):coachMove||'Le Maître observe le plateau : essaie d’occuper le centre et garde tes pièces en sécurité.');document.getElementById('plyCount').textContent=movesSAN.length+' demi-coups';let h=document.getElementById('history');h.innerHTML=movesSAN.length?movesSAN.map((s,i)=>'<span>'+(i%2===0?'<strong>'+ (Math.floor(i/2)+1)+'.</strong> ':'&nbsp;&nbsp;')+s+'</span>').join(''):'<span class="empty">Les coups apparaîtront ici.</span>';h.scrollTop=h.scrollHeight;let score=evalPos(s),pct=Math.round(Math.min(97,Math.max(3,50+45*Math.tanh(score/8))));document.getElementById('evalFill').style.width=pct+'%';document.getElementById('evalText').textContent=pct+' / '+(100-pct);document.getElementById('undo').disabled=gameHistory.length===1;
+ document.getElementById('mentorForecast').textContent=tacticalForecast(s);
+ const threats=currentThreats;
+ let lessonActive=mode==='lesson',major=threats[0];
+ document.getElementById('mentorAssessment').textContent=lessonActive?(lessonFinished?'Exercice terminé. Très beau travail !':'Exercice : '+lessons[activeLesson].topic+'. Tu peux demander trois niveaux d’indices et voir le trajet sur le plateau.'):
+ checked(s)?'Échec : ton roi doit être sauvé.':major?`Menace : ${pname[major.piece]} en ${sq(major.to).toUpperCase()}, valeur ${major.points} points, perte possible ${Number(major.loss.toFixed(1))} après les reprises.`:`${legal(s).length} coups légaux. Aucune perte de matériel directe détectée.`;
+ document.getElementById('mentorQuestion').textContent=lessonActive?(lessonFinished?'Sais-tu expliquer pourquoi ce coup fonctionne ?':'Lis la mission, puis utilise un indice si besoin.'):
+ checked(s)?'Comment répondre à cet échec ?':major?'Peux-tu sauver cette pièce, la défendre, ou capturer son attaquant ?':'Avant ton coup : que pourrais-tu prendre, et comment ton adversaire pourrait-il répondre ?';
+ document.getElementById('mentorValue').textContent=lessonActive?'':major?`Enjeu estimé : ${Number(major.loss.toFixed(1))} point(s) après les reprises · ${pname[major.by]} → ${pname[major.piece]}`:'Valeurs de référence : pion 1 · cavalier 3 · fou 3 · tour 5 · dame 9';
+
+ }
+function cancelAI(){clearTimeout(aiTimer);busy=false;showThreatArrow(null);anim=[];selected=-1;legalTargets=[];pending=null;clearDanger();lastPlayerThreat=null;document.getElementById('promoModal').style.display='none';}
+function newGame(){if(mode==='lesson')return startLesson(activeLesson);cancelAI();gameHistory=[parseFen(FEN)];movesSAN=[];lastMove=null;resetTacticCache();showThreatArrow(null);coachMove='';mentorArrow=null;hintLevel=0;refresh();}
+function setMode(m){activeLesson=-1;lessonFinished=false;hintLevel=0;mentorArrow=null;document.getElementById('nextLesson').style.display='none';document.getElementById('lessonFeedback').style.display='none';mode=m;document.getElementById('modeAI').classList.toggle('active',m==='ai');document.getElementById('modeLocal').classList.toggle('active',m==='local');document.getElementById('aiOptions').style.display=m==='ai'?'':'none';newGame();}
+document.getElementById('modeAI').onclick=()=>setMode('ai');document.getElementById('modeLocal').onclick=()=>setMode('local');document.getElementById('newgame').onclick=newGame;
+document.getElementById('undo').onclick=()=>{if(mode==='lesson'){startLesson(activeLesson);return;}if(gameHistory.length<=1)return;cancelAI();let count=mode==='ai'&&gameHistory.length>=3&&current().t===1?2:1;for(let i=0;i<count&&gameHistory.length>1;i++){gameHistory.pop();movesSAN.pop();}lastMove=null;resetTacticCache();showThreatArrow(null);coachMove='Reprends ton temps pour analyser la position.';refresh();};
+document.getElementById('export').onclick=()=>{let pgn='[Event "SFT CHESS"]\n[Site "SALESFILS.COM"]\n[Date "'+new Date().toISOString().slice(0,10).replace(/-/g,'.')+'"]\n[White "Blancs"]\n[Black "Noirs"]\n\n'+movesSAN.map((m,i)=>(i%2===0?Math.floor(i/2)+1+'. ':'')+m).join(' ')+' *';let blob=new Blob([pgn],{type:'application/x-chess-pgn'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sft-chess-partie.pgn';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);announce('Partie exportée en PGN.');};
+let pointerState=new Map(),gesture=null;
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+function cameraSnapshot(){return {az:camera.az,el:camera.el,dist:camera.dist,target:[...camera.target]};}
+function restoreSnapshot(snapshot){camera.az=snapshot.az;camera.el=snapshot.el;camera.dist=snapshot.dist;camera.target=[...snapshot.target];sftFrameSignature='';}
+function updateCameraUI(){
+ document.querySelector('.board-toolbar').classList.toggle('camera-is-locked',cameraLocked);
+ let lock=document.getElementById('lockcam');lock.textContent=cameraLocked?'🔒':'🔓';lock.classList.toggle('active',cameraLocked);
+ lock.setAttribute('aria-pressed',String(cameraLocked));lock.setAttribute('aria-label',cameraLocked?'Déverrouiller la rotation':'Verrouiller l’angle de vue');
+ document.getElementById('resetcam').title=cameraLocked?'Revenir à ma vue mémorisée':'Caméra initiale';
+ ['rotate','viewbtn'].forEach(id=>document.getElementById(id).classList.toggle('is-disabled',cameraLocked));
+ ['zoomin','zoomout','resetcam'].forEach(id=>document.getElementById(id).classList.remove('is-disabled'));
+}
+function setCameraCompact(compact){
+ const toolbar=document.querySelector('.board-toolbar');
+ toolbar.classList.toggle('is-compact',!!compact);
+ document.getElementById('camExpand').setAttribute('aria-expanded',String(!compact));
+}
+function syncCameraUI(){updateCameraUI();}
+document.getElementById('camExpand').onclick=()=>setCameraCompact(false);
+document.getElementById('camCollapse').onclick=()=>setCameraCompact(true);
+document.getElementById('homeMini').onclick=()=>document.getElementById('resetcam').click();
+document.getElementById('fullMini').onclick=()=>document.getElementById('fullbtn').click();
+function touchPoints(){return [...pointerState.entries()].filter(([id,p])=>p.type==='touch');}
+function touchDistance(a,b){return Math.hypot(b.x-a.x,b.y-a.y);}
+function midpoint(a,b){return {x:(a.x+b.x)/2,y:(a.y+b.y)/2};}
+function floorAt(clientX,clientY){
+ updateCamera();const rect=canvas.getBoundingClientRect(),w=rect.width,h=rect.height;
+ let nx=(clientX-rect.left)/w*2-1,ny=1-(clientY-rect.top)/h*2;
+ let camZ=norm(sub(eye,camera.target)),camX=norm(cross([0,1,0],camZ)),camY=cross(camZ,camX);
+ let ray=norm(camX.map((v,i)=>-camZ[i]+v*nx*Math.tan(Math.PI/8)*(w/h)+camY[i]*ny*Math.tan(Math.PI/8)));
+ if(ray[1]>-.02)return null;let t=(.22-eye[1])/ray[1];if(t<0)return null;
+ return {x:eye[0]+ray[0]*t,z:eye[2]+ray[2]*t};
+}
+function adjustTarget(dx,dz){camera.target[0]=clamp(camera.target[0]+dx,-4.6,4.6);camera.target[2]=clamp(camera.target[2]+dz,-4.6,4.6);}
+function beginPinch(){let pts=touchPoints();if(pts.length<2)return;
+ let a=pts[0][1],b=pts[1][1],mid=midpoint(a,b);
+ gesture={mode:'pinch',startDist:touchDistance(a,b),startCamera:camera.dist,anchor:floorAt(mid.x,mid.y),suppressTap:true};
+}
+canvas.addEventListener('pointerdown',e=>{
+ e.preventDefault();canvas.setPointerCapture(e.pointerId);
+ pointerState.set(e.pointerId,{x:e.clientX,y:e.clientY,type:e.pointerType});
+ if(touchPoints().length===2){beginPinch();return;}
+ if(pointerState.size===1)gesture={mode:cameraLocked?'pan':'rotate',id:e.pointerId,lastX:e.clientX,lastY:e.clientY,startX:e.clientX,startY:e.clientY,startAz:camera.az,startEl:camera.el,moved:false,suppressTap:false};
+},{passive:false});
+canvas.addEventListener('pointermove',e=>{
+ const old=pointerState.get(e.pointerId);if(!old)return;e.preventDefault();
+ let x=e.clientX,y=e.clientY;
+ let pts=touchPoints();
+ // Update pointer coordinates before gesture calculations.
+ pointerState.set(e.pointerId,{...old,x,y});pts=touchPoints();
+ if(pts.length>=2){
+  if(!gesture||gesture.mode!=='pinch')beginPinch();
+  let a=pts[0][1],b=pts[1][1],mid=midpoint(a,b);
+  camera.dist=clamp(gesture.startCamera*gesture.startDist/Math.max(18,touchDistance(a,b)),6.3,28);
+  let after=floorAt(mid.x,mid.y),before=gesture.anchor;
+  if(before&&after)adjustTarget(before.x-after.x,before.z-after.z);
+  return;
+ }
+ if(!gesture||gesture.id!==e.pointerId||gesture.mode==='pinch')return;
+ let dx=x-gesture.startX,dy=y-gesture.startY;
+ if(Math.hypot(dx,dy)>7)gesture.moved=true;
+ if(gesture.mode==='rotate'&&gesture.moved){
+  camera.az=gesture.startAz-dx*.009;camera.el=clamp(gesture.startEl+dy*.008,.33,1.5);
+ }else if(gesture.mode==='pan'&&gesture.moved){
+  let a=floorAt(gesture.lastX,gesture.lastY),b=floorAt(x,y);
+  if(a&&b)adjustTarget(a.x-b.x,a.z-b.z);
+ }
+ gesture.lastX=x;gesture.lastY=y;
+},{passive:false});
+function endPointer(e){
+ let tap=gesture&&gesture.id===e.pointerId&&gesture.mode!=='pinch'&&!gesture.moved&&!gesture.suppressTap;
+ pointerState.delete(e.pointerId);
+ if(!pointerState.size){if(tap)selectSquare(screenSquare(e.clientX,e.clientY));gesture=null;return;}
+ let pts=touchPoints();
+ if(pts.length===1){let [id,p]=pts[0];gesture={mode:cameraLocked?'pan':'rotate',id,lastX:p.x,lastY:p.y,startX:p.x,startY:p.y,startAz:camera.az,startEl:camera.el,moved:true,suppressTap:true};}
+ else if(pts.length>=2)beginPinch();
+ else gesture=null;
+}
+canvas.addEventListener('pointerup',endPointer,{passive:false});
+canvas.addEventListener('pointercancel',e=>{pointerState.delete(e.pointerId);gesture=null;},{passive:false});
+canvas.addEventListener('wheel',e=>{e.preventDefault();camera.dist=clamp(camera.dist+e.deltaY*.008,6.3,28);},{passive:false});
+document.getElementById('lockcam').onclick=()=>{
+ cameraLocked=!cameraLocked;
+ if(cameraLocked){cameraPreset=cameraSnapshot();setCameraCompact(true);announce('Vue mémorisée : outils masqués. Zoom et déplacement restent possibles.');}
+ else{setCameraCompact(false);announce('Rotation débloquée.');}
+ updateCameraUI();
+};
+document.getElementById('resetcam').onclick=()=>{
+ if(cameraLocked&&cameraPreset){restoreSnapshot(cameraPreset);announce('Retour à ta vue mémorisée.');}
+ else{restoreSnapshot({az:.12,el:1.22,dist:13,target:[0,.30,0]});announce('Vue de départ.');}
+};
+document.getElementById('rotate').onclick=()=>{if(cameraLocked)return;camera.az+=Math.PI;};
+document.getElementById('zoomout').onclick=()=>camera.dist=clamp(camera.dist+1.2,6.3,28);
+document.getElementById('zoomin').onclick=()=>camera.dist=clamp(camera.dist-1.2,6.3,28);
+let cinemaView=false;
+document.getElementById('viewbtn').onclick=()=>{
+ if(cameraLocked){announce('Déverrouille l’angle pour changer l’orientation.');return;}
+ cinemaView=!cinemaView;camera.target=[0,.30,0];
+ if(cinemaView){camera.az=.56;camera.el=.87;camera.dist=15.3;}
+ else{camera.az=.12;camera.el=1.22;camera.dist=13;}
+ document.getElementById('viewbtn').textContent=cinemaView?'▣':'◩';
+};
+const appShell=document.querySelector('.shell');
+function updateFullscreenButton(active){let btn=document.getElementById('fullbtn');btn.textContent=active?'⤢':'⛶';btn.setAttribute('aria-label',active?'Quitter le plein écran':'Passer en plein écran');btn.setAttribute('aria-pressed',String(active));}
+function toggleFullscreen(){
+ let active=!appShell.classList.contains('immersive');
+ // Crucial: do not reset camera azimuth, elevation, distance or target on mode switch.
+ appShell.classList.toggle('immersive',active);document.body.style.overflow=active?'hidden':'';
+ updateFullscreenButton(active);sftFrameSignature='';lastOverlayUpdate=0;
+ if(active&&appShell.requestFullscreen)appShell.requestFullscreen({navigationUI:'hide'}).catch(()=>{});
+ else if(!active&&document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+}
+document.getElementById('fullbtn').onclick=toggleFullscreen;
+document.addEventListener('fullscreenchange',()=>{
+ if(!document.fullscreenElement&&appShell.classList.contains('immersive')){
+  appShell.classList.remove('immersive');document.body.style.overflow='';updateFullscreenButton(false);sftFrameSignature='';lastOverlayUpdate=0;
+ }
+});
+document.getElementById('stage').addEventListener('dblclick',e=>{if(cameraLocked&&cameraPreset){restoreSnapshot(cameraPreset);announce('Vue mémorisée retrouvée.');}});
+
+refresh();syncCameraUI();requestAnimationFrame(render);
+window.SFTCHESS={newGame,legal,apply,current,commit,index,startLesson,stopLesson,lessonMove,lessons,showHintArrow,selectSquare,dangerAfterMove,getThreats,getReport,exchangeGain,bestTeachingMove,gameHistory:()=>gameHistory,view:{get angle(){return camera.az;},get elevation(){return camera.el;},get distance(){return camera.dist;},get target(){return [...camera.target];},get locked(){return cameraLocked;},get saved(){return cameraPreset&&{...cameraPreset,target:[...cameraPreset.target]};},get fullscreen(){return appShell.classList.contains('immersive');}}};
+</script>
+</body></html>
