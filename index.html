@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no"/>
-<title>SFT CHESS V5.5 — Le Maître tacticien</title>
+<title>SFT CHESS V5.6 — Le Maître pédagogue</title>
 <style>
 
 :root{--bg:#080e17;--panel:#121b29;--panel2:#192333;--line:#2b3445;--muted:#9ca9bb;--text:#f4eee4;--gold:#dbbb74;--green:#7dcdab}
@@ -210,16 +210,28 @@ html,body{overscroll-behavior-y:contain}
 .mentor-value{font-size:11px;color:#e4c996;line-height:1.45;margin-top:8px;padding:8px 10px;border-left:3px solid #be9b63;background:#a8853a0d;border-radius:4px}
 .threat-arrow{stroke:#f16a60;stroke-width:4;filter:drop-shadow(0 1px 4px #000a)}
 .tactical-brief{margin-top:8px;font-size:12px;line-height:1.55;color:#e5e9d9}
+/* V5.6 : l'analyse devient un mini-tutoriel interactif, pas un simple avertissement. */
+.exchange-film{border:1px solid #d6a86878;border-radius:14px;background:linear-gradient(135deg,#24313b,#13242d);padding:13px;margin:12px 0;color:#f1e7d6}
+.exchange-film[hidden]{display:none!important}
+.exchange-film strong{color:#f5d396;font-size:13px}
+.exchange-film .film-sub{font-size:12px;line-height:1.5;color:#d3e5e0;margin:6px 0 10px}
+.film-steps{display:flex;flex-wrap:wrap;gap:7px}
+.film-step{font-size:12px;flex:1;min-width:86px;padding:9px 7px;background:#193943;color:#e9e3d7;border:1px solid #64887e6e;border-radius:9px;cursor:pointer;text-align:center}
+.film-step.active{background:#684a30;border-color:#edc182;color:#fff3d2}
+.film-result{margin:9px 0 0;font-size:12px;line-height:1.55;color:#f2e3ca}
+.film-result span{font-weight:700;color:#f5cb85}
+.reply-arrow{stroke:#58c3e7;stroke-width:4;filter:drop-shadow(0 1px 4px #000b)}
+@media(max-width:770px){.exchange-film{padding:11px;margin:10px 0}.film-step{font-size:11px}}
 </style>
 </head>
 <body>
 <div class="shell">
 <header><div class="brand"><div class="brand-mark">♞</div><div><h1>SFT <span>CHESS</span></h1><small>Sales Fils · L'Académie</small></div></div><div class="top-right"><span class="tag"><span class="live"></span>VRAIE 3D · WEBGL</span><span class="tag">PARTIES LOCALES</span></div></header>
 <main>
-<div class="board-column"><section class="stage" id="stage" aria-label="Échiquier 3D interactif"><canvas id="gl" aria-label="Jeu d'échecs 3D : toucher une pièce puis une destination"></canvas><div class="board-label-layer" id="boardLabels" aria-hidden="true"></div><svg class="mentor-overlay" id="mentorSvg" aria-hidden="true"><defs><marker id="mentorArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#91eac4"/></marker><marker id="threatArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#f16a60"/></marker></defs><path id="mentorPath" class="mentor-arrow" marker-end="url(#mentorArrowHead)" style="display:none"/><path id="threatPath" class="mentor-arrow threat-arrow" marker-end="url(#threatArrowHead)" style="display:none"/></svg><div id="mentorFrom" class="mentor-point"></div><div id="mentorTo" class="mentor-point to"></div><div class="stage-top"><div class="eyebrow">L'ART DE LA STRATÉGIE</div><div class="stage-title">Chaque coup compte.</div></div><div class="notice" id="notice"></div><div class="edition-stamp" aria-hidden="true">ATELIER · ÉDITION NOYER & LAITON</div></section><nav class="board-toolbar" aria-label="Commandes de caméra"><div class="toolbar-label">◈ <span>CAMÉRA</span><small>🔒 garde ton angle · 🤏 zoome · glisse pour explorer · ⌂ revient à ta vue</small></div><div class="compact-controls" aria-label="Caméra simplifiée"><button class="compact-btn" id="homeMini" aria-label="Revenir à ma vue mémorisée" title="Ma vue">⌂</button><button class="compact-btn" id="fullMini" aria-label="Basculer le plein écran" title="Plein écran">⛶</button><button class="compact-btn" id="camExpand" aria-label="Afficher les réglages caméra" title="Réglages de caméra">⚙</button></div><div class="camera-tools"><button class="cam-btn" id="rotate" title="Tourner le plateau" aria-label="Tourner le plateau">↻</button><button class="cam-btn" id="camCollapse" title="Masquer les outils caméra" aria-label="Masquer les outils de caméra">▾</button><button class="cam-btn" id="lockcam" title="Verrouiller la caméra" aria-label="Verrouiller la caméra" aria-pressed="false">🔓</button><button class="cam-btn" id="resetcam" title="Retour à ma vue (ou caméra initiale)" aria-label="Retour à ma vue">⌂</button><button class="cam-btn" id="zoomout" title="Éloigner" aria-label="Zoom arrière">−</button><button class="cam-btn" id="zoomin" title="Rapprocher" aria-label="Zoom avant">+</button><button class="cam-btn" id="viewbtn" title="Alterner vue de jeu et vue 3D" aria-label="Passer en vue cinématique">◩</button><button class="cam-btn fs" id="fullbtn" title="Plein écran" aria-label="Passer en plein écran">⛶</button></div></nav>
+<div class="board-column"><section class="stage" id="stage" aria-label="Échiquier 3D interactif"><canvas id="gl" aria-label="Jeu d'échecs 3D : toucher une pièce puis une destination"></canvas><div class="board-label-layer" id="boardLabels" aria-hidden="true"></div><svg class="mentor-overlay" id="mentorSvg" aria-hidden="true"><defs><marker id="mentorArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#91eac4"/></marker><marker id="threatArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#f16a60"/></marker><marker id="replyArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#58c3e7"/></marker></defs><path id="mentorPath" class="mentor-arrow" marker-end="url(#mentorArrowHead)" style="display:none"/><path id="threatPath" class="mentor-arrow threat-arrow" marker-end="url(#threatArrowHead)" style="display:none"/><path id="replyPath" class="mentor-arrow reply-arrow" marker-end="url(#replyArrowHead)" style="display:none"/></svg><div id="mentorFrom" class="mentor-point"></div><div id="mentorTo" class="mentor-point to"></div><div class="stage-top"><div class="eyebrow">L'ART DE LA STRATÉGIE</div><div class="stage-title">Chaque coup compte.</div></div><div class="notice" id="notice"></div><div class="edition-stamp" aria-hidden="true">ATELIER · ÉDITION NOYER & LAITON</div></section><nav class="board-toolbar" aria-label="Commandes de caméra"><div class="toolbar-label">◈ <span>CAMÉRA</span><small>🔒 garde ton angle · 🤏 zoome · glisse pour explorer · ⌂ revient à ta vue</small></div><div class="compact-controls" aria-label="Caméra simplifiée"><button class="compact-btn" id="homeMini" aria-label="Revenir à ma vue mémorisée" title="Ma vue">⌂</button><button class="compact-btn" id="fullMini" aria-label="Basculer le plein écran" title="Plein écran">⛶</button><button class="compact-btn" id="camExpand" aria-label="Afficher les réglages caméra" title="Réglages de caméra">⚙</button></div><div class="camera-tools"><button class="cam-btn" id="rotate" title="Tourner le plateau" aria-label="Tourner le plateau">↻</button><button class="cam-btn" id="camCollapse" title="Masquer les outils caméra" aria-label="Masquer les outils de caméra">▾</button><button class="cam-btn" id="lockcam" title="Verrouiller la caméra" aria-label="Verrouiller la caméra" aria-pressed="false">🔓</button><button class="cam-btn" id="resetcam" title="Retour à ma vue (ou caméra initiale)" aria-label="Retour à ma vue">⌂</button><button class="cam-btn" id="zoomout" title="Éloigner" aria-label="Zoom arrière">−</button><button class="cam-btn" id="zoomin" title="Rapprocher" aria-label="Zoom avant">+</button><button class="cam-btn" id="viewbtn" title="Alterner vue de jeu et vue 3D" aria-label="Passer en vue cinématique">◩</button><button class="cam-btn fs" id="fullbtn" title="Plein écran" aria-label="Passer en plein écran">⛶</button></div></nav>
 <section class="academy-dock" aria-label="Maître d'échecs interactif"><div class="mentor-top"><div class="mentor-avatar">♛</div><div class="mentor-content"><div class="mentor-name">✦ Le Maître tacticien <span id="mentorMode">· Conseils en direct</span></div><p id="coach" aria-live="polite">Bienvenue ! Apprenons les échecs ensemble. Tu peux commencer un cours ou jouer librement.</p></div></div>
 <div class="mentor-controls"><button class="mbtn primary" id="hint">💡 Un indice</button><button class="mbtn" id="showMove">↗ Voir le coup</button><button class="mbtn" id="whyBtn">❔ Pourquoi ?</button><button class="mbtn" id="lessonMenu">📚 Cours</button><button class="mbtn" id="glossaryBtn" aria-expanded="false">📖 Les mots</button><button class="mbtn" id="nextLesson">Leçon suivante →</button></div>
-<div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
+<section id="exchangeFilm" class="exchange-film" hidden aria-label="Leçon tactique en trois temps"><strong>♘ Le regard du Maître · Trois coups à imaginer</strong><p class="film-sub" id="exchangeFilmIntro"></p><div class="film-steps"><button type="button" class="film-step" data-step="1">1 · Ton coup</button><button type="button" class="film-step" data-step="2">2 · Sa réponse</button><button type="button" class="film-step" data-step="3">3 · Ta reprise</button></div><p class="film-result" id="exchangeFilmResult" aria-live="polite"></p></section><div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
 <div class="glossary-panel" id="glossaryPanel" hidden>
  <strong>Le dictionnaire du Maître — les mots expliqués simplement</strong>
  <div class="glossary-grid">
@@ -449,12 +461,12 @@ function renderMesh(mesh,model,tint=[1,1,1],mat=0,opacity=1){gl.bindBuffer(gl.AR
 function pieceTint(ch){return ch===ch.toUpperCase()?[.99,.90,.76]:[.42,.46,.54];}
 function loc(i){return [(i&7)-3.5,(i>>4)-3.5];}
 let gameHistory=[parseFen(FEN)],movesSAN=[],lastMove=null,selected=-1,legalTargets=[],hovered=-1,mode='ai',anim=[],busy=false,pending=null,aiTimer=null,coachMove='',cameraLocked=false;
-let cameraPreset=null,captureTargets=[],dangerTargets=[],dangerPending='',dangerMessage='',lastPlayerThreat=null;
+let cameraPreset=null,captureTargets=[],dangerTargets=[],exchangeTargets=[],dangerPending='',dangerMessage='',lastPlayerThreat=null;
 let current=()=>gameHistory.at(-1),motion=()=>legal(current());
 
 const coordRoot=document.getElementById('boardLabels'),coordNodes=[];
 for(let i=0;i<128;i++)if(on(i)){let el=document.createElement('span');el.className='coord-cell'+(((i>>4)+(i&7))%2===0?'':' dark');el.textContent=sq(i);el.dataset.square=sq(i);coordRoot.append(el);coordNodes.push({i,el});}
-let showCoords=false,mentorArrow=null,threatArrow=null,currentThreats=[],lastOverlayUpdate=0;
+let showCoords=false,mentorArrow=null,threatArrow=null,replyArrow=null,currentThreats=[],lastOverlayUpdate=0;
 function project3D(x,y,z){
  const v=[x,y,z,1];let a=[0,0,0,0],b=[0,0,0,0];for(let j=0;j<4;j++){a[j]=view[j]*v[0]+view[j+4]*v[1]+view[j+8]*v[2]+view[j+12]*v[3];}
  for(let j=0;j<4;j++){b[j]=projection[j]*a[0]+projection[j+4]*a[1]+projection[j+8]*a[2]+projection[j+12]*a[3];}
@@ -468,8 +480,9 @@ function updateMentorOverlay(t){if(t-lastOverlayUpdate<70)return;lastOverlayUpda
  let p=squareOnScreen(i,true);
  el.textContent=sq(i);if(!p){el.style.display='none';continue;}el.style.display='block';el.style.left=p.x+'px';el.style.top=p.y+'px';}
  const path=document.getElementById('mentorPath'),svg=document.getElementById('mentorSvg'),from=document.getElementById('mentorFrom'),to=document.getElementById('mentorTo');
- const redPath=document.getElementById('threatPath');
+ const redPath=document.getElementById('threatPath'),bluePath=document.getElementById('replyPath');
  if(threatArrow){let p=squareOnScreen(threatArrow[0]),q=squareOnScreen(threatArrow[1]);if(p&&q){let dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy)||1;redPath.style.display='';redPath.setAttribute('d',`M ${p.x+dx/len*18} ${p.y+dy/len*18} L ${q.x-dx/len*23} ${q.y-dy/len*23}`);}else redPath.style.display='none';}else redPath.style.display='none';
+ if(replyArrow){let p=squareOnScreen(replyArrow[0]),q=squareOnScreen(replyArrow[1]);if(p&&q){let dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy)||1;bluePath.style.display='';bluePath.setAttribute('d',`M ${p.x+dx/len*16} ${p.y+dy/len*16} L ${q.x-dx/len*24} ${q.y-dy/len*24}`);}else bluePath.style.display='none';}else bluePath.style.display='none';
  svg.setAttribute('viewBox',`0 0 ${canvas.clientWidth} ${canvas.clientHeight}`);
  if(!mentorArrow){path.style.display='none';from.style.display='none';to.style.display='none';return;}
  const p=squareOnScreen(mentorArrow[0]),q=squareOnScreen(mentorArrow[1]);if(!p||!q)return;
@@ -479,18 +492,20 @@ function updateMentorOverlay(t){if(t-lastOverlayUpdate<70)return;lastOverlayUpda
 }
 function showHintArrow(m){mentorArrow=m?[m[0],m[1]]:null;lastOverlayUpdate=0;}
 function showThreatArrow(m){threatArrow=m?[m[0],m[1]]:null;lastOverlayUpdate=0;}
+function showReplyArrow(pair){replyArrow=pair?[pair[0],pair[1]]:null;lastOverlayUpdate=0;}
 
 let sftLastFrame=0,sftFrameSignature='';function render(t){requestAnimationFrame(render);
-  const newSignature=[camera.az.toFixed(3),camera.el.toFixed(3),camera.dist.toFixed(3),camera.target[0].toFixed(3),camera.target[2].toFixed(3),dangerTargets.map(d=>d.to).join(','),captureTargets.map(d=>d.to+':'+d.danger).join(','),lastPlayerThreat?.target||-1,canvas.clientWidth,canvas.clientHeight,selected,legalTargets.join(','),lastMove?.join(','),gameHistory.length,current().b.join(''),showCoords,mentorArrow?.join(','),threatArrow?.join(','),currentThreats.map(x=>x.to).join(','),anim.length].join('|');
+  const newSignature=[camera.az.toFixed(3),camera.el.toFixed(3),camera.dist.toFixed(3),camera.target[0].toFixed(3),camera.target[2].toFixed(3),dangerTargets.map(d=>d.to).join(','),exchangeTargets.map(d=>d.to).join(','),captureTargets.map(d=>d.to+':'+d.danger+':'+d.exposure).join(','),lastPlayerThreat?.target||-1,canvas.clientWidth,canvas.clientHeight,selected,legalTargets.join(','),lastMove?.join(','),gameHistory.length,current().b.join(''),showCoords,mentorArrow?.join(','),threatArrow?.join(','),replyArrow?.join(','),currentThreats.map(x=>x.to).join(','),anim.length].join('|');
   if(!anim.length&&newSignature===sftFrameSignature)return;
   if(t-sftLastFrame<33)return;
   sftLastFrame=t;sftFrameSignature=newSignature;
   let w=canvas.clientWidth,h=canvas.clientHeight,dpi=Math.min(window.devicePixelRatio||1,1.7);if(canvas.width!==Math.round(w*dpi)||canvas.height!==Math.round(h*dpi)){canvas.width=Math.max(2,Math.round(w*dpi));canvas.height=Math.max(2,Math.round(h*dpi));gl.viewport(0,0,canvas.width,canvas.height);}updateCamera();gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);gl.clearColor(.052,.062,.078,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(prog);gl.uniformMatrix4fv(U.view,false,view);gl.uniformMatrix4fv(U.proj,false,projection);gl.uniform3fv(U.cam,eye);gl.uniform1f(U.time,t*.001);let id=mIdentity();renderMesh(floorMesh,id);renderMesh(boardMesh,id);renderMesh(engraveMesh,id);
 if(lastMove){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);renderMesh(lastMesh,mTransform(...[...loc(lastMove[0]).slice(0,1),0,...loc(lastMove[0]).slice(1)]),[1,1,1],0,.48);renderMesh(lastMesh,mTransform(...[...loc(lastMove[1]).slice(0,1),0,...loc(lastMove[1]).slice(1)]),[1,1,1],0,.48);gl.disable(gl.BLEND);}
 if(selected>=0){let [x,z]=loc(selected);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);renderMesh(selectMesh,mTransform(x,0,z),[1,1,1],0,.55);
-for(let d of legalTargets){if(captureTargets.some(r=>r.to===d)||dangerTargets.some(r=>r.to===d))continue;let [xx,zz]=loc(d);renderMesh(destMesh,mTransform(xx,0,zz),[1,1,1],0,.8);}
+for(let d of legalTargets){if(captureTargets.some(r=>r.to===d)||dangerTargets.some(r=>r.to===d)||exchangeTargets.some(r=>r.to===d))continue;let [xx,zz]=loc(d);renderMesh(destMesh,mTransform(xx,0,zz),[1,1,1],0,.8);}
+for(const r of exchangeTargets){if(captureTargets.some(c=>c.to===r.to))continue;let [xx,zz]=loc(r.to);renderMesh(captureHaloMesh,mTransform(xx,0,zz),[1,1,1],0,1);renderMesh(captureRiskMesh,mTransform(xx,0,zz),[1,1,1],0,1);}
 for(const r of dangerTargets){if(captureTargets.some(c=>c.to===r.to))continue;let [xx,zz]=loc(r.to);renderMesh(dangerSpotMesh,mTransform(xx,0,zz),[1,1,1],0,1);}
-for(const r of captureTargets){let [xx,zz]=loc(r.to);renderMesh(captureHaloMesh,mTransform(xx,0,zz),[1,1,1],0,1);if(r.danger)renderMesh(captureRiskMesh,mTransform(xx,0,zz),[1,1,1],0,1);}
+for(const r of captureTargets){let [xx,zz]=loc(r.to);renderMesh(captureHaloMesh,mTransform(xx,0,zz),[1,1,1],0,1);if(r.exposure)renderMesh(captureRiskMesh,mTransform(xx,0,zz),[1,1,1],0,1);}
 gl.disable(gl.BLEND);}
 if(lastPlayerThreat){let [xx,zz]=loc(lastPlayerThreat.target);renderMesh(riskRingMesh,mTransform(xx,0,zz),[1,1,1],0,1);}
 if(mode!=='lesson'&&(mode==='local'||current().t===1)){for(const threat of currentThreats.slice(0,3)){let [xx,zz]=loc(threat.to);renderMesh(riskRingMesh,mTransform(xx,0,zz),[1,1,1],0,1);}}let s=current();for(let i=0;i<128;i++){if(!on(i)||s.b[i]==='.')continue;let ch=s.b[i],p=ch.toLowerCase(),[x,z]=loc(i),a=anim.find(q=>q.to===i&&q.piece===ch);let y=.18;if(a){let k=Math.min(1,(t-a.t)/370);let ease=1-Math.pow(1-k,3);let [fx,fz]=loc(a.from);x=fx+(x-fx)*ease;z=fz+(z-fz)*ease;y+=.35*Math.sin(Math.PI*ease);if(k>=1)anim.splice(anim.indexOf(a),1);}renderMesh(shadowMesh,mTransform(x,0,z),[1,1,1],0,.98);renderMesh(pieceMeshes[p],mTransform(x,y,z,.74,ch===ch.toUpperCase()?Math.PI:0),pieceTint(ch),1);}
@@ -513,7 +528,8 @@ const lessons=[
  {name:'7 · La promotion',fen:'7k/P7/8/8/8/8/8/4K3 w - - 0 1',move:'a7a8q',topic:'Promotion',child:'Ton petit pion touche la dernière ligne et devient super puissant !',adult:'Fais avancer le pion jusqu’à la huitième rangée et choisis sa promotion.',h1:'Un pion sur la septième rangée peut être promu en avançant.',h2:'Fais avancer le pion a7 vers a8, puis sélectionne la dame.',why:'Lorsqu’un pion atteint la dernière rangée, il peut devenir dame, tour, fou ou cavalier.'},
  {name:'8 · Sauve ton cavalier !',fen:'rnbqkbnr/ppp1pppp/8/8/3pP3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 3',move:'c3d5',topic:'Menace',child:'Alerte ! Le pion noir en d4 veut manger ton cavalier en c3. Fais-le sauter en lieu sûr !',adult:'Détecte la menace du pion d4 sur le cavalier c3 et éloigne le cavalier sans perdre de matériel.',h1:'Un pion attaque en diagonale : le pion d4 peut aller vers c3 pour prendre ton cavalier.',h2:'Le cavalier en c3 peut aller en d5. Regarde ce qui défend cette case.',why:'En allant en d5, le cavalier échappe au pion d4. Le pion blanc e4 le défend sur sa nouvelle case.'},
  {name:'9 · Le pion qui piège le fou',fen:'4k3/8/8/1p6/2p5/3B4/8/4K3 w - - 0 1',move:'d3e2',topic:'Piège',child:'Le pion en c4 est tentant... mais le pion b5 le protège ! Sauve ton fou.',adult:'Ne capture pas le pion c4 avec ton fou d3 : le pion b5 pourrait reprendre le fou. Reviens en e2.',h1:'Repère le pion noir en b5 : quelle case attaque-t-il ?',h2:'Le fou en d3 peut revenir sur la case e2 sans subir de reprise.',why:'Prendre le pion c4 rapporte 1 point, mais le pion b5 pourrait ensuite prendre ton fou de 3 points : perte nette de 2.'},
- {name:'10 · Le bon échange',fen:'4k3/8/8/1p6/2r5/3B4/8/4K3 w - - 0 1',move:'d3c4',topic:'Échange',child:'Cette fois, ton fou peut prendre une tour ! Même si le pion noir mange ton fou ensuite, compte les points.',adult:'Capture la tour c4 avec le fou d3 : l’échange peut être favorable malgré la reprise du pion b5.',h1:'Ton fou vaut 3 points, la tour 5. Quel échange est intéressant ?',h2:'Le fou en d3 peut capturer la tour en c4 ; le pion noir b5 pourra ensuite reprendre ton fou.',why:'Tu gagnes une tour de 5 points et tu risques de perdre un fou de 3 points : bilan matériel indicatif de +2.'}
+ {name:'10 · Le bon échange',fen:'4k3/8/8/1p6/2r5/3B4/8/4K3 w - - 0 1',move:'d3c4',topic:'Échange',child:'Cette fois, ton fou peut prendre une tour ! Même si le pion noir mange ton fou ensuite, compte les points.',adult:'Capture la tour c4 avec le fou d3 : l’échange peut être favorable malgré la reprise du pion b5.',h1:'Ton fou vaut 3 points, la tour 5. Quel échange est intéressant ?',h2:'Le fou en d3 peut capturer la tour en c4 ; le pion noir b5 pourra ensuite reprendre ton fou.',why:'Tu gagnes une tour de 5 points et tu risques de perdre un fou de 3 points : bilan matériel indicatif de +2.'},
+ {name:'11 · Un piège ou un échange ?',fen:'4k3/8/8/p1p5/2Pn4/N7/8/4K3 w - - 0 1',move:'a3b5',topic:'Échange ou danger',child:'Ton cavalier veut aller entre deux pions. Un autre cavalier peut-il le manger ? Et qui pourrait le reprendre ?',adult:'Le cavalier A3 peut aller en B5, mais le cavalier noir D4 attaque cette case. Analyse la reprise possible du pion C4 avant de décider.',h1:'Regarde le cavalier noir D4 : il saute en L et contrôle la case B5.',h2:'Si le cavalier noir prend en B5, ton pion blanc C4 peut-il reprendre en diagonale ?',why:'A3–B5 est légal, mais B5 est attaquée par le cavalier noir D4. Si le Noir prend ton cavalier (3 points), le pion blanc C4 peut reprendre ce cavalier (3 points). C’est une possibilité d’échange, pas une perte gratuite certaine. Le Noir peut aussi choisir un autre coup.'}
 ];
 let studentType='adult',activeLesson=-1,lessonFinished=false,hintLevel=0,lessonMistakes=0;
 let progress={};try{progress=JSON.parse(localStorage.getItem('sft_chess_academy_v5')||'{}');}catch(err){}
@@ -532,8 +548,41 @@ const shortDefinitions=[
 function explainNewTerm(msg){for(const [pattern,definition] of shortDefinitions)if(pattern.test(msg))return msg+'\n'+definition;return msg;}
 function showCoach(msg){document.getElementById('coach').textContent=explainNewTerm(msg);}
 function say(msg){coachMove=msg;showCoach(msg);}
+
+// Entraînement professionnel : ne pas confondre une attaque, une perte et un échange.
+// Les flèches présentent des VARIANTES possibles sans modifier la position de la partie.
+let focusScenario=null,filmStep=0;
+const filmPanel=document.getElementById('exchangeFilm');
+function clearFilm(){focusScenario=null;filmStep=0;filmPanel.hidden=true;showReplyArrow(null);}
+function scenarioSummary(r,s,m){
+ const you=pname[s.b[m[0]].toLowerCase()],foe=pname[r.by],place=sq(m[1]).toUpperCase(),where=sq(r.attacker).toUpperCase();
+ return `Tu envisages de placer ton ${you} en ${place}. Le ${foe} noir en ${where} peut l'y capturer. `+(r.recapture?`Mais ton ${pname[r.recapture.piece]} en ${sq(r.recapture.from).toUpperCase()} peut ensuite reprendre.`:`Aucune reprise immédiate n'a été trouvée dans cette réponse.`);
+}
+function setScenario(m,r,s=current()){
+ if(!m||!r){clearFilm();return;}
+ focusScenario={m,r,state:s};filmStep=0;filmPanel.hidden=false;
+ document.getElementById('exchangeFilmIntro').textContent=scenarioSummary(r,s,m)+' Ce sont des coups possibles, pas une suite obligatoire.';
+ document.getElementById('exchangeFilmResult').textContent='Choisis une étape pour voir sur le plateau : ton coup, sa réponse, puis ta reprise éventuelle.';
+ for(const b of filmPanel.querySelectorAll('.film-step')){b.classList.remove('active');b.disabled=b.dataset.step==='3'&&!r.recapture;}
+ showReplyArrow(null);
+}
+function showFilmStep(n){
+ if(!focusScenario)return;
+ const {m,r,state:s}=focusScenario,place=sq(m[1]).toUpperCase(),own=s.b[m[0]].toLowerCase();
+ n=Number(n);if(n===3&&!r.recapture)return;
+ filmStep=n;
+ for(const b of filmPanel.querySelectorAll('.film-step'))b.classList.toggle('active',Number(b.dataset.step)===n);
+ showHintArrow(null);showThreatArrow(null);showReplyArrow(null);
+ let message='';
+ if(n===1){showHintArrow(m);message=`1. Tu peux jouer ${sq(m[0]).toUpperCase()} → ${place} avec ton ${pname[own]}. Mais une case légale n'est pas forcément une case sûre.`;}
+ if(n===2){showThreatArrow([r.attacker,m[1]]);message=`2. Le ${pname[r.by]} noir en ${sq(r.attacker).toUpperCase()} peut prendre ton ${pname[own]} en ${place}. Tu risques une pièce valant ${mp(s.b[m[0]])} points.`;}
+ if(n===3){showReplyArrow([r.recapture.from,m[1]]);message=`3. Ton ${pname[r.recapture.piece]} en ${sq(r.recapture.from).toUpperCase()} peut reprendre le ${pname[r.by]} noir en ${place}. Dans cette variante, tu récupères une pièce de ${materialScore[r.by]||0} points. Cela peut être un échange équilibré, et pas une perte gratuite.`;}
+ document.getElementById('exchangeFilmResult').textContent=message;
+}
+for(const b of filmPanel.querySelectorAll('.film-step'))b.addEventListener('click',()=>showFilmStep(b.dataset.step));
+
 function dangerNotice(text){let el=document.getElementById('dangerWarning');el.textContent=text;el.style.display=text?'block':'none';}
-function clearDanger(){dangerTargets=[];captureTargets=[];dangerPending='';dangerMessage='';dangerNotice('');}
+function clearDanger(){dangerTargets=[];captureTargets=[];exchangeTargets=[];dangerPending='';dangerMessage='';dangerNotice('');}
 // Analyse tactique courte : séquence de prises et de reprises LEGALES sur une même case.
 // Le camp au trait peut refuser de capturer : un échange n'est pas automatiquement perdant.
 const materialScore={p:1,n:3,b:3,r:5,q:9,k:0};
@@ -573,8 +622,11 @@ function riskAfterMove(s,m){
  const captures=legal(next).filter(x=>x[1]===m[1]&&isCapture(next,x));
  if(!captures.length)return null;
  let r=null;
- for(const x of captures){const loss=capturePoints(next,x)-exchangeGain(apply(next,x),m[1]);
-  if(!r||loss>r.loss)r={to:m[1],target:m[1],attacker:x[0],by:next.b[x[0]].toLowerCase(),piece:piece.toLowerCase(),move:moveKey(m),loss};
+ for(const x of captures){
+  const afterCapture=apply(next,x),loss=capturePoints(next,x)-exchangeGain(afterCapture,m[1]);
+  const recapture=legal(afterCapture).filter(y=>y[1]===m[1]&&isCapture(afterCapture,y)).sort((a,b)=>capturePoints(afterCapture,b)-capturePoints(afterCapture,a))[0];
+  if(!r||loss>r.loss)r={to:m[1],target:m[1],attacker:x[0],by:next.b[x[0]].toLowerCase(),piece:piece.toLowerCase(),move:moveKey(m),loss,
+    recapture:recapture?{from:recapture[0],piece:afterCapture.b[recapture[0]].toLowerCase()}:null};
  }
  return r;
 }
@@ -635,6 +687,13 @@ function dangerText(r,s){
  const balance=cap?`Tu gagnes une pièce de ${captured} point${captured>1?'s':''}, mais tu risques de perdre environ ${loss} point${loss>1?'s':''} lors de la reprise.`:`Tu risques de perdre environ ${loss} point${loss>1?'s':''}.`;
  return (studentType==='child'?'⚠ Oups ! ':'⚠ Attention ! ')+`Sur ${square}, ${namedPiece(attacker)} peut prendre ton ${name}. `+balance+' Regarde si un autre coup protège mieux tes pièces.';
 }
+function exposureText(r,s,m){
+ const from=sq(m[0]).toUpperCase(),to=sq(m[1]).toUpperCase();
+ const name=pname[s.b[m[0]].toLowerCase()],attacker=pname[r.by],origin=sq(r.attacker).toUpperCase();
+ const recapture=r.recapture?` Mais ton ${pname[r.recapture.piece]} en ${sq(r.recapture.from).toUpperCase()} peut reprendre le ${attacker}.`:'';
+ const balance=r.recapture?` Ton ${name} vaut ${mp(s.b[m[0]])} points et le ${attacker} adverse en vaut ${materialScore[r.by]} : cette suite peut être un échange, pas une perte gratuite. Attention : l'adversaire n'est pas obligé de prendre.`:' Une reprise immédiate de ton côté n’a pas été trouvée : réfléchis à une autre destination.';
+ return `⚠ Attention à la case ${to} ! Si tu déplaces ton ${name} de ${from} vers ${to}, le ${attacker} adverse en ${origin} peut le capturer.${recapture}${balance}`;
+}
 function moveOutcomeNet(s,m){let captured=isCapture(s,m)?value[(m[3]==='ep'?'p':s.b[m[1]].toLowerCase())]||0:0;return captured-(value[s.b[m[0]].toLowerCase()]||0);}
 function captureText(s,m){
  if(!isCapture(s,m))return '';
@@ -645,21 +704,26 @@ function captureText(s,m){
 function recomputeDanger(){
  clearDanger();if(selected<0)return;
  const s=current(),moves=legal(s).filter(m=>m[0]===selected);
- dangerTargets=moves.map(m=>dangerAfterMove(s,m)).filter(Boolean);
- captureTargets=moves.filter(m=>isCapture(s,m)).map(m=>({to:m[1],danger:!!dangerTargets.find(d=>d.move===moveKey(m)),move:moveKey(m)}));
- if(captureTargets.some(c=>c.danger))dangerNotice('🟠 Pièce à prendre ; cercle rouge = perte possible après reprise. Le Maître calcule qui peut reprendre.');
- else if(dangerTargets.length)dangerNotice('🔴 Une destination risque de te faire perdre du matériel. Sélectionne-la pour connaître le danger.');
+ const scenarios=moves.map(m=>({m,exposure:riskAfterMove(s,m),danger:dangerAfterMove(s,m)}));
+ dangerTargets=scenarios.filter(o=>o.danger).map(o=>o.danger);
+ exchangeTargets=scenarios.filter(o=>o.exposure&&!o.danger&&!isCapture(s,o.m)).map(o=>({to:o.m[1],m:o.m,r:o.exposure}));
+ captureTargets=scenarios.filter(o=>isCapture(s,o.m)).map(o=>({to:o.m[1],danger:!!o.danger,exposure:!!o.exposure,move:moveKey(o.m)}));
+ if(dangerTargets.length)dangerNotice('🔴 Une pièce peut être perdue après ce coup. Un anneau autour d’une case signifie aussi que l’adversaire peut capturer, même si tu peux reprendre.');
+ else if(exchangeTargets.length)dangerNotice('🟠🔴 Attention : une case entourée d’orange et de rouge est attaquée par l’adversaire, même si tu peux reprendre ensuite.');
  else if(captureTargets.length)dangerNotice('🟠 Tu peux prendre une pièce. Vérifie toujours les reprises.');
+ const focus=scenarios.find(o=>o.exposure&&(o.exposure.recapture||o.danger))||scenarios.find(o=>o.exposure);
+ if(focus)setScenario(focus.m,focus.exposure,s);else clearFilm();
 }
 function pendingSafety(m){
  if(mode==='lesson'||mode==='local'||current().t!==1)return false;
- let s=current(),r=dangerAfterMove(s,m),report=getReport(s,m),best=bestTeachingMove(s);
+ let s=current(),r=dangerAfterMove(s,m),exposure=riskAfterMove(s,m),report=getReport(s,m),best=bestTeachingMove(s);
  let danger=r;
  const omitted=report.worst&&report.worst.loss>=2.5&&best&&best.score>(report.gain-report.worst.loss)+1.3;
- if(!danger&&!omitted)return false;
+ if(!danger&&!omitted&&!exposure)return false;
  if(dangerPending===moveKey(m)){dangerPending='';return false;}
  dangerPending=moveKey(m);
- let msg=danger?dangerText(danger,s):`⚠ Attention : ce coup laisse ton ${pname[report.worst.piece]} en ${sq(report.worst.to).toUpperCase()} menacé. ${namedPiece(pname[report.worst.by])} peut le capturer et te coûter environ ${Number(report.worst.loss.toFixed(1))} points.`;
+ let msg=danger?dangerText(danger,s):exposure?exposureText(exposure,s,m):`⚠ Attention : ce coup laisse ton ${pname[report.worst.piece]} en ${sq(report.worst.to).toUpperCase()} menacé. ${namedPiece(pname[report.worst.by])} peut le capturer et te coûter environ ${Number(report.worst.loss.toFixed(1))} points.`;
+ if(exposure)showThreatArrow([exposure.attacker,m[1]]);
  msg+=' Appuie une seconde fois sur la même case si tu veux jouer malgré ce risque.';
  say(msg);dangerNotice(msg);return true;
 }
@@ -674,6 +738,7 @@ function selectedHint(){
  return bestTeachingMove(current())?.m||null;
 }
 function mentorHint(){
+ if(focusScenario&&focusScenario.state===current()&&mode!=='lesson'){showFilmStep(Math.min(3,filmStep+1||1));say('Le Maître détaille une réponse possible, sans jouer à ta place. Regarde le trajet affiché et compare les valeurs des pièces.');return;}
  const s=current(),m=selectedHint();if(!m){say('La partie est terminée : aucun coup disponible.');return;}
  hintLevel=Math.min(3,hintLevel+1);
  const l=mode==='lesson'?lessons[activeLesson]:null,urgent=!l?getThreats(s)[0]:null;
@@ -693,6 +758,7 @@ function mentorHint(){
  else{say(`Je te montre un coup plausible : ${pname[s.b[m[0]].toLowerCase()]} de ${sq(m[0]).toUpperCase()} vers ${sq(m[1]).toUpperCase()}. ${isCapture(s,m)?captureText(s,m):'Vérifie la réponse adverse après ce coup.'} C’est une analyse tactique courte, pas une garantie de meilleur coup.`);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(m);}
 }
 function demonstrate(){
+ if(focusScenario&&focusScenario.state===current()&&mode!=='lesson'){showFilmStep(2);say(exposureText(focusScenario.r,current(),focusScenario.m));return;}
  const s=current(),m=selectedHint();if(!m)return;
  selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(m);
  const t=mode!=='lesson'?getThreats(s)[0]:null;showThreatArrow(t?t.attacker:null);
@@ -701,11 +767,13 @@ function demonstrate(){
 
 function mentorWhy(){
  let l=mode==='lesson'?lessons[activeLesson]:null;
- if(l){let extra={Centre:'Regarde les quatre cases du milieu : d4, e4, d5 et e5. Tes pions les disputent, puis tes pièces profitent de cet espace.',Cavalier:'Le cavalier saute en L : deux cases dans un sens, puis une à côté. Il peut sauter par-dessus les autres pièces, contrairement au fou ou à la tour.',Capture:'Prendre n’est pas toujours gagner ! Après une capture, demande-toi si ton adversaire peut reprendre avec une autre pièce.',Roque:'Le petit roque est autorisé si le roi et la tour n’ont pas bougé, qu’aucune pièce ne se trouve entre eux et que le roi ne traverse pas une case attaquée.',Mat:'Il ne suffit pas de donner échec : pour faire mat, le roi ne doit avoir aucune parade légale. Ici, le fou soutient la dame.',Fourchette:'Le roi doit répondre à un échec immédiatement. Le cavalier pourra ensuite gagner la dame, si elle ne s’échappe pas autrement.',Promotion:'Une dame est souvent la plus forte, mais une promotion en cavalier, tour ou fou peut parfois être meilleure.'}[l.topic]||'';
+ if(l){let extra={Centre:'Regarde les quatre cases du milieu : d4, e4, d5 et e5. Tes pions les disputent, puis tes pièces profitent de cet espace.',Cavalier:'Le cavalier saute en L : deux cases dans un sens, puis une à côté. Il peut sauter par-dessus les autres pièces, contrairement au fou ou à la tour.',Capture:'Prendre n’est pas toujours gagner ! Après une capture, demande-toi si ton adversaire peut reprendre avec une autre pièce.',Roque:'Le petit roque est autorisé si le roi et la tour n’ont pas bougé, qu’aucune pièce ne se trouve entre eux et que le roi ne traverse pas une case attaquée.',Mat:'Il ne suffit pas de donner échec : pour faire mat, le roi ne doit avoir aucune parade légale. Ici, le fou soutient la dame.',Fourchette:'Le roi doit répondre à un échec immédiatement. Le cavalier pourra ensuite gagner la dame, si elle ne s’échappe pas autrement.',Promotion:'Une dame est souvent la plus forte, mais une promotion en cavalier, tour ou fou peut parfois être meilleure.','Échange ou danger':'Un cavalier saute en L et peut attaquer une case que les pions voisins ne contrôlent pas. Une reprise est possible seulement si elle est légale ; elle ne rend pas la première capture impossible.'}[l.topic]||'';
  say((studentType==='child'?'Voici l’astuce du maître : ':'Le principe stratégique : ')+l.why+' '+extra);return;
  }
  let s=current(),check=checked(s),remaining=legal(s).length;
  const urgent=getThreats(s)[0];
+ if(focusScenario&&focusScenario.state===s){say(exposureText(focusScenario.r,s,focusScenario.m)+' Utilise le film des trois coups pour voir l’attaque et la reprise.');showFilmStep(2);return;}
+ if(selected>=0&&exchangeTargets.length){const e=exchangeTargets[0];say(exposureText(e.r,s,e.m));showThreatArrow([e.r.attacker,e.r.to]);return;}
  if(!check&&urgent){say(threatMessage(urgent,studentType==='child')+' Une pièce peut être attaquée tout en étant défendue ; ici le calcul des reprises indique une perte possible. Le Maître ne connaît pas encore tous les pièges à plusieurs coups.');showThreatArrow(urgent.attacker);return;}
  if(check){say('Ton roi est en échec : la priorité absolue est de le sauver. Tu peux le déplacer, capturer la pièce menaçante ou bloquer la ligne d’attaque, si les règles le permettent.');return;}
  if(movesSAN.length===0){say(studentType==='child'?'Imagine le plateau comme un château : protège ton roi, ouvre des chemins à tes pièces et prends le centre avant de partir à l’aventure.':'Au début : contrôle le centre, développe cavaliers et fous, puis mets ton roi à l’abri grâce au roque. Évite les sorties prématurées de la dame.');return;}
@@ -729,7 +797,7 @@ function commit(m){
  if(busy||lessonFinished)return;
  let s=current(),chosen=legal(s).find(x=>x[0]===m[0]&&x[1]===m[1]&&x[2]===m[2]);if(!chosen)return;
  if(mode==='lesson'&&moveKey(chosen)!==lessons[activeLesson].move){lessonMistakes++;let l=lessons[activeLesson],r=getReport(s,chosen);let trap=isCapture(s,chosen)&&r.worst&&r.worst.loss>r.gain+.3;let extra=trap?`Attention : tu gagnes ${r.gain} point(s), mais la reprise pourrait te coûter ${Number(r.worst.loss.toFixed(1))} point(s). `:'';say(extra+(studentType==='child'?'Essaie encore ! ':'Ce n’est pas le coup recherché. ')+l.h1);displayFeedback('Essaie une autre case : une erreur sert aussi à apprendre.');return;}
- let text=san(s,chosen),next=apply(s,chosen);hintLevel=0;resetTacticCache();showThreatArrow(null);gameHistory.push(next);movesSAN.push(text);lastMove=[chosen[0],chosen[1]];selected=-1;legalTargets=[];clearDanger();showHintArrow(null);lastPlayerThreat=(s.t===1&&mode!=='lesson')?dangerAfterMove(s,chosen):null;
+ let text=san(s,chosen),next=apply(s,chosen);hintLevel=0;resetTacticCache();clearFilm();showThreatArrow(null);gameHistory.push(next);movesSAN.push(text);lastMove=[chosen[0],chosen[1]];selected=-1;legalTargets=[];clearDanger();showHintArrow(null);lastPlayerThreat=(s.t===1&&mode!=='lesson')?dangerAfterMove(s,chosen):null;
  let piece=s.b[chosen[0]];anim.push({from:chosen[0],to:chosen[1],piece:chosen[2]?(s.t===1?chosen[2].toUpperCase():chosen[2]):piece,t:performance.now()});
  if(chosen[3]==='castle'){let from=chosen[1]>chosen[0]?chosen[0]+3:chosen[0]-4,to=chosen[1]>chosen[0]?chosen[0]+1:chosen[0]-1;anim.push({from,to,piece:s.t===1?'R':'r',t:performance.now()});}
  if(mode==='lesson'){
@@ -751,6 +819,8 @@ function selectSquare(i){
   let candidates=l.filter(m=>m[0]===selected&&m[1]===i);
   if(candidates.length){
    if(candidates.length>1){pending=candidates;let choices=document.getElementById('promoChoices');choices.innerHTML='';for(let m of candidates){let b=document.createElement('button');b.textContent=({q:'♛',r:'♜',b:'♝',n:'♞'})[m[2]];b.title=({q:'Dame',r:'Tour',b:'Fou',n:'Cavalier'})[m[2]];b.onclick=()=>{pending=null;document.getElementById('promoModal').style.display='none';commit(m);};choices.appendChild(b);}document.getElementById('promoModal').style.display='flex';return;}
+   const candidateRisk=riskAfterMove(s,candidates[0]);
+   if(candidateRisk){setScenario(candidates[0],candidateRisk,s);showFilmStep(2);}
    if(pendingSafety(candidates[0]))return;
    commit(candidates[0]);return;
   }
@@ -762,11 +832,12 @@ function selectSquare(i){
    let urgent=getThreats(s)[0];
    if(urgent){say(threatMessage(urgent,studentType==='child')+' Les pastilles des mouvements sélectionnés restent visibles.');return;}
    let name=pname[s.b[selected].toLowerCase()];
-   if(captureTargets.length){let c=legal(s).find(m=>m[0]===selected&&isCapture(s,m));say('Tu as choisi ton '+name+'. Vert : déplacement libre. Orange : pièce que tu peux prendre. Rouge : risque de reprise. '+(c?captureText(s,c):''));}
-   else if(dangerTargets.length) say('Tu as choisi ton '+name+'. Vert : case libre. Rouge : l’adversaire pourra peut-être capturer cette pièce après le coup.');
+   if(exchangeTargets.length){let e=exchangeTargets[0];say('Tu as choisi ton '+name+'. '+exposureText(e.r,s,e.m)+' Les cases orange cerclées de rouge ne sont pas sans risque.');}
+   else if(captureTargets.length){let c=legal(s).find(m=>m[0]===selected&&isCapture(s,m));say('Tu as choisi ton '+name+'. Vert : déplacement libre. Orange : pièce que tu peux prendre. Rouge : risque de reprise. '+(c?captureText(s,c):''));}
+   else if(dangerTargets.length) say('Tu as choisi ton '+name+'. Une case rouge signale une capture adverse possible ; le Maître vérifie aussi les reprises et la valeur des pièces.');
    else say('Tu as choisi '+name+' sur '+sq(selected).toUpperCase()+'. Les points verts montrent où il peut aller.');
   }
- }else{selected=-1;legalTargets=[];clearDanger();}
+ }else{selected=-1;legalTargets=[];clearDanger();clearFilm();}
 }
 
 function tacticalForecast(s){
@@ -780,7 +851,7 @@ function tacticalForecast(s){
  if(threats.length){const t=threats[0];return threatMessage(t,studentType==='child')+(threats.length>1?` Il y a ${threats.length} pièces en danger.`:'');}
  const safe=moves.filter(m=>isCapture(s,m)&&!dangerAfterMove(s,m));
  if(safe.length){const m=safe.sort((a,b)=>capturePoints(s,b)-capturePoints(s,a))[0];return '🟠 Prise possible : '+captureText(s,m);}
- return '🔎 Vérification terminée : aucune perte de matériel immédiate trouvée. À présent, regarde le centre et la sécurité du roi.';
+ return '🔎 Aucune perte nette immédiate détectée. Attention : des cases peuvent être attaquées même lorsqu’un échange permet de reprendre. Sélectionne une pièce pour examiner ces réponses.';
 }
 
 function refresh(){let s=current(),st=status(gameHistory);document.getElementById('turnDot').classList.toggle('black',s.t===-1);document.getElementById('turnText').textContent=lessonFinished?'Exercice réussi':st.done?'Partie terminée':s.t===1?'Aux Blancs de jouer':'Aux Noirs de jouer';document.getElementById('statusText').textContent=mode==='lesson'?'Académie · '+lessons[activeLesson].topic:(st.message||(mode==='ai'?'Mode professeur · contre IA':'Duel local · deux joueurs'));document.getElementById('mentorMode').textContent=mode==='lesson'?'· Exercice '+(activeLesson+1)+'/'+lessons.length:'· Conseils en direct';if(mode!=='lesson'&&(!mode||mode==='local'||s.t===1)){currentThreats=getThreats(s);}else currentThreats=[];
@@ -790,13 +861,13 @@ function refresh(){let s=current(),st=status(gameHistory);document.getElementByI
  const threats=currentThreats;
  let lessonActive=mode==='lesson',major=threats[0];
  document.getElementById('mentorAssessment').textContent=lessonActive?(lessonFinished?'Exercice terminé. Très beau travail !':'Exercice : '+lessons[activeLesson].topic+'. Tu peux demander trois niveaux d’indices et voir le trajet sur le plateau.'):
- checked(s)?'Échec : ton roi doit être sauvé.':major?`Menace : ${pname[major.piece]} en ${sq(major.to).toUpperCase()}, valeur ${major.points} points, perte possible ${Number(major.loss.toFixed(1))} après les reprises.`:`${legal(s).length} coups légaux. Aucune perte de matériel directe détectée.`;
+ checked(s)?'Échec : ton roi doit être sauvé.':major?`Menace : ${pname[major.piece]} en ${sq(major.to).toUpperCase()}, valeur ${major.points} points, perte possible ${Number(major.loss.toFixed(1))} après les reprises.`:`${legal(s).length} coups légaux. Pas de perte directe estimée, mais des échanges et des attaques restent possibles.`;
  document.getElementById('mentorQuestion').textContent=lessonActive?(lessonFinished?'Sais-tu expliquer pourquoi ce coup fonctionne ?':'Lis la mission, puis utilise un indice si besoin.'):
  checked(s)?'Comment répondre à cet échec ?':major?'Peux-tu sauver cette pièce, la défendre, ou capturer son attaquant ?':'Avant ton coup : que pourrais-tu prendre, et comment ton adversaire pourrait-il répondre ?';
  document.getElementById('mentorValue').textContent=lessonActive?'':major?`Enjeu estimé : ${Number(major.loss.toFixed(1))} point(s) après les reprises · ${pname[major.by]} → ${pname[major.piece]}`:'Valeurs de référence : pion 1 · cavalier 3 · fou 3 · tour 5 · dame 9';
 
  }
-function cancelAI(){clearTimeout(aiTimer);busy=false;showThreatArrow(null);anim=[];selected=-1;legalTargets=[];pending=null;clearDanger();lastPlayerThreat=null;document.getElementById('promoModal').style.display='none';}
+function cancelAI(){clearTimeout(aiTimer);busy=false;clearFilm();showThreatArrow(null);anim=[];selected=-1;legalTargets=[];pending=null;clearDanger();lastPlayerThreat=null;document.getElementById('promoModal').style.display='none';}
 function newGame(){if(mode==='lesson')return startLesson(activeLesson);cancelAI();gameHistory=[parseFen(FEN)];movesSAN=[];lastMove=null;resetTacticCache();showThreatArrow(null);coachMove='';mentorArrow=null;hintLevel=0;refresh();}
 function setMode(m){activeLesson=-1;lessonFinished=false;hintLevel=0;mentorArrow=null;document.getElementById('nextLesson').style.display='none';document.getElementById('lessonFeedback').style.display='none';mode=m;document.getElementById('modeAI').classList.toggle('active',m==='ai');document.getElementById('modeLocal').classList.toggle('active',m==='local');document.getElementById('aiOptions').style.display=m==='ai'?'':'none';newGame();}
 document.getElementById('modeAI').onclick=()=>setMode('ai');document.getElementById('modeLocal').onclick=()=>setMode('local');document.getElementById('newgame').onclick=newGame;
@@ -923,6 +994,6 @@ document.addEventListener('fullscreenchange',()=>{
 document.getElementById('stage').addEventListener('dblclick',e=>{if(cameraLocked&&cameraPreset){restoreSnapshot(cameraPreset);announce('Vue mémorisée retrouvée.');}});
 
 refresh();syncCameraUI();requestAnimationFrame(render);
-window.SFTCHESS={newGame,legal,apply,current,commit,index,startLesson,stopLesson,lessonMove,lessons,showHintArrow,selectSquare,dangerAfterMove,getThreats,getReport,exchangeGain,bestTeachingMove,gameHistory:()=>gameHistory,view:{get angle(){return camera.az;},get elevation(){return camera.el;},get distance(){return camera.dist;},get target(){return [...camera.target];},get locked(){return cameraLocked;},get saved(){return cameraPreset&&{...cameraPreset,target:[...cameraPreset.target]};},get fullscreen(){return appShell.classList.contains('immersive');}}};
+window.SFTCHESS={newGame,legal,apply,current,commit,index,parseFen,moveKey,setScenario,showFilmStep,scenarioSummary,get focusScenario(){return focusScenario;},startLesson,stopLesson,lessonMove,lessons,showHintArrow,selectSquare,dangerAfterMove,riskAfterMove,exposureText,getThreats,getReport,exchangeGain,bestTeachingMove,gameHistory:()=>gameHistory,view:{get angle(){return camera.az;},get elevation(){return camera.el;},get distance(){return camera.dist;},get target(){return [...camera.target];},get locked(){return cameraLocked;},get saved(){return cameraPreset&&{...cameraPreset,target:[...cameraPreset.target]};},get fullscreen(){return appShell.classList.contains('immersive');}}};
 </script>
 </body></html>
