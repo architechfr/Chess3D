@@ -1,39 +1,40 @@
 # SFT CHESS 3D
 
-Jeu d'échecs 3D sur navigateur pour le projet SALES FILS.
+Jeu d’échecs 3D sur navigateur pour SALES FILS.
 
-## Version
+## Version publiée
 
-**V5.5.1** — Maître tacticien, exercices et lettres A–H gravées en capitales sur le plateau.
+**V5.6 — Le Maître pédagogue**
 
-## Démarrage
+Le jeu est actuellement contenu dans `index.html` sur la branche `main`.
 
-Ouvrez `index.html` dans un navigateur récent compatible WebGL (Chrome, Brave, Firefox, Safari selon prise en charge). Aucune installation ni compilation n'est requise pour cette version.
+## Lancer le jeu
 
-Le dépôt contient une page autonome. Les parties à deux se jouent localement sur le même appareil ; le multijoueur en ligne n'est **pas encore disponible**.
+Ouvrir `index.html` dans un navigateur récent avec WebGL, ou le servir comme page statique par un hébergeur compatible. Le dépôt GitHub seul ne publie pas de site jouable.
 
-## Fonctionnalités existantes
+## Fonctionnalités
 
-- Échiquier et pièces en 3D, déplacements et captures.
-- Jeu local à deux ou contre l'IA expérimentale.
-- Zoom tactile au pincement, caméra orientable, verrouillage d'angle, rappel de vue et mode plein écran.
-- Historique de partie et export PGN.
-- « Maître d'échecs » : avertissements de menaces tactiques immédiates, aide par étapes, valeurs des pièces, captures et reprises.
-- Dix exercices guidés.
-- Lettres capitales A–H sur le cadre du plateau ; la notation officielle des coups reste en minuscules.
+- Échiquier et pièces en 3D, interface tactile et souris, zoom, caméra orientable, angle verrouillable et plein écran.
+- Jeu local contre IA expérimentale ou deux joueurs sur le même appareil.
+- Historique et export PGN.
+- Maître : détection de certaines captures et reprises **légales**, avertissement avant un coup risqué, flèches pédagogiques.
+- Nouveau mini-tutoriel **en trois étapes** : « ton coup », « sa réponse », « ta reprise ». Les coups sont montrés sans modifier la partie.
+- **11 leçons**, dont une consacrée au cavalier A3 vers B5 attaqué par un cavalier noir D4 et défendu par un pion blanc C4.
+- Gravure des coordonnées en capitales A–H sur le bord du plateau.
 
-## Limites connues
+## Ce que le Maître distingue
 
-- Les pièces et les matériaux sont encore des modèles procéduraux, pas des modèles 3D professionnels définitifs.
-- L'IA et les conseils tactiques ne remplacent pas encore un moteur avancé comme Stockfish ; certaines situations complexes peuvent être mal évaluées.
-- Pas de multijoueur en ligne, pas encore de compte joueur ou progression persistante.
-- Les performances mobiles et le rendu dépendent du navigateur et de l'appareil.
-- Cette publication GitHub n'active pas à elle seule un hébergement ou un déploiement sur SALESFILS.COM.
+- Une case légale n'est pas nécessairement sûre.
+- Une pièce attaquée n'est pas automatiquement perdue.
+- Un échange équilibré doit être expliqué **même sans perte nette**.
+- Une variante est possible, mais l'adversaire n'est pas forcé de la jouer.
 
-## Suite du projet
+Lire [MAITRE_ECHECS_SPEC.md](MAITRE_ECHECS_SPEC.md) pour le contrat de qualité et les scénarios testés.
 
-Amélioration de la direction artistique, intégration d'un moteur d'échecs robuste, enseignement différencié enfant/adulte, analyse approfondie, profils joueurs et parties en ligne.
+## Limites explicites
 
-## Installation
-
-Le fichier `index.html` peut être servi comme page statique par un hébergeur web. Aucune clé API n'est nécessaire pour la version actuelle.
+- Analyse tactique de courte portée, **pas encore** un moteur expert Stockfish.
+- Modèles 3D et textures non définitifs.
+- Pas de multijoueur en ligne ni de sauvegarde de profils hébergés.
+- Tests logiques navigateur effectués pour la V5.6 avec WebGL simulé ; tests graphiques sur appareils mobiles réels encore nécessaires.
+- Pas de déploiement automatique sur SALESFILS.COM.
