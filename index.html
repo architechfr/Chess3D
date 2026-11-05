@@ -1292,6 +1292,7 @@ const deepEngineSettings={
  advanced:{depth:16,time:1800,multiPV:3}
 };
 let deepBridge=null,deepResult=null,deepFen='',deepGeneration=0,deepBusy=false;
+let deepAutoEnabled=false,deepRefreshTimer=null;
 function serializeFen(s){
  let ranks=[];
  for(let r=0;r<8;r++){
@@ -1339,8 +1340,9 @@ function deepTeachingText(s,result){
 }
 async function deepAnalyzePosition(showDetails=true){
  const statusEl=document.getElementById('deepEngineStatus'),reportEl=document.getElementById('deepEngineReport');
- if(!window.SFTStockfishBridge){statusEl.textContent='Indisponible';reportEl.textContent='Le module Stockfish n’a pas été chargé. Le diagnostic tactique local reste utilisable.';return;}
+ if(!window.SFTStockfishBridge){deepAutoEnabled=false;statusEl.textContent='Indisponible';reportEl.textContent='Le module Stockfish n’a pas été chargé. Le diagnostic tactique local reste utilisable.';return;}
  const position=current(),fen=serializeFen(position),generation=++deepGeneration;
+ if(!showDetails&&mode==='ai'&&position.t===-1)return;
  const profile=document.getElementById('deepProfile').value,settings=deepEngineSettings[profile]||deepEngineSettings.club;
  statusEl.textContent='Analyse en cours…';deepBusy=true;
  if(showDetails)reportEl.textContent='Chargement du moteur et examen des réponses adverses…';
@@ -1358,13 +1360,20 @@ async function deepAnalyzePosition(showDetails=true){
   }
  }catch(err){
   if(generation!==deepGeneration)return;
-  deepBusy=false;deepResult=null;deepFen='';
+  deepBusy=false;deepResult=null;deepFen='';deepAutoEnabled=false;
   statusEl.textContent='Moteur externe indisponible';
   reportEl.textContent='Stockfish ne peut pas démarrer ('+(err?.message||'chargement réseau')+'). Le Maître Tacticien local et ses alertes restent disponibles.';
  }
 }
-document.getElementById('deepAnalyze').onclick=()=>deepAnalyzePosition(true);
+document.getElementById('deepAnalyze').onclick=()=>{deepAutoEnabled=true;deepAnalyzePosition(true);};
 document.getElementById('deepProfile').onchange=()=>{deepResult=null;deepFen='';deepAnalyzePosition(true);};
+function deepScheduleRefresh(s){
+ if(!deepAutoEnabled)return;
+ clearTimeout(deepRefreshTimer);
+ if(status(gameHistory).done||mode==='lesson'||(mode==='ai'&&s.t===-1))return;
+ if(deepFen===serializeFen(s)&&deepResult)return;
+ deepRefreshTimer=setTimeout(()=>deepAnalyzePosition(false),250);
+}
 function deepBestMove(s){
  if(deepResult&&deepFen===serializeFen(s))return deepMoveFromUCI(s,deepResult.bestmove);
  return null;
@@ -1555,6 +1564,7 @@ function sftShowCheckOrigin(s){
 }
 function refresh(){let s=current(),st=status(gameHistory);sftDrawMission();const playHud=document.getElementById('sftPlayHud'),turnHud=document.getElementById('sftHudTurn');if(playHud&&turnHud){playHud.classList.toggle('danger',checked(s));playHud.classList.toggle('win',lessonFinished);turnHud.textContent=lessonFinished?'MISSION RÉUSSIE':st.done?'FIN DE PARTIE':checked(s)?'ÉCHEC !':mode==='lesson'?'MISSION '+(activeLesson+1):s.t===1?'À TOI DE JOUER':mode==='ai'?'L’IA JOUE':'AUX NOIRS DE JOUER';}document.getElementById('turnDot').classList.toggle('black',s.t===-1);document.getElementById('turnText').textContent=lessonFinished?'Exercice réussi':st.done?'Partie terminée':s.t===1?'Aux Blancs de jouer':'Aux Noirs de jouer';document.getElementById('statusText').textContent=mode==='lesson'?'Académie · '+lessons[activeLesson].topic:(st.message||(mode==='ai'?'Mode professeur · contre IA':'Duel local · deux joueurs'));document.getElementById('mentorMode').textContent=mode==='lesson'?'· Exercice '+(activeLesson+1)+'/'+lessons.length:'· Conseils en direct';if((mode==='local'||s.t===1)&&!st.done){currentThreats=getThreats(s);}else currentThreats=[];
  if(deepFen&&deepFen!==serializeFen(s)){deepResult=null;deepFen='';document.getElementById('deepEngineStatus').textContent='Position modifiée · relancer l’analyse';document.getElementById('deepEngineReport').textContent='La position a changé. Appuie sur « Analyser avec Stockfish » pour recalculer les variantes.';}
+ deepScheduleRefresh(s);
  const urgent=mode!=='lesson'&&(mode==='local'||s.t===1)&&!st.done?currentThreats[0]:null;
  const immediate=document.getElementById('mentorImmediate');
  if(immediate){const alerts=!st.done&&(mode==='local'||s.t===1)&&mode!=='lesson'?currentThreats:[];immediate.style.display=alerts.length?'block':'none';immediate.textContent=alerts.length?(alerts.length>1?'⚠ '+alerts.length+' de tes pièces sont attaquées. Première alerte : ':'⚠ Pièce attaquée : ')+threatMessage(alerts[0],studentType==='child')+' Une pièce défendue reste attaquée : vérifie les échanges avant de jouer.':'';}
