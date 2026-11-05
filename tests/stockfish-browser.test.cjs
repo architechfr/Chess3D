@@ -57,6 +57,15 @@ test('Stockfish 19 Lite starts in a real browser worker', {timeout:75000},async(
   assert.equal(await page.locator('.sft-board2d-frame').isVisible(),true);
   assert.equal(await page.locator('.academy-dock').isVisible(),true);
   assert.equal(await page.locator('#sft2dFullscreen').isVisible(),true);
+  // Simulate a phone rotated to landscape: board and coach remain side by side.
+  await page.setViewportSize({width:900,height:400});
+  const boardBox=await page.locator('.sft-board2d-frame').boundingBox();
+  const coachBox=await page.locator('.academy-dock').boundingBox();
+  assert(boardBox&&coachBox,'2D board and tutor must be laid out');
+  assert(boardBox.width>=220,'Board should remain usable on landscape phones');
+  assert(coachBox.x>boardBox.x+boardBox.width-10,'Coach should be beside the chessboard');
+  assert(boardBox.y>=0&&boardBox.y+boardBox.height<=405,'Full chessboard should remain visible');
+  await page.setViewportSize({width:1280,height:720});
   await page.locator('#sft2dFullscreen').click();
   await page.waitForFunction(()=>!document.querySelector('.shell')?.classList.contains('immersive'));
   assert.equal(await page.locator('header').isVisible(),true);
