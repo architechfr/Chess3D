@@ -1,0 +1,24 @@
+name: SFT Chess - moteur et tactique
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Source
+        uses: actions/checkout@v4
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Télécharger le moteur Stockfish 19 Lite pour le test réel UCI
+        run: npm install --no-save --no-package-lock stockfish@19.0.1
+      - name: Vérifier les scripts, l'interface et les échanges UCI
+        run: node --test tests/*.test.cjs
