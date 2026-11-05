@@ -41,6 +41,15 @@ test('Stockfish 19 Lite starts in a real browser worker', {timeout:75000},async(
   });
   assert.match(data.bestmove,/^[a-h][1-8][a-h][1-8][qrbn]?$/);
   assert(data.variants>=1);
+  // Exercise the actual SFT Chess coach, not only the bridge library.
+  await page.locator('#deepAnalyze').click({timeout:12000});
+  await page.waitForFunction(()=>{
+   const state=document.getElementById('deepEngineStatus')?.textContent||'';
+   return state.includes('Prêt');
+  },null,{timeout:25000});
+  const report=await page.locator('#deepEngineReport').textContent();
+  assert.match(report,/proposition|Variante|coup|moteur/i);
+
  }finally{
   await browser.close();
   await new Promise(resolve=>server.close(resolve));
