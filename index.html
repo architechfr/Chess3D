@@ -1748,7 +1748,7 @@ document.getElementById('viewbtn').onclick=()=>{
  document.getElementById('viewbtn').textContent=cinemaView?'▣':'◩';
 };
 const appShell=document.querySelector('.shell');
-function updateFullscreenButton(active){let btn=document.getElementById('fullbtn');btn.textContent=active?'⤢':'⛶';btn.setAttribute('aria-label',active?'Quitter le plein écran':'Passer en plein écran');btn.setAttribute('aria-pressed',String(active));}
+function updateFullscreenButton(active){let btn=document.getElementById('fullbtn');btn.textContent=active?'⤢':'⛶';btn.setAttribute('aria-label',active?'Quitter le plein écran':'Passer en plein écran');btn.setAttribute('aria-pressed',String(active));if(typeof window.sftSync2DImmersive==='function')window.sftSync2DImmersive();}
 /* V5.9.6 — Sleep/wake aware landscape controller. Camera does not change on resize. */
 let sftLandscapeSession=false,sftNativeFullscreenSeen=false,sftResumeNeeded=false,sftScreenWasHidden=false;
 const SFT_WAKE_SESSION='sft_chess_mobile_landscape_session_v1';
@@ -1828,6 +1828,7 @@ function toggleFullscreen(force){
   if(document.fullscreenElement)try{Promise.resolve(document.exitFullscreen()).catch(()=>{});}catch(_){}
  }
  sftRememberSession();sftInvalidateViewport();sftSyncLandscapePrompt();
+ if(typeof window.sftSync2DImmersive==='function')window.sftSync2DImmersive();
 }
 document.getElementById('fullbtn').onclick=()=>toggleFullscreen();
 document.addEventListener('fullscreenchange',()=>{
@@ -1874,8 +1875,9 @@ document.getElementById('sftContinueLandscape').onclick=()=>{
  if(sftPortraitNow())return;
  sftResumeNeeded=false;sftInvalidateViewport();sftSyncLandscapePrompt();
 };
+document.getElementById('sftExitLandscape').textContent='✕ Quitter le plein écran';
 document.getElementById('sftExitLandscape').onclick=()=>{
- toggleFullscreen(false);navActive('accueil');
+ toggleFullscreen(false);navActive('jouer');
 };
 function sftRestoreWakeSession(){
  if(!sftMobileDevice())return;
@@ -2062,8 +2064,20 @@ function sft2dSet(enabled){
  sft2dToggle.textContent=sft2dEnabled?'♞ Vue 3D · Prestige':'♟ Vue 2D · Classique';
  sft2dToggle.setAttribute('aria-label',sft2dEnabled?'Passer en vue 3D prestige':'Passer en vue 2D classique');
  try{localStorage.setItem('sft-chess-view',sft2dEnabled?'2d':'3d');}catch(_){}
- sft2dSignature='';sft2dPaint();
+ sft2dSignature='';sftSync2DImmersive();sft2dPaint();
 }
+const sft2dFullscreen=document.getElementById('sft2dFullscreen');
+function sftSync2DImmersive(){
+ const active=sft2dEnabled&&document.querySelector('.shell').classList.contains('immersive');
+ document.querySelector('.shell').classList.toggle('sft-immersive-2d',active);
+ sft2dFullscreen.hidden=!sft2dEnabled;
+ sft2dFullscreen.textContent=active?'✕ Quitter le plein écran':'⛶ Plein écran paysage';
+ sft2dFullscreen.setAttribute('aria-label',active?'Quitter le plein écran 2D':'Passer en plein écran paysage 2D');
+ sft2dFullscreen.setAttribute('aria-pressed',String(active));
+ sft2dSignature='';
+}
+window.sftSync2DImmersive=sftSync2DImmersive;
+sft2dFullscreen.addEventListener('click',()=>{toggleFullscreen(!document.querySelector('.shell').classList.contains('immersive'));sftSync2DImmersive();});
 sft2dToggle.addEventListener('click',()=>sft2dSet(!sft2dEnabled));
 try{sft2dSet(localStorage.getItem('sft-chess-view')==='2d');}catch(_){sft2dSet(false);}
 const sftPieceStyleSelect=document.getElementById('sftPieceStyle');
