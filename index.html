@@ -2,7 +2,16 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no"/>
-<title>SFT CHESS V5.6 — Le Maître pédagogue</title>
+<title>SFT CHESS 3D — Le Maître d'échecs | V5.9.2</title>
+<meta name="theme-color" content="#101b27"/>
+<meta name="description" content="SFT CHESS 3D : échecs en 3D, parties sauvegardées et apprentissage avec le Maître."/>
+<meta name="application-name" content="SFT CHESS 3D"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="SFT CHESS"/>
+<link rel="icon" href="./icons/logo.svg?v=5.9.2" type="image/svg+xml"/>
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png?v=5.9.2"/>
+<link rel="manifest" href="./manifest.webmanifest"/>
 <style>
 
 :root{--bg:#080e17;--panel:#121b29;--panel2:#192333;--line:#2b3445;--muted:#9ca9bb;--text:#f4eee4;--gold:#dbbb74;--green:#7dcdab}
@@ -99,6 +108,18 @@ main{grid-template-columns:minmax(0,1fr) 350px;gap:19px;align-items:start}
 @media(max-width:380px){.toolbar-label span{display:none}.cam-btn{width:42px}.stage{height:455px}}
 
 
+/* V5.6.1 — Camera orbit and board translation are independent.
+   The expanded camera menu contains a move-mode button; locked angle also pans.
+   The short reminder in compact mode never overlays the playing pieces. */
+#gl.pan-enabled{cursor:move}
+#gl.pan-enabled:active{cursor:grabbing}
+#panbtn.active{background:#e4bf80;color:#16202a;border-color:#efd6a3;box-shadow:0 0 0 1px #ecc99050}
+.board-toolbar.camera-is-locked #panbtn{display:none}
+.compact-pan-help{display:none;align-items:center;gap:4px;color:#e3d3ad;font-size:11px;font-weight:600;white-space:nowrap;opacity:.82;user-select:none}
+.board-toolbar.is-compact .compact-pan-help{display:flex;margin-right:auto;padding-left:8px}
+.board-toolbar.is-compact{justify-content:space-between}
+@media(max-width:390px){.compact-pan-help{font-size:9px}.board-toolbar.is-compact .compact-pan-help{padding-left:0}}
+@media(max-width:770px){.camera-tools{overflow-x:auto;scrollbar-width:none;justify-content:flex-start!important}.camera-tools .cam-btn{flex:0 0 39px;min-width:39px}}
 /* V5.4: fold camera controls away while continuing to allow zoom and pan. */
 .compact-controls{display:none;align-items:center;justify-content:flex-end;gap:6px}
 .board-toolbar:not(.camera-is-locked) #camCollapse{display:none}
@@ -222,14 +243,141 @@ html,body{overscroll-behavior-y:contain}
 .film-result span{font-weight:700;color:#f5cb85}
 .reply-arrow{stroke:#58c3e7;stroke-width:4;filter:drop-shadow(0 1px 4px #000b)}
 @media(max-width:770px){.exchange-film{padding:11px;margin:10px 0}.film-step{font-size:11px}}
+
+/* V5.7 · Installation / emblème / sauvegarde locale */
+.brand-mark{overflow:hidden;padding:0;border-radius:12px}
+.brand-mark img{display:block;width:100%;height:100%;object-fit:cover}
+.install-top{color:#221b0e;border:1px solid #f3d8a1;border-radius:9px;background:linear-gradient(135deg,#ecd093,#ad864d);padding:10px 12px;font-size:12px;font-weight:750;white-space:nowrap}
+.install-top:hover{filter:brightness(1.08)}
+.save-indicator{align-self:center;font-size:10px;color:#b8d9c8;flex:1;text-align:center}
+.archive-overlay{position:fixed;inset:0;z-index:1200;background:#050c14e8;display:flex;align-items:center;justify-content:center;padding:15px}
+.archive-overlay[hidden]{display:none}
+.archive-card{background:linear-gradient(145deg,#1e3038,#111d2b);border:1px solid #cfab7280;border-radius:18px;width:min(500px,95vw);max-height:85dvh;overflow:auto;padding:22px;box-shadow:0 18px 85px #000a;color:#f7efe0}
+.archive-card p{font-size:12px;color:#c7cbbd;line-height:1.5}
+.archive-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.archive-title h2{font-family:Georgia,serif;font-size:21px;font-weight:600;margin:0}
+.archive-title button{background:#273747;border:1px solid #687789;color:#f4eee3;border-radius:9px;width:35px;height:35px}
+.archive-list{display:grid;gap:9px;margin:15px 0}
+.archive-entry{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px;border:1px solid #ffffff25;background:#14212b;border-radius:10px}
+.archive-entry strong{display:block;font-size:13px}
+.archive-entry small{display:block;color:#aebdbe;font-size:11px;margin-top:4px}
+.archive-entry button{background:#d7b779;color:#14212b;padding:9px 13px;border:0;border-radius:8px;font-weight:700}
+@media(max-width:770px){header .install-top{padding:7px 9px;font-size:11px}.brand-mark{flex-shrink:0}.save-indicator{font-size:9px}}
+
+/* V5.8 · Navigation cohérente avec la maquette de direction artistique. */
+.shell{max-width:none;padding:15px clamp(10px,1.5vw,26px) 24px;gap:12px}
+header{display:flex;align-items:center;gap:24px;justify-content:space-between;padding:2px 0 13px;flex-wrap:nowrap}
+header .brand{flex:0 0 245px;min-width:0}
+header .top-right{flex:0 0 auto}
+header .tag{display:none}
+.sft-site-nav{display:flex;align-items:stretch;justify-content:center;gap:4px;min-width:0;flex:1}
+.sft-nav{border:1px solid transparent;background:transparent;color:#c6d1ce;min-width:70px;flex:1;max-width:118px;padding:9px 8px;border-radius:10px;font-size:12px;line-height:1.2;font-weight:650;white-space:nowrap}
+.sft-nav span{display:block;font-size:21px;color:#edcc86;line-height:1.2;margin-bottom:5px}
+.sft-nav:hover{background:#273440;border-color:#7a746060;color:#fff}
+.sft-nav.active{color:#fff2cf;background:linear-gradient(135deg,#473e2f,#182633);border-color:#d9b97865;box-shadow:inset 0 -2px #d6b574}
+main{display:grid;grid-template-columns:minmax(174px,205px) minmax(0,1fr) minmax(292px,325px);align-items:start;gap:13px;min-height:0}
+.sft-rail{display:flex;flex-direction:column;gap:8px;border:1px solid #967f5b6b;border-radius:15px;padding:15px 12px;background:linear-gradient(160deg,#172431,#0d1824);box-shadow:0 15px 36px #0005;position:sticky;top:10px}
+.rail-eyebrow{font-size:11px;letter-spacing:.17em;font-weight:750;color:#e1c38b;margin:2px 7px 8px}
+.rail-btn{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;text-align:left;border-radius:10px;padding:12px 10px;border:1px solid #6b81914a;background:#10202c;color:#e4e7e6;font-size:12px;line-height:1.35}
+.rail-btn:hover{border-color:#d2b87e;background:#233342}
+.rail-primary{background:linear-gradient(135deg,#f0d08d,#b68b49);color:#17222b;font-weight:800;text-align:center;justify-content:center;border-color:#efd69d}
+.rail-small{font-size:10px;color:#92a9ac}
+.rail-section{font-size:10px;letter-spacing:.15em;color:#d5b979;font-weight:800;margin:15px 7px 3px}
+.rail-foot{display:grid;gap:8px;margin-top:18px;padding:12px 8px 4px;border-top:1px solid #cbb88a35}
+.rail-foot strong{letter-spacing:.16em;color:#edc77e;font-size:10px}
+.rail-foot small{color:#92a7ad;line-height:1.45;font-size:10px}
+.board-column{min-width:0;display:flex;flex-direction:column;gap:10px}
+.sft-right-column{min-width:0;display:flex;flex-direction:column;gap:11px}
+.stage{height:clamp(530px,66vh,790px);min-height:0;border:1px solid #d0a76a5a;background:radial-gradient(ellipse at 50% 52%,#29343b,#101925 64%,#080f17 95%)}
+.stage-title{font-size:23px}
+.academy-dock{margin:0;border-color:#c6a56a9c;background:linear-gradient(152deg,#152832,#0d1d2b);padding:15px 13px}
+.mentor-avatar{background:linear-gradient(140deg,#dac58f,#86643b)}
+.mentor-name{font-size:14px;line-height:1.55;letter-spacing:.055em}
+.mentor-engine-label{display:block;font-weight:500;color:#9bb5b0;letter-spacing:0;font-size:10px;margin-top:3px}
+#coach{color:#e8e6da;font-size:12.5px;line-height:1.55;margin-top:9px}
+.mentor-controls{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}
+.mentor-controls .mbtn{min-width:0;white-space:normal;font-size:11px;padding:8px 6px;text-align:center}
+.mentor-details{display:grid;grid-template-columns:1fr;gap:7px;margin-top:10px}
+.mentor-card{background:#122330;border-color:#8caa9a50;padding:11px;gap:5px}
+.mentor-card strong{font-size:12px}
+.mentor-card span{font-size:11px}
+.warning-box{font-size:11px;margin-top:9px}
+.tactical-brief{font-size:11px}
+.mentor-value{font-size:11px}
+.glossary-grid{grid-template-columns:1fr}
+.panel{box-shadow:none}
+.panel-body{padding:13px}
+.panel h2{font-size:24px}
+.panel-header{padding:15px}
+.section{margin-bottom:13px}
+.modes{gap:5px}
+.mode{font-size:11px;padding:9px 5px}
+.hub-card{width:min(620px,96vw)}
+.hub-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:15px}
+.hub-choice{min-height:58px;text-align:left;border:1px solid #a48d6469;border-radius:12px;padding:12px;background:#20313c;color:#f0e7d6;font-weight:750;font-size:13px}
+.hub-choice:hover{background:#344554;border-color:#e4c383}
+.hub-choice small{display:block;color:#c0cece;font-weight:400;font-size:11px;line-height:1.4;margin-top:5px}
+.hub-settings{display:grid;gap:11px;padding:15px 2px}
+.hub-settings label{display:grid;gap:6px;color:#e6dbbd;font-size:12px;font-weight:700}
+.hub-settings select{background:#162938;color:#f7edd7;border:1px solid #cdb17a80;border-radius:9px;padding:10px}
+.hub-status{padding:12px;border:1px solid #c7ac7670;border-radius:11px;background:#26343b;color:#e5dfd0;font-size:12px;line-height:1.55}
+@media(max-width:1250px){main{grid-template-columns:170px minmax(0,1fr) 285px;gap:9px}.sft-nav{min-width:54px;padding:9px 3px;font-size:11px}header .brand{flex-basis:193px}.brand h1{font-size:16px}.brand small{font-size:9px}header{gap:9px}}
+@media(max-width:980px){.sft-rail{display:none}main{grid-template-columns:minmax(0,1fr) 280px}.sft-site-nav{justify-content:flex-start;overflow-x:auto;scrollbar-width:thin}.sft-nav{flex:0 0 73px}header .brand{flex:0 0 183px}}
+@media(max-width:770px){.shell{padding:8px 8px 16px;gap:7px}header{flex-wrap:wrap;gap:5px}.brand{margin:2px}header .brand{flex:1 1 auto}.top-right{order:1}.sft-site-nav{order:2;width:100%;flex:0 0 100%;overflow-x:auto;justify-content:flex-start;gap:4px}.sft-nav{min-width:73px;flex:0 0 73px;padding:7px 3px;font-size:10px}.sft-nav span{font-size:19px}main{display:flex;flex-direction:column;gap:9px}.sft-right-column{width:100%;display:contents}.board-column{width:100%;order:0}.academy-dock{order:1;width:100%;margin:0;padding:13px}.panel{order:2;width:100%}.stage{height:min(105vw,590px);min-height:320px}.mentor-controls{display:flex;flex-wrap:wrap}.mentor-controls .mbtn{font-size:11px;padding:8px}.mentor-details{grid-template-columns:1fr 1fr}.hub-actions{grid-template-columns:1fr 1fr}header .install-top{font-size:11px}}
+@media(max-width:480px){.mentor-details{grid-template-columns:1fr}.hub-actions{grid-template-columns:1fr}header .brand h1{font-size:17px}}
+/* Immersive stays game-first. Coach remains available, sidebar/menu hidden. */
+.immersive .sft-rail{display:none!important}
+.immersive .sft-right-column{display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;width:min(360px,40vw)}
+.immersive .academy-dock{margin:0;flex:1;min-height:0;overflow-y:auto;width:100%;border-radius:0}
+.immersive .board-column{width:auto;min-width:0;flex:1}
+.immersive .stage{height:min(90vh,90vw);width:min(90vh,80vw);max-width:100%;flex:1 1 auto;min-height:0}
+@media(max-width:770px){.immersive main{display:flex;flex-direction:column}.immersive .sft-right-column{display:contents}.immersive .board-column{flex:0 0 auto;height:65dvh}.immersive .stage{height:calc(65dvh - 45px);width:100%}.immersive .academy-dock{flex:1;max-height:35dvh;overflow:auto}}
+
+/* V5.9 · Rapport pédagogique de toutes les pièces attaquées. */
+.mentor-threats{background:linear-gradient(145deg,#192735,#0e1e2b);border:1px solid #d8ba7d7a;border-radius:13px;padding:12px;margin:12px 0}
+.mentor-threats-head{display:flex;justify-content:space-between;align-items:center;gap:7px;flex-wrap:wrap}
+.mentor-threats-head strong{color:#f0d99e;font-size:13px}
+.mentor-threats-head small{color:#b4c6c7;font-size:11px}
+.mentor-threat-intro{font-size:11.5px;line-height:1.5;color:#d1deda;margin:9px 0}
+.mentor-threat-list{display:grid;gap:7px}
+.mentor-threat-entry{display:flex;align-items:center;gap:9px;padding:9px 10px;background:#102531;border:1px solid #416572;border-radius:10px;text-align:left;color:#e7eee9;width:100%;cursor:pointer}
+.mentor-threat-entry.danger{border-left:4px solid #ed655c}
+.mentor-threat-entry.exchange{border-left:4px solid #edb661}
+.mentor-threat-entry:hover,.mentor-threat-entry:focus-visible{background:#24424d;border-color:#e7c58b}
+.mentor-threat-entry .threat-symbol{font-size:18px;flex:0 0 22px;text-align:center}
+.mentor-threat-entry .threat-copy{min-width:0;flex:1;display:grid;gap:4px;font-size:11.5px;line-height:1.45}
+.mentor-threat-entry .threat-copy strong{font-size:12px;color:#f3e8ce}
+.mentor-threat-entry .threat-show{flex:0 0 auto;font-size:10px;border:1px solid #8faeaf66;border-radius:7px;padding:5px 7px;color:#addeda}
+.mentor-threat-empty{padding:8px;border:1px solid #44626b;border-radius:8px;color:#a8c6c3;font-size:11px}
 </style>
 </head>
 <body>
 <div class="shell">
-<header><div class="brand"><div class="brand-mark">♞</div><div><h1>SFT <span>CHESS</span></h1><small>Sales Fils · L'Académie</small></div></div><div class="top-right"><span class="tag"><span class="live"></span>VRAIE 3D · WEBGL</span><span class="tag">PARTIES LOCALES</span></div></header>
+<header><div class="brand"><div class="brand-mark"><img src="./icons/logo.svg?v=5.9.2" width="49" height="49" alt="SFT CHESS — Dame couronnée"/></div><div><h1>SFT <span>CHESS</span></h1><small>Sales Fils · L'Académie</small></div></div><nav class="sft-site-nav" aria-label="Navigation principale">
+<button class="sft-nav active" data-go="accueil" type="button"><span>⌂</span>Accueil</button>
+<button class="sft-nav" data-go="jouer" type="button"><span>♞</span>Jouer</button>
+<button class="sft-nav" data-go="cours" type="button"><span>🎓</span>Cours</button>
+<button class="sft-nav" data-go="exercices" type="button"><span>◈</span>Exercices</button>
+<button class="sft-nav" data-go="parties" type="button"><span>▤</span>Parties</button>
+<button class="sft-nav" data-go="tournois" type="button"><span>🏆</span>Tournois</button>
+<button class="sft-nav" data-go="reglages" type="button"><span>⚙</span>Réglages</button>
+</nav><div class="top-right"><span class="tag"><span class="live"></span>VRAIE 3D · WEBGL</span><span class="tag">PARTIES LOCALES</span><button type="button" class="install-top" id="installBtn" title="Installer le jeu sur cet appareil">⬇ Installer</button></div></header>
 <main>
-<div class="board-column"><section class="stage" id="stage" aria-label="Échiquier 3D interactif"><canvas id="gl" aria-label="Jeu d'échecs 3D : toucher une pièce puis une destination"></canvas><div class="board-label-layer" id="boardLabels" aria-hidden="true"></div><svg class="mentor-overlay" id="mentorSvg" aria-hidden="true"><defs><marker id="mentorArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#91eac4"/></marker><marker id="threatArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#f16a60"/></marker><marker id="replyArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#58c3e7"/></marker></defs><path id="mentorPath" class="mentor-arrow" marker-end="url(#mentorArrowHead)" style="display:none"/><path id="threatPath" class="mentor-arrow threat-arrow" marker-end="url(#threatArrowHead)" style="display:none"/><path id="replyPath" class="mentor-arrow reply-arrow" marker-end="url(#replyArrowHead)" style="display:none"/></svg><div id="mentorFrom" class="mentor-point"></div><div id="mentorTo" class="mentor-point to"></div><div class="stage-top"><div class="eyebrow">L'ART DE LA STRATÉGIE</div><div class="stage-title">Chaque coup compte.</div></div><div class="notice" id="notice"></div><div class="edition-stamp" aria-hidden="true">ATELIER · ÉDITION NOYER & LAITON</div></section><nav class="board-toolbar" aria-label="Commandes de caméra"><div class="toolbar-label">◈ <span>CAMÉRA</span><small>🔒 garde ton angle · 🤏 zoome · glisse pour explorer · ⌂ revient à ta vue</small></div><div class="compact-controls" aria-label="Caméra simplifiée"><button class="compact-btn" id="homeMini" aria-label="Revenir à ma vue mémorisée" title="Ma vue">⌂</button><button class="compact-btn" id="fullMini" aria-label="Basculer le plein écran" title="Plein écran">⛶</button><button class="compact-btn" id="camExpand" aria-label="Afficher les réglages caméra" title="Réglages de caméra">⚙</button></div><div class="camera-tools"><button class="cam-btn" id="rotate" title="Tourner le plateau" aria-label="Tourner le plateau">↻</button><button class="cam-btn" id="camCollapse" title="Masquer les outils caméra" aria-label="Masquer les outils de caméra">▾</button><button class="cam-btn" id="lockcam" title="Verrouiller la caméra" aria-label="Verrouiller la caméra" aria-pressed="false">🔓</button><button class="cam-btn" id="resetcam" title="Retour à ma vue (ou caméra initiale)" aria-label="Retour à ma vue">⌂</button><button class="cam-btn" id="zoomout" title="Éloigner" aria-label="Zoom arrière">−</button><button class="cam-btn" id="zoomin" title="Rapprocher" aria-label="Zoom avant">+</button><button class="cam-btn" id="viewbtn" title="Alterner vue de jeu et vue 3D" aria-label="Passer en vue cinématique">◩</button><button class="cam-btn fs" id="fullbtn" title="Plein écran" aria-label="Passer en plein écran">⛶</button></div></nav>
-<section class="academy-dock" aria-label="Maître d'échecs interactif"><div class="mentor-top"><div class="mentor-avatar">♛</div><div class="mentor-content"><div class="mentor-name">✦ Le Maître tacticien <span id="mentorMode">· Conseils en direct</span></div><p id="coach" aria-live="polite">Bienvenue ! Apprenons les échecs ensemble. Tu peux commencer un cours ou jouer librement.</p></div></div>
+<aside class="sft-rail" aria-label="Accès rapides">
+<div class="rail-eyebrow">L'ACADÉMIE</div>
+<button type="button" id="railNewGame" class="rail-btn rail-primary">▶ Nouvelle partie</button>
+<button type="button" class="rail-btn" data-go="parties">▤ Mes parties <span class="rail-small">locales</span></button>
+<button type="button" class="rail-btn" data-go="cours">🎓 Apprendre les échecs</button>
+<button type="button" class="rail-btn" data-go="exercices">◈ Exercices tactiques</button>
+<button type="button" class="rail-btn" id="railCoach">♛ Conseils du Maître</button>
+<div class="rail-section">MON ESPACE</div>
+<button type="button" class="rail-btn" data-go="reglages">⚙ Préférences</button>
+<button type="button" class="rail-btn" id="railInstall">↓ Installer le jeu</button>
+<div class="rail-foot"><strong>SALES FILS · CHESS</strong><small>11 leçons, sauvegarde locale et analyse pédagogique expérimentale. Pas de partie en ligne actuellement.</small></div>
+</aside>
+<div class="board-column"><section class="stage" id="stage" aria-label="Échiquier 3D interactif"><canvas id="gl" aria-label="Jeu d'échecs 3D : toucher une pièce puis une destination"></canvas><div class="board-label-layer" id="boardLabels" aria-hidden="true"></div><svg class="mentor-overlay" id="mentorSvg" aria-hidden="true"><defs><marker id="mentorArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#91eac4"/></marker><marker id="threatArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#f16a60"/></marker><marker id="replyArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#58c3e7"/></marker></defs><path id="mentorPath" class="mentor-arrow" marker-end="url(#mentorArrowHead)" style="display:none"/><path id="threatPath" class="mentor-arrow threat-arrow" marker-end="url(#threatArrowHead)" style="display:none"/><path id="replyPath" class="mentor-arrow reply-arrow" marker-end="url(#replyArrowHead)" style="display:none"/></svg><div id="mentorFrom" class="mentor-point"></div><div id="mentorTo" class="mentor-point to"></div><div class="stage-top"><div class="eyebrow">L'ART DE LA STRATÉGIE</div><div class="stage-title">Chaque coup compte.</div></div><div class="notice" id="notice"></div><div class="edition-stamp" aria-hidden="true">ATELIER · ÉDITION NOYER & LAITON</div></section><nav class="board-toolbar" aria-label="Commandes de caméra"><div class="toolbar-label">◈ <span>CAMÉRA</span><small>✋ tire le plateau vers toi · 🔒 angle fixe · 🤏 zoom · ⌂ retour à ma vue</small></div><span class="compact-pan-help" aria-hidden="true">✋ Tire le plateau</span><div class="compact-controls" aria-label="Caméra simplifiée"><button class="compact-btn" id="homeMini" aria-label="Revenir à ma vue mémorisée" title="Ma vue">⌂</button><button class="compact-btn" id="fullMini" aria-label="Basculer le plein écran" title="Plein écran">⛶</button><button class="compact-btn" id="camExpand" aria-label="Afficher les réglages caméra" title="Réglages de caméra">⚙</button></div><div class="camera-tools"><button class="cam-btn" id="rotate" title="Tourner le plateau" aria-label="Tourner le plateau">↻</button><button class="cam-btn" id="panbtn" title="Déplacer le plateau sans tourner la caméra (clic-glisser ou doigt)" aria-label="Activer le déplacement du plateau" aria-pressed="false">✋</button><button class="cam-btn" id="camCollapse" title="Masquer les outils caméra" aria-label="Masquer les outils de caméra">▾</button><button class="cam-btn" id="lockcam" title="Verrouiller la caméra" aria-label="Verrouiller la caméra" aria-pressed="false">🔓</button><button class="cam-btn" id="resetcam" title="Retour à ma vue (ou caméra initiale)" aria-label="Retour à ma vue">⌂</button><button class="cam-btn" id="savecam" title="Enregistrer cette position et cet angle comme ma vue" aria-label="Mémoriser la position actuelle du plateau">★</button><button class="cam-btn" id="zoomout" title="Éloigner" aria-label="Zoom arrière">−</button><button class="cam-btn" id="zoomin" title="Rapprocher" aria-label="Zoom avant">+</button><button class="cam-btn" id="viewbtn" title="Alterner vue de jeu et vue 3D" aria-label="Passer en vue cinématique">◩</button><button class="cam-btn fs" id="fullbtn" title="Plein écran" aria-label="Passer en plein écran">⛶</button></div></nav>
+</div>
+<div class="sft-right-column"><section class="academy-dock" aria-label="Maître d'échecs interactif"><div class="mentor-top"><div class="mentor-avatar">♛</div><div class="mentor-content"><div class="mentor-name">♛ Le Maître tacticien <span id="mentorMode">· Conseils en direct</span><small class="mentor-engine-label">● Analyse locale · menaces multiples · expérimentale</small></div><p id="coach" aria-live="polite">Bienvenue ! Apprenons les échecs ensemble. Tu peux commencer un cours ou jouer librement.</p></div></div>
 <div class="mentor-controls"><button class="mbtn primary" id="hint">💡 Un indice</button><button class="mbtn" id="showMove">↗ Voir le coup</button><button class="mbtn" id="whyBtn">❔ Pourquoi ?</button><button class="mbtn" id="lessonMenu">📚 Cours</button><button class="mbtn" id="glossaryBtn" aria-expanded="false">📖 Les mots</button><button class="mbtn" id="nextLesson">Leçon suivante →</button></div>
 <section id="exchangeFilm" class="exchange-film" hidden aria-label="Leçon tactique en trois temps"><strong>♘ Le regard du Maître · Trois coups à imaginer</strong><p class="film-sub" id="exchangeFilmIntro"></p><div class="film-steps"><button type="button" class="film-step" data-step="1">1 · Ton coup</button><button type="button" class="film-step" data-step="2">2 · Sa réponse</button><button type="button" class="film-step" data-step="3">3 · Ta reprise</button></div><p class="film-result" id="exchangeFilmResult" aria-live="polite"></p></section><div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
 <div class="glossary-panel" id="glossaryPanel" hidden>
@@ -253,19 +401,31 @@ html,body{overscroll-behavior-y:contain}
  <div><b>Diagonale</b> : suite de cases qui se touchent par les coins. Les fous s’y déplacent.</div>
  </div>
 </div>
-<div class="mentor-options" id="mentorOptions"><label>Pour qui ?<select id="studentType"><option value="child">Enfant · simple et amusant</option><option value="adult" selected>Adulte · clair et précis</option></select></label><label>Exercice<select id="lessonSelector"></select></label><button class="mbtn primary" id="startLesson">Commencer l'exercice</button><button class="mbtn" id="freePlay">Jouer librement</button><button class="mbtn" id="coordsToggle" aria-pressed="false">Repères : gravure</button><span id="lessonProgress" style="font-size:11px;color:#cce6cd"></span></div><div class="lesson-feedback" id="lessonFeedback"></div><div class="mentor-details" aria-label="Tableau du Maître"><div class="mentor-card"><strong>♟ Ce que je vois</strong><span id="mentorAssessment">Position de départ : vingt coups possibles. Le centre attend ses premiers défis.</span></div><div class="mentor-card"><strong>✦ Réflexe du joueur</strong><span id="mentorQuestion">Avant de jouer, pense à la sécurité de ton roi et à tes pièces non protégées.</span></div></div></section>
-</div>
+<div class="mentor-options" id="mentorOptions"><label>Pour qui ?<select id="studentType"><option value="child">Enfant · simple et amusant</option><option value="adult" selected>Adulte · clair et précis</option></select></label><label>Exercice<select id="lessonSelector"></select></label><button class="mbtn primary" id="startLesson">Commencer l'exercice</button><button class="mbtn" id="freePlay">Jouer librement</button><button class="mbtn" id="coordsToggle" aria-pressed="false">Repères : gravure</button><span id="lessonProgress" style="font-size:11px;color:#cce6cd"></span></div><div class="lesson-feedback" id="lessonFeedback"></div><section class="mentor-threats" id="mentorThreatPanel" aria-label="Toutes les menaces détectées" aria-live="polite"><div class="mentor-threats-head"><strong>⚠ Vue d’ensemble des menaces</strong><small id="threatCount">Analyse du plateau…</small></div><p class="mentor-threat-intro" id="threatIntro">Le Maître inspecte toutes les pièces, sans confondre attaque et perte de matériel.</p><div class="mentor-threat-list" id="mentorThreatList"></div></section>
+<div class="mentor-details" aria-label="Tableau du Maître"><div class="mentor-card"><strong>♟ Ce que je vois</strong><span id="mentorAssessment">Position de départ : vingt coups possibles. Le centre attend ses premiers défis.</span></div><div class="mentor-card"><strong>✦ Réflexe du joueur</strong><span id="mentorQuestion">Avant de jouer, pense à la sécurité de ton roi et à tes pièces non protégées.</span></div></div></section>
 <aside class="panel"><div class="panel-header"><div class="label">SFT CHESS · PARTIE N° 001</div><h2>La table des maîtres</h2><div class="sub" id="statusText">Une nouvelle partie commence.</div><div class="turn"><span class="turn-dot" id="turnDot"></span><span id="turnText">Aux Blancs de jouer</span></div></div>
-<div class="panel-body"><div class="howto"><span class="howto-symbol">◇</span><span><strong>Toucher pour jouer</strong><small>Un doigt : orienter · Deux doigts : zoomer · Cadenas : figer la vue</small></span></div><div class="section"><div class="section-title">MODE DE JEU</div><div class="modes"><button class="mode active" id="modeAI">♟ Contre l'IA</button><button class="mode" id="modeLocal">♟ Deux joueurs</button></div></div>
+<div class="panel-body"><div class="howto"><span class="howto-symbol">◇</span><span><strong>Toucher pour jouer</strong><small>✋ Déplacer : glisse pour tirer le plateau · Deux doigts : zoomer · 🔒 fixe l’angle</small></span></div><div class="section"><div class="section-title">MODE DE JEU</div><div class="modes"><button class="mode active" id="modeAI">♟ Contre l'IA</button><button class="mode" id="modeLocal">♟ Deux joueurs</button></div></div>
 <div class="section" id="aiOptions"><div class="section-title">PERSONNALITÉ DE L'IA</div><div class="select"><select id="difficulty"><option value="apprenti">L'Apprenti · Débutant</option><option value="club" selected>Le Club · Intermédiaire</option><option value="tacticien">Le Tacticien · Plus exigeant</option></select></div></div>
 
 <div class="section"><div class="prob-title"><span>Équilibre indicatif (pas une probabilité de victoire)</span><span id="evalText">50 / 50</span></div><div class="bar"><div class="fill" id="evalFill"></div></div><div class="bar-labels"><span>BLANCS</span><span>NOIRS</span></div></div>
 <div class="section"><div class="section-title">HISTORIQUE <span id="plyCount">0 coup</span></div><div class="history" id="history"><span class="empty">Les coups apparaîtront ici.</span></div></div>
-<div class="controls"><button class="btn primary" id="newgame">↻ Nouvelle partie</button><button class="btn" id="undo">↶ Annuler</button><button class="btn" id="export">↓ PGN</button></div>
-</div><div class="bottom-note">Règles classiques · roque · prise en passant · promotion · mat · pat</div></aside>
-</main><footer><span>© SALES FILS · SFT CHESS — prototype 3D jouable</span><span>Le Maître V5.5 anticipe les captures et reprises à court terme ; Stockfish et jeu en ligne restent à intégrer.</span></footer>
+<div class="controls"><button class="btn primary" id="newgame">↻ Nouvelle partie</button><button class="btn" id="undo">↶ Annuler</button><button class="btn" id="export">↓ PGN</button></div><div class="controls" style="margin-top:9px"><button class="btn" id="savedGamesBtn">📁 Mes parties</button><span id="saveState" class="save-indicator" aria-live="polite">Sauvegarde automatique locale</span></div>
+</div><div class="bottom-note">Règles classiques · roque · prise en passant · promotion · mat · pat</div></aside></div>
+</main><footer><span>© SALES FILS · SFT CHESS — prototype 3D jouable</span><span>Le Maître expérimental anticipe les captures et reprises à court terme ; Stockfish et jeu en ligne restent à intégrer.</span></footer>
 </div>
+<div class="archive-overlay" id="hubOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="hubTitle"><div class="archive-card hub-card"><div class="archive-title"><h2 id="hubTitle">SFT CHESS</h2><button id="hubClose" type="button" aria-label="Fermer">✕</button></div><p id="hubIntro"></p><div class="hub-actions" id="hubActions"></div></div></div>
 <div class="overlay" id="promoModal"><div class="modal"><div class="label">PROMOTION DU PION</div><h3>Choisis une pièce</h3><div class="sub">Ton pion atteint la dernière rangée.</div><div class="promotion" id="promoChoices"></div></div></div>
+<div class="archive-overlay" id="archiveOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="archiveTitle">
+ <div class="archive-card"><div class="archive-title"><h2 id="archiveTitle">Mes parties sauvegardées</h2><button id="archiveClose" type="button" aria-label="Fermer">✕</button></div>
+ <p>Les parties sont sauvegardées automatiquement sur cet appareil. Elles ne sont pas encore synchronisées entre appareils.</p>
+ <div id="archiveList" class="archive-list"></div>
+ <button class="btn" id="archiveDone" type="button">Fermer</button></div>
+</div>
+<div class="archive-overlay" id="installOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="installTitle">
+ <div class="archive-card"><div class="archive-title"><h2 id="installTitle">Installer SFT CHESS</h2><button id="installClose" type="button" aria-label="Fermer">✕</button></div>
+ <p id="installInstructions">Ouvre ce jeu depuis son adresse HTTPS dans Chrome, Edge ou Safari pour l’ajouter à ton écran d’accueil.</p>
+ <button class="btn primary" id="installDone" type="button">Compris</button></div>
+</div>
 <script>
 'use strict';
 // SFT Chess: self-contained legal chess rules + procedural WebGL 3D renderer.
@@ -495,7 +655,7 @@ function showThreatArrow(m){threatArrow=m?[m[0],m[1]]:null;lastOverlayUpdate=0;}
 function showReplyArrow(pair){replyArrow=pair?[pair[0],pair[1]]:null;lastOverlayUpdate=0;}
 
 let sftLastFrame=0,sftFrameSignature='';function render(t){requestAnimationFrame(render);
-  const newSignature=[camera.az.toFixed(3),camera.el.toFixed(3),camera.dist.toFixed(3),camera.target[0].toFixed(3),camera.target[2].toFixed(3),dangerTargets.map(d=>d.to).join(','),exchangeTargets.map(d=>d.to).join(','),captureTargets.map(d=>d.to+':'+d.danger+':'+d.exposure).join(','),lastPlayerThreat?.target||-1,canvas.clientWidth,canvas.clientHeight,selected,legalTargets.join(','),lastMove?.join(','),gameHistory.length,current().b.join(''),showCoords,mentorArrow?.join(','),threatArrow?.join(','),replyArrow?.join(','),currentThreats.map(x=>x.to).join(','),anim.length].join('|');
+  const newSignature=[camera.az.toFixed(3),camera.el.toFixed(3),camera.dist.toFixed(3),camera.target[0].toFixed(3),camera.target[2].toFixed(3),dangerTargets.map(d=>d.to).join(','),exchangeTargets.map(d=>d.to).join(','),captureTargets.map(d=>d.to+':'+d.danger+':'+d.exposure).join(','),lastPlayerThreat?.target||-1,canvas.clientWidth,canvas.clientHeight,selected,legalTargets.join(','),lastMove?.join(','),gameHistory.length,current().b.join(''),showCoords,mentorArrow?.join(','),threatArrow?.join(','),replyArrow?.join(','),currentThreats.map(x=>x.to+':'+x.loss).join(','),anim.length].join('|');
   if(!anim.length&&newSignature===sftFrameSignature)return;
   if(t-sftLastFrame<33)return;
   sftLastFrame=t;sftFrameSignature=newSignature;
@@ -508,7 +668,7 @@ for(const r of dangerTargets){if(captureTargets.some(c=>c.to===r.to))continue;le
 for(const r of captureTargets){let [xx,zz]=loc(r.to);renderMesh(captureHaloMesh,mTransform(xx,0,zz),[1,1,1],0,1);if(r.exposure)renderMesh(captureRiskMesh,mTransform(xx,0,zz),[1,1,1],0,1);}
 gl.disable(gl.BLEND);}
 if(lastPlayerThreat){let [xx,zz]=loc(lastPlayerThreat.target);renderMesh(riskRingMesh,mTransform(xx,0,zz),[1,1,1],0,1);}
-if(mode!=='lesson'&&(mode==='local'||current().t===1)){for(const threat of currentThreats.slice(0,3)){let [xx,zz]=loc(threat.to);renderMesh(riskRingMesh,mTransform(xx,0,zz),[1,1,1],0,1);}}let s=current();for(let i=0;i<128;i++){if(!on(i)||s.b[i]==='.')continue;let ch=s.b[i],p=ch.toLowerCase(),[x,z]=loc(i),a=anim.find(q=>q.to===i&&q.piece===ch);let y=.18;if(a){let k=Math.min(1,(t-a.t)/370);let ease=1-Math.pow(1-k,3);let [fx,fz]=loc(a.from);x=fx+(x-fx)*ease;z=fz+(z-fz)*ease;y+=.35*Math.sin(Math.PI*ease);if(k>=1)anim.splice(anim.indexOf(a),1);}renderMesh(shadowMesh,mTransform(x,0,z),[1,1,1],0,.98);renderMesh(pieceMeshes[p],mTransform(x,y,z,.74,ch===ch.toUpperCase()?Math.PI:0),pieceTint(ch),1);}
+if(mode==='lesson'||mode==='local'||current().t===1){for(const threat of currentThreats){let [xx,zz]=loc(threat.to);if(threat.loss>.3)renderMesh(riskRingMesh,mTransform(xx,0,zz),[1,1,1],0,1);else renderMesh(captureRiskMesh,mTransform(xx,0,zz),[1,1,1],0,.86);}}let s=current();for(let i=0;i<128;i++){if(!on(i)||s.b[i]==='.')continue;let ch=s.b[i],p=ch.toLowerCase(),[x,z]=loc(i),a=anim.find(q=>q.to===i&&q.piece===ch);let y=.18;if(a){let k=Math.min(1,(t-a.t)/370);let ease=1-Math.pow(1-k,3);let [fx,fz]=loc(a.from);x=fx+(x-fx)*ease;z=fz+(z-fz)*ease;y+=.35*Math.sin(Math.PI*ease);if(k>=1)anim.splice(anim.indexOf(a),1);}renderMesh(shadowMesh,mTransform(x,0,z),[1,1,1],0,.98);renderMesh(pieceMeshes[p],mTransform(x,y,z,.74,ch===ch.toUpperCase()?Math.PI:0),pieceTint(ch),1);}
 updateMentorOverlay(t);}
 function screenSquare(cx,cy){let rect=canvas.getBoundingClientRect(),ndcX=((cx-rect.left)/rect.width)*2-1,ndcY=1-((cy-rect.top)/rect.height)*2;let camZ=norm(sub(eye,camera.target)),camX=norm(cross([0,1,0],camZ)),camY=cross(camZ,camX),tan=Math.tan(Math.PI/8),aspect=rect.width/rect.height;let ray=norm(camX.map((v,i)=>-camZ[i]+v*ndcX*tan*aspect+camY[i]*ndcY*tan));if(ray[1]>=-.0001)return -1;let r=(.22-eye[1])/ray[1],x=eye[0]+ray[0]*r,z=eye[2]+ray[2]*r,c=Math.floor(x+4),row=Math.floor(z+4);if(c<0||c>7||row<0||row>7)return -1;return row*16+c;}
 function announce(text){let n=document.getElementById('notice');n.textContent=text;n.style.display='block';clearTimeout(n._time);n._time=setTimeout(()=>n.style.display='none',2100);}
@@ -601,21 +761,31 @@ function exchangeGain(s,target,depth=0){
 }
 // Analyse du tour adverse dans une position où c'est au joueur de jouer.
 // Cette simulation détecte une menace actuelle, pas une certitude que le coup sera joué.
-function tacticalThreats(s){
- if(checked(s))return [];
- const other={...s,t:-s.t,ep:-1};
- const ls=legal(other).filter(m=>isCapture(other,m));
- const threats=new Map();
- for(const m of ls){
-  const victim=other.b[m[1]];
-  if(side(victim)!==s.t||victim.toLowerCase()==='k')continue;
-  let net=capturePoints(other,m)-exchangeGain(apply(other,m),m[1]);
-  if(net<=.3)continue;
-  const prev=threats.get(m[1]);
-  if(!prev||net>prev.loss)threats.set(m[1],{to:m[1],from:m[0],by:other.b[m[0]].toLowerCase(),piece:victim.toLowerCase(),points:mp(victim),loss:net,attacker:m});
+// Liste EXHAUSTIVE des pièces capturables : une attaque peut être compensée
+// par une reprise, et plusieurs pièces peuvent être menacées en même temps.
+function threatsForSide(s,victimSide){
+ const attackerSide=-victimSide;
+ const enemyTurn=s.t===attackerSide?s:{...s,t:attackerSide,ep:-1};
+ const captures=legal(enemyTurn).filter(m=>isCapture(enemyTurn,m));
+ const found=new Map();
+ for(const m of captures){
+  const victim=enemyTurn.b[m[1]];
+  if(side(victim)!==victimSide||victim.toLowerCase()==='k')continue;
+  const net=capturePoints(enemyTurn,m)-exchangeGain(apply(enemyTurn,m),m[1]);
+  const entry={from:m[0],by:enemyTurn.b[m[0]].toLowerCase(),net,move:m};
+  let group=found.get(m[1]);
+  if(!group){group={to:m[1],piece:victim.toLowerCase(),points:mp(victim),loss:0,attackers:[],from:m[0],by:entry.by,attacker:m};found.set(m[1],group);}
+  group.attackers.push(entry);
+  if(group.attackers.length===1||net>group._maxNet){group._maxNet=net;group.from=m[0];group.by=entry.by;group.attacker=m;}
+  group.loss=Math.max(group.loss,net,0);
  }
- return [...threats.values()].sort((a,b)=>b.loss-a.loss||b.points-a.points);
+ return [...found.values()].sort((a,b)=>Number(b.loss>.3)-Number(a.loss>.3)||b.loss-a.loss||b.points-a.points||a.to-b.to);
 }
+function tacticalThreats(s){return threatsForSide(s,s.t);}
+// Sert à inspecter toutes les menaces possibles après un coup envisagé,
+// au lieu de ne regarder que l'attaque de la pièce déplacée.
+function threatsAfterMove(s,m){return threatsForSide(apply(s,m),s.t);}
+function urgentThreat(s){return getThreats(s).find(x=>x.loss>.3)||null;}
 function riskAfterMove(s,m){
  const next=apply(s,m),piece=next.b[m[1]];
  if(piece==='.'||piece.toLowerCase()==='k')return null;
@@ -649,7 +819,7 @@ function getThreats(s){if(s!==cachedPosition){cachedPosition=s;cachedMoveReport.
 function getReport(s,m){if(s!==cachedPosition){cachedPosition=s;cachedMoveReport.clear();cachedThreatList=null;}let k=moveKey(m);if(!cachedMoveReport.has(k))cachedMoveReport.set(k,analyzeReply(s,m));return cachedMoveReport.get(k);}
 function bestTeachingMove(s){
  const moves=legal(s);if(!moves.length)return null;
- const threats=getThreats(s),urgent=threats[0];
+ const threats=getThreats(s),urgent=threats.find(x=>x.loss>.3);
  let best=null;
  for(const m of moves){
   const after=apply(s,m),reply=getReport(s,m),piece=s.b[m[0]].toLowerCase();
@@ -669,8 +839,10 @@ function bestTeachingMove(s){
 function threatMessage(threat,child=false){
  const name=pname[threat.piece],enemy=pname[threat.by],square=sq(threat.to).toUpperCase(),source=sq(threat.from).toUpperCase();
  const worth=threat.points,loss=Number(threat.loss.toFixed(1));
- return child?`🚨 Oh ! Ton ${name} en ${square} est en danger : le ${enemy} en ${source} peut le manger ! Le ${name} vaut environ ${worth} point${worth>1?'s':''}. Cherche comment le sauver.`:
- `🚨 URGENCE : ton ${name} en ${square} est menacé par ${namedPiece(enemy)} en ${source}. Valeur : ${worth} points ; perte matérielle possible après les reprises : environ ${loss} point${loss>1?'s':''}. Cherche à le déplacer, le défendre ou neutraliser l'attaquant.`;
+ const more=threat.attackers.length>1?` et ${threat.attackers.length-1} autre(s) attaquant(s)`:'';
+ if(threat.loss<=.3)return `🟠 Ton ${name} en ${square} est attaqué par ${namedPiece(enemy)} en ${source}${more}. Une reprise peut permettre un échange : ce n’est pas nécessairement une perte. Voir les menaces pour comprendre.`;
+ return child?`🚨 Ton ${name} en ${square} peut se faire manger par ${namedPiece(enemy)} en ${source}${more} ! Il vaut ${worth} point${worth>1?'s':''}. Vérifie comment le sauver ou le défendre.`:
+ `🚨 Attention : ton ${name} en ${square} est attaqué par ${namedPiece(enemy)} en ${source}${more}. Valeur ${worth} points ; perte possible après les reprises : environ ${loss} point${loss>1?'s':''}. Observe aussi les autres alertes.`;
 }
 
 function isCapture(s,m){return s.b[m[1]]!=='.'||m[3]==='ep';}
@@ -718,12 +890,17 @@ function pendingSafety(m){
  if(mode==='lesson'||mode==='local'||current().t!==1)return false;
  let s=current(),r=dangerAfterMove(s,m),exposure=riskAfterMove(s,m),report=getReport(s,m),best=bestTeachingMove(s);
  let danger=r;
+ const anticipated=threatsAfterMove(s,m);
+ const previous=getThreats(s);
+ const newRisks=anticipated.filter(t=>t.loss>.3&&!previous.some(p=>p.to===t.to&&p.loss>=t.loss-.2));
+ const newAttacks=anticipated.filter(t=>!previous.some(p=>p.to===t.to&&p.attackers.some(a=>t.attackers.some(b=>a.from===b.from))));
  const omitted=report.worst&&report.worst.loss>=2.5&&best&&best.score>(report.gain-report.worst.loss)+1.3;
- if(!danger&&!omitted&&!exposure)return false;
+ if(!danger&&!omitted&&!exposure&&!newRisks.length&&!newAttacks.length)return false;
  if(dangerPending===moveKey(m)){dangerPending='';return false;}
  dangerPending=moveKey(m);
- let msg=danger?dangerText(danger,s):exposure?exposureText(exposure,s,m):`⚠ Attention : ce coup laisse ton ${pname[report.worst.piece]} en ${sq(report.worst.to).toUpperCase()} menacé. ${namedPiece(pname[report.worst.by])} peut le capturer et te coûter environ ${Number(report.worst.loss.toFixed(1))} points.`;
- if(exposure)showThreatArrow([exposure.attacker,m[1]]);
+ let msg=danger?dangerText(danger,s):exposure?exposureText(exposure,s,m):newRisks.length?`⚠ Ce coup expose ${newRisks.length} pièce(s) à une perte possible.`:newAttacks.length?`🟠 Ce coup laisse ${newAttacks.length} nouvelle(s) pièce(s) attaquée(s), même si elles peuvent être reprises.`:`⚠ Attention : ce coup laisse ton ${pname[report.worst.piece]} en ${sq(report.worst.to).toUpperCase()} menacé.`;
+ if(anticipated.length){msg+=' Après ce coup, les attaques possibles sont : '+anticipated.map(t=>`${pname[t.piece]} ${sq(t.to).toUpperCase()} par ${t.attackers.map(a=>pname[a.by]+' '+sq(a.from).toUpperCase()).join(' et ')}${t.loss>.3?' (perte possible ~'+Number(t.loss.toFixed(1))+' pts)':' (échange ou défense possible)'}`).join(' ; ')+'.';}
+ if(exposure)showThreatArrow([exposure.attacker,m[1]]);else if(newRisks.length||newAttacks.length){const t=(newRisks[0]||newAttacks[0]);showThreatArrow([t.from,t.to]);}
  msg+=' Appuie une seconde fois sur la même case si tu veux jouer malgré ce risque.';
  say(msg);dangerNotice(msg);return true;
 }
@@ -741,7 +918,7 @@ function mentorHint(){
  if(focusScenario&&focusScenario.state===current()&&mode!=='lesson'){showFilmStep(Math.min(3,filmStep+1||1));say('Le Maître détaille une réponse possible, sans jouer à ta place. Regarde le trajet affiché et compare les valeurs des pièces.');return;}
  const s=current(),m=selectedHint();if(!m){say('La partie est terminée : aucun coup disponible.');return;}
  hintLevel=Math.min(3,hintLevel+1);
- const l=mode==='lesson'?lessons[activeLesson]:null,urgent=!l?getThreats(s)[0]:null;
+ const l=mode==='lesson'?lessons[activeLesson]:null,urgent=!l?urgentThreat(s):null;
  if(l){
   if(hintLevel===1){say(l.h1);showHintArrow(null);showThreatArrow(null);}
   else if(hintLevel===2){say(l.h2);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(null);}
@@ -840,6 +1017,26 @@ function selectSquare(i){
  }else{selected=-1;legalTargets=[];clearDanger();clearFilm();}
 }
 
+function renderThreatPanel(s){
+ const panel=document.getElementById('mentorThreatPanel'),list=document.getElementById('mentorThreatList'),count=document.getElementById('threatCount'),intro=document.getElementById('threatIntro');
+ if(!panel||!list)return;
+ list.replaceChildren();
+ const threats=currentThreats;
+ const severe=threats.filter(t=>t.loss>.3);
+ count.textContent=threats.length?`${threats.length} pièce${threats.length>1?'s':''} attaquée${threats.length>1?'s':''} · ${severe.length} danger${severe.length>1?'s':''} matériel${severe.length>1?'s':''}`:'Aucune capture adverse immédiate identifiée';
+ intro.textContent=threats.length?'Appuie sur chaque alerte pour voir qui attaque. Une pièce attaquée n’est pas forcément perdue, mais tu dois connaître toutes les menaces.':'Aucune de tes pièces (hors roi) n’est directement capturable dans cette position selon les coups légaux examinés.';
+ if(!threats.length){const empty=document.createElement('div');empty.className='mentor-threat-empty';empty.textContent='Surveille toutefois les attaques qui pourront apparaître après ton prochain coup.';list.appendChild(empty);return;}
+ for(const t of threats){
+  const risk=t.loss>.3,b=document.createElement('button');b.type='button';b.className='mentor-threat-entry '+(risk?'danger':'exchange');
+  const symbol=document.createElement('span');symbol.className='threat-symbol';symbol.textContent=risk?'🔴':'🟠';
+  const copy=document.createElement('span');copy.className='threat-copy';const name=document.createElement('strong');name.textContent=`${pname[t.piece]} ${sq(t.to).toUpperCase()} · ${t.points} point${t.points>1?'s':''}`;
+  const info=document.createElement('span');const attackers=t.attackers.map(a=>`${pname[a.by]} ${sq(a.from).toUpperCase()}`).join(', ');
+  info.textContent=`Attaquants : ${attackers}. ${risk?`Perte possible ~${Number(t.loss.toFixed(1))} point(s).`:'Reprise / échange possible : vérifier la suite.'}`;
+  copy.append(name,info);const action=document.createElement('span');action.className='threat-show';action.textContent='Voir ↗';b.append(symbol,copy,action);
+  b.onclick=()=>{showThreatArrow([t.from,t.to]);showHintArrow(null);showReplyArrow(null);say(threatMessage(t,studentType==='child')+' Le Maître montre une attaque possible, pas une capture obligatoire.');document.getElementById('stage').scrollIntoView({behavior:'smooth',block:'nearest'});};
+  list.appendChild(b);
+ }
+}
 function tacticalForecast(s){
  if(mode==='lesson'||status(gameHistory).done)return '';
  if(mode==='ai'&&s.t===-1)return 'L’IA réfléchit. Essaie de deviner ce qu’elle veut attaquer.';
@@ -848,23 +1045,24 @@ function tacticalForecast(s){
  const mate=moves.find(m=>{let n=apply(s,m);return checked(n)&&legal(n).length===0;});
  if(mate)return `♛ Échec et mat possible en un coup ! Demande un indice pour découvrir quelle pièce peut gagner.`;
  const threats=getThreats(s);
- if(threats.length){const t=threats[0];return threatMessage(t,studentType==='child')+(threats.length>1?` Il y a ${threats.length} pièces en danger.`:'');}
+ if(threats.length){const danger=threats.filter(x=>x.loss>.3),first=danger[0]||threats[0];return `${threats.length} pièce(s) attaquée(s), dont ${danger.length} avec perte matérielle potentielle. `+threatMessage(first,studentType==='child')+' Examine les alertes une par une dans « Vue d’ensemble des menaces ».';}
  const safe=moves.filter(m=>isCapture(s,m)&&!dangerAfterMove(s,m));
  if(safe.length){const m=safe.sort((a,b)=>capturePoints(s,b)-capturePoints(s,a))[0];return '🟠 Prise possible : '+captureText(s,m);}
  return '🔎 Aucune perte nette immédiate détectée. Attention : des cases peuvent être attaquées même lorsqu’un échange permet de reprendre. Sélectionne une pièce pour examiner ces réponses.';
 }
 
-function refresh(){let s=current(),st=status(gameHistory);document.getElementById('turnDot').classList.toggle('black',s.t===-1);document.getElementById('turnText').textContent=lessonFinished?'Exercice réussi':st.done?'Partie terminée':s.t===1?'Aux Blancs de jouer':'Aux Noirs de jouer';document.getElementById('statusText').textContent=mode==='lesson'?'Académie · '+lessons[activeLesson].topic:(st.message||(mode==='ai'?'Mode professeur · contre IA':'Duel local · deux joueurs'));document.getElementById('mentorMode').textContent=mode==='lesson'?'· Exercice '+(activeLesson+1)+'/'+lessons.length:'· Conseils en direct';if(mode!=='lesson'&&(!mode||mode==='local'||s.t===1)){currentThreats=getThreats(s);}else currentThreats=[];
- const urgent=mode!=='lesson'&&(mode==='local'||s.t===1)&&!st.done?currentThreats[0]:null;
+function refresh(){let s=current(),st=status(gameHistory);document.getElementById('turnDot').classList.toggle('black',s.t===-1);document.getElementById('turnText').textContent=lessonFinished?'Exercice réussi':st.done?'Partie terminée':s.t===1?'Aux Blancs de jouer':'Aux Noirs de jouer';document.getElementById('statusText').textContent=mode==='lesson'?'Académie · '+lessons[activeLesson].topic:(st.message||(mode==='ai'?'Mode professeur · contre IA':'Duel local · deux joueurs'));document.getElementById('mentorMode').textContent=mode==='lesson'?'· Exercice '+(activeLesson+1)+'/'+lessons.length:'· Conseils en direct';if((mode==='local'||s.t===1)&&!st.done){currentThreats=getThreats(s);}else currentThreats=[];
+ const urgent=mode!=='lesson'&&(mode==='local'||s.t===1)&&!st.done?currentThreats.find(x=>x.loss>.3):null;
  showCoach(mode==='lesson'?(coachMove||lessonIntro(lessons[activeLesson])):st.done?'Partie terminée. Analyse tes coups, puis rejoue pour progresser.':urgent?threatMessage(urgent,studentType==='child'):coachMove||'Le Maître observe le plateau : essaie d’occuper le centre et garde tes pièces en sécurité.');document.getElementById('plyCount').textContent=movesSAN.length+' demi-coups';let h=document.getElementById('history');h.innerHTML=movesSAN.length?movesSAN.map((s,i)=>'<span>'+(i%2===0?'<strong>'+ (Math.floor(i/2)+1)+'.</strong> ':'&nbsp;&nbsp;')+s+'</span>').join(''):'<span class="empty">Les coups apparaîtront ici.</span>';h.scrollTop=h.scrollHeight;let score=evalPos(s),pct=Math.round(Math.min(97,Math.max(3,50+45*Math.tanh(score/8))));document.getElementById('evalFill').style.width=pct+'%';document.getElementById('evalText').textContent=pct+' / '+(100-pct);document.getElementById('undo').disabled=gameHistory.length===1;
  document.getElementById('mentorForecast').textContent=tacticalForecast(s);
  const threats=currentThreats;
- let lessonActive=mode==='lesson',major=threats[0];
+ renderThreatPanel(s);
+ let lessonActive=mode==='lesson',major=threats.find(x=>x.loss>.3)||threats[0];
  document.getElementById('mentorAssessment').textContent=lessonActive?(lessonFinished?'Exercice terminé. Très beau travail !':'Exercice : '+lessons[activeLesson].topic+'. Tu peux demander trois niveaux d’indices et voir le trajet sur le plateau.'):
- checked(s)?'Échec : ton roi doit être sauvé.':major?`Menace : ${pname[major.piece]} en ${sq(major.to).toUpperCase()}, valeur ${major.points} points, perte possible ${Number(major.loss.toFixed(1))} après les reprises.`:`${legal(s).length} coups légaux. Pas de perte directe estimée, mais des échanges et des attaques restent possibles.`;
+ checked(s)?'Échec : ton roi doit être sauvé.':major?`${threats.length} pièce(s) attaquée(s), dont ${threats.filter(t=>t.loss>.3).length} perte(s) possible(s). Exemple : ${pname[major.piece]} en ${sq(major.to).toUpperCase()}. Consulte les alertes ci-dessus.`:`${legal(s).length} coups légaux. Pas de perte directe estimée, mais des échanges et des attaques restent possibles.`;
  document.getElementById('mentorQuestion').textContent=lessonActive?(lessonFinished?'Sais-tu expliquer pourquoi ce coup fonctionne ?':'Lis la mission, puis utilise un indice si besoin.'):
  checked(s)?'Comment répondre à cet échec ?':major?'Peux-tu sauver cette pièce, la défendre, ou capturer son attaquant ?':'Avant ton coup : que pourrais-tu prendre, et comment ton adversaire pourrait-il répondre ?';
- document.getElementById('mentorValue').textContent=lessonActive?'':major?`Enjeu estimé : ${Number(major.loss.toFixed(1))} point(s) après les reprises · ${pname[major.by]} → ${pname[major.piece]}`:'Valeurs de référence : pion 1 · cavalier 3 · fou 3 · tour 5 · dame 9';
+ document.getElementById('mentorValue').textContent=lessonActive?'':major?`Toutes les attaques : ${threats.length} pièce(s) · ${threats.reduce((v,x)=>v+x.attackers.length,0)} attaque(s) légale(s) recensée(s) · valeurs de référence : pion 1, cavalier 3, fou 3, tour 5, dame 9`:'Valeurs de référence : pion 1 · cavalier 3 · fou 3 · tour 5 · dame 9';
 
  }
 function cancelAI(){clearTimeout(aiTimer);busy=false;clearFilm();showThreatArrow(null);anim=[];selected=-1;legalTargets=[];pending=null;clearDanger();lastPlayerThreat=null;document.getElementById('promoModal').style.display='none';}
@@ -873,12 +1071,16 @@ function setMode(m){activeLesson=-1;lessonFinished=false;hintLevel=0;mentorArrow
 document.getElementById('modeAI').onclick=()=>setMode('ai');document.getElementById('modeLocal').onclick=()=>setMode('local');document.getElementById('newgame').onclick=newGame;
 document.getElementById('undo').onclick=()=>{if(mode==='lesson'){startLesson(activeLesson);return;}if(gameHistory.length<=1)return;cancelAI();let count=mode==='ai'&&gameHistory.length>=3&&current().t===1?2:1;for(let i=0;i<count&&gameHistory.length>1;i++){gameHistory.pop();movesSAN.pop();}lastMove=null;resetTacticCache();showThreatArrow(null);coachMove='Reprends ton temps pour analyser la position.';refresh();};
 document.getElementById('export').onclick=()=>{let pgn='[Event "SFT CHESS"]\n[Site "SALESFILS.COM"]\n[Date "'+new Date().toISOString().slice(0,10).replace(/-/g,'.')+'"]\n[White "Blancs"]\n[Black "Noirs"]\n\n'+movesSAN.map((m,i)=>(i%2===0?Math.floor(i/2)+1+'. ':'')+m).join(' ')+' *';let blob=new Blob([pgn],{type:'application/x-chess-pgn'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sft-chess-partie.pgn';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);announce('Partie exportée en PGN.');};
-let pointerState=new Map(),gesture=null;
+let pointerState=new Map(),gesture=null,panToolActive=false;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 function cameraSnapshot(){return {az:camera.az,el:camera.el,dist:camera.dist,target:[...camera.target]};}
 function restoreSnapshot(snapshot){camera.az=snapshot.az;camera.el=snapshot.el;camera.dist=snapshot.dist;camera.target=[...snapshot.target];sftFrameSignature='';}
 function updateCameraUI(){
  document.querySelector('.board-toolbar').classList.toggle('camera-is-locked',cameraLocked);
+ let panButton=document.getElementById('panbtn');
+ panButton.classList.toggle('active',panToolActive);
+ panButton.setAttribute('aria-pressed',String(panToolActive));
+ canvas.classList.toggle('pan-enabled',cameraLocked||panToolActive);
  let lock=document.getElementById('lockcam');lock.textContent=cameraLocked?'🔒':'🔓';lock.classList.toggle('active',cameraLocked);
  lock.setAttribute('aria-pressed',String(cameraLocked));lock.setAttribute('aria-label',cameraLocked?'Déverrouiller la rotation':'Verrouiller l’angle de vue');
  document.getElementById('resetcam').title=cameraLocked?'Revenir à ma vue mémorisée':'Caméra initiale';
@@ -895,6 +1097,16 @@ document.getElementById('camExpand').onclick=()=>setCameraCompact(false);
 document.getElementById('camCollapse').onclick=()=>setCameraCompact(true);
 document.getElementById('homeMini').onclick=()=>document.getElementById('resetcam').click();
 document.getElementById('fullMini').onclick=()=>document.getElementById('fullbtn').click();
+document.getElementById('panbtn').onclick=()=>{
+ panToolActive=!panToolActive;
+ updateCameraUI();
+ announce(panToolActive?'Déplacement activé : fais glisser le plateau vers le bord de la fenêtre.':'Rotation activée : fais glisser pour changer l’angle.');
+};
+document.getElementById('savecam').onclick=()=>{
+ cameraPreset=cameraSnapshot();cameraLocked=true;panToolActive=false;
+ setCameraCompact(true);updateCameraUI();
+ announce('Ta position est mémorisée. Tire le plateau pour explorer ; ⌂ retrouve cette vue.');
+};
 function touchPoints(){return [...pointerState.entries()].filter(([id,p])=>p.type==='touch');}
 function touchDistance(a,b){return Math.hypot(b.x-a.x,b.y-a.y);}
 function midpoint(a,b){return {x:(a.x+b.x)/2,y:(a.y+b.y)/2};}
@@ -906,16 +1118,17 @@ function floorAt(clientX,clientY){
  if(ray[1]>-.02)return null;let t=(.22-eye[1])/ray[1];if(t<0)return null;
  return {x:eye[0]+ray[0]*t,z:eye[2]+ray[2]*t};
 }
-function adjustTarget(dx,dz){camera.target[0]=clamp(camera.target[0]+dx,-4.6,4.6);camera.target[2]=clamp(camera.target[2]+dz,-4.6,4.6);}
+function adjustTarget(dx,dz){camera.target[0]=clamp(camera.target[0]+dx,-5.6,5.6);camera.target[2]=clamp(camera.target[2]+dz,-5.6,5.6);}
 function beginPinch(){let pts=touchPoints();if(pts.length<2)return;
  let a=pts[0][1],b=pts[1][1],mid=midpoint(a,b);
  gesture={mode:'pinch',startDist:touchDistance(a,b),startCamera:camera.dist,anchor:floorAt(mid.x,mid.y),suppressTap:true};
 }
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
 canvas.addEventListener('pointerdown',e=>{
  e.preventDefault();canvas.setPointerCapture(e.pointerId);
  pointerState.set(e.pointerId,{x:e.clientX,y:e.clientY,type:e.pointerType});
  if(touchPoints().length===2){beginPinch();return;}
- if(pointerState.size===1)gesture={mode:cameraLocked?'pan':'rotate',id:e.pointerId,lastX:e.clientX,lastY:e.clientY,startX:e.clientX,startY:e.clientY,startAz:camera.az,startEl:camera.el,moved:false,suppressTap:false};
+ if(pointerState.size===1)gesture={mode:(cameraLocked||panToolActive||e.button===2||e.shiftKey)?'pan':'rotate',id:e.pointerId,lastX:e.clientX,lastY:e.clientY,startX:e.clientX,startY:e.clientY,startAz:camera.az,startEl:camera.el,moved:false,suppressTap:e.button===2};
 },{passive:false});
 canvas.addEventListener('pointermove',e=>{
  const old=pointerState.get(e.pointerId);if(!old)return;e.preventDefault();
@@ -943,11 +1156,11 @@ canvas.addEventListener('pointermove',e=>{
  gesture.lastX=x;gesture.lastY=y;
 },{passive:false});
 function endPointer(e){
- let tap=gesture&&gesture.id===e.pointerId&&gesture.mode!=='pinch'&&!gesture.moved&&!gesture.suppressTap;
+ let tap=gesture&&gesture.id===e.pointerId&&gesture.mode!=='pinch'&&!gesture.moved&&!gesture.suppressTap&&e.button!==2;
  pointerState.delete(e.pointerId);
  if(!pointerState.size){if(tap)selectSquare(screenSquare(e.clientX,e.clientY));gesture=null;return;}
  let pts=touchPoints();
- if(pts.length===1){let [id,p]=pts[0];gesture={mode:cameraLocked?'pan':'rotate',id,lastX:p.x,lastY:p.y,startX:p.x,startY:p.y,startAz:camera.az,startEl:camera.el,moved:true,suppressTap:true};}
+ if(pts.length===1){let [id,p]=pts[0];gesture={mode:(cameraLocked||panToolActive)?'pan':'rotate',id,lastX:p.x,lastY:p.y,startX:p.x,startY:p.y,startAz:camera.az,startEl:camera.el,moved:true,suppressTap:true};}
  else if(pts.length>=2)beginPinch();
  else gesture=null;
 }
@@ -956,7 +1169,7 @@ canvas.addEventListener('pointercancel',e=>{pointerState.delete(e.pointerId);ges
 canvas.addEventListener('wheel',e=>{e.preventDefault();camera.dist=clamp(camera.dist+e.deltaY*.008,6.3,28);},{passive:false});
 document.getElementById('lockcam').onclick=()=>{
  cameraLocked=!cameraLocked;
- if(cameraLocked){cameraPreset=cameraSnapshot();setCameraCompact(true);announce('Vue mémorisée : outils masqués. Zoom et déplacement restent possibles.');}
+ if(cameraLocked){cameraPreset=cameraSnapshot();panToolActive=false;setCameraCompact(true);announce('Angle mémorisé : fais glisser le plateau pour le tirer vers toi, zoom disponible.');}
  else{setCameraCompact(false);announce('Rotation débloquée.');}
  updateCameraUI();
 };
@@ -993,7 +1206,75 @@ document.addEventListener('fullscreenchange',()=>{
 });
 document.getElementById('stage').addEventListener('dblclick',e=>{if(cameraLocked&&cameraPreset){restoreSnapshot(cameraPreset);announce('Vue mémorisée retrouvée.');}});
 
+
+/* V5.7 · local save/restart, archive and optional PWA installation. */
+const SFT_ACTIVE_KEY='sft_chess_saved_game_v1',SFT_ARCHIVE_KEY='sft_chess_saved_archive_v1';
+const safeRead=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key)||'null')??fallback;}catch(_){return fallback;}};
+const safeWrite=(key,value)=>{try{localStorage.setItem(key,JSON.stringify(value));return true;}catch(_){return false;}};
+let archives=Array.isArray(safeRead(SFT_ARCHIVE_KEY,[]))?safeRead(SFT_ARCHIVE_KEY,[]):[];
+function copyGame(){return {version:1,id:Date.now()+'-'+Math.random().toString(36).slice(2,7),savedAt:new Date().toISOString(),mode,states:gameHistory.map(g=>({b:g.b.slice(),t:g.t,c:g.c,ep:g.ep,half:g.half,full:g.full,i:g.i})),moves:movesSAN.slice(),lastMove:lastMove?lastMove.slice():null,difficulty:document.getElementById('difficulty').value,student:document.getElementById('studentType').value};}
+function validStored(g){return !!(g&&['ai','local'].includes(g.mode)&&Array.isArray(g.states)&&g.states.length>0&&g.states.length<1500&&Array.isArray(g.moves)&&g.moves.length===g.states.length-1&&g.states.every(s=>s&&Array.isArray(s.b)&&s.b.length===128&&s.b.filter(x=>x==='K').length===1&&s.b.filter(x=>x==='k').length===1&&[1,-1].includes(s.t)&&Number.isInteger(s.c)));}
+function updateSaveMark(text){let e=document.getElementById('saveState');if(e)e.textContent=text;}
+function storeGame(){if(mode==='lesson')return;let g=copyGame();if(safeWrite(SFT_ACTIVE_KEY,g))updateSaveMark('✓ Partie mémorisée sur cet appareil');else updateSaveMark('⚠ Sauvegarde indisponible');}
+function archiveGame(){if(mode==='lesson'||movesSAN.length===0)return;const g=copyGame();archives=[g,...archives].slice(0,15);safeWrite(SFT_ARCHIVE_KEY,archives);}
+function restoreGame(g){if(!validStored(g))return false;cancelAI();activeLesson=-1;lessonFinished=false;mode=g.mode;gameHistory=g.states.map(s=>({...s,b:s.b.slice()}));movesSAN=g.moves.slice();lastMove=g.lastMove&&g.lastMove.length===2?g.lastMove.slice():null;coachMove='Partie retrouvée ! Regarde les menaces avant ton prochain coup.';document.getElementById('modeAI').classList.toggle('active',mode==='ai');document.getElementById('modeLocal').classList.toggle('active',mode==='local');document.getElementById('aiOptions').style.display=mode==='ai'?'':'none';if(['apprenti','club','tacticien'].includes(g.difficulty))document.getElementById('difficulty').value=g.difficulty;if(['adult','child'].includes(g.student)){document.getElementById('studentType').value=g.student;studentType=g.student;}refresh();storeGame();if(mode==='ai'&&current().t===-1&&!status(gameHistory).done){busy=true;aiTimer=setTimeout(()=>{busy=false;let ai=chooseAI();if(ai)commit(ai);},600);}return true;}
+const originalCommit=commit;
+commit=function(m){let before=gameHistory.length;originalCommit(m);if(gameHistory.length>before)storeGame();};
+const originalNewGame=newGame;
+newGame=function(){archiveGame();originalNewGame();storeGame();};
+document.getElementById('newgame').onclick=newGame;
+const originalStartLesson=startLesson;
+startLesson=function(i){if(mode!=='lesson')storeGame();originalStartLesson(i);};
+document.getElementById('undo').addEventListener('click',storeGame);
+document.getElementById('difficulty').addEventListener('change',storeGame);
+document.getElementById('studentType').addEventListener('change',storeGame);
+window.addEventListener('pagehide',storeGame);
+function renderArchive(){const list=document.getElementById('archiveList');list.replaceChildren();let currentSaved=safeRead(SFT_ACTIVE_KEY,null);let entries=[];if(validStored(currentSaved)&&currentSaved.moves.length)entries.push({...currentSaved,current:true});for(const a of archives){if(validStored(a)&&a.moves.length)entries.push(a);}if(!entries.length){let note=document.createElement('p');note.textContent='Aucune partie enregistrée pour le moment. Joue quelques coups et ta partie sera mémorisée automatiquement.';list.appendChild(note);return;}entries.forEach((g,idx)=>{let item=document.createElement('div');item.className='archive-entry';let box=document.createElement('div');let title=document.createElement('strong');title.textContent=(g.current?'Partie en cours':'Partie '+(idx+1))+' · '+(g.mode==='ai'?'contre IA':'2 joueurs');let small=document.createElement('small');small.textContent=g.moves.length+' demi-coups · '+new Date(g.savedAt).toLocaleString('fr-FR');box.append(title,small);let btn=document.createElement('button');btn.type='button';btn.textContent='Reprendre';btn.onclick=()=>{if(!g.current)archiveGame();restoreGame(g);closeArchive();announce('Partie chargée depuis cet appareil.');};item.append(box,btn);list.appendChild(item);});}
+function closeArchive(){document.getElementById('archiveOverlay').hidden=true;}
+document.getElementById('savedGamesBtn').onclick=()=>{renderArchive();document.getElementById('archiveOverlay').hidden=false;};
+document.getElementById('archiveClose').onclick=closeArchive;document.getElementById('archiveDone').onclick=closeArchive;
+document.getElementById('archiveOverlay').addEventListener('click',e=>{if(e.target.id==='archiveOverlay')closeArchive();});
+let installEvent=null;
+const installBtn=document.getElementById('installBtn'),installOverlay=document.getElementById('installOverlay');
+function showInstallHelp(){let ios=/iPhone|iPad|iPod/.test(navigator.userAgent),inApp=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;let instruction=inApp?'SFT CHESS est déjà ouvert comme une application.':ios?'Dans Safari, appuie sur Partager, puis « Sur l’écran d’accueil » et « Ajouter ».':location.protocol==='file:'?'L’installation nécessite une version hébergée en HTTPS. Ouvre ensuite le site dans Chrome ou Edge et choisis « Installer l’application » dans le menu.':'Ouvre le menu de Chrome ou Edge puis « Installer l’application » (ou « Ajouter à l’écran d’accueil »). Si l’option n’apparaît pas, vérifie que tu utilises bien une adresse HTTPS.';document.getElementById('installInstructions').textContent=instruction;installOverlay.hidden=false;}
+installBtn.addEventListener('click',async()=>{if(installEvent){const evt=installEvent;installEvent=null;try{await evt.prompt();const choice=await evt.userChoice;if(choice.outcome==='accepted')announce('Installation acceptée.');}catch(_){showInstallHelp();}return;}showInstallHelp();});
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installEvent=event;installBtn.textContent='⬇ Installer';});
+window.addEventListener('appinstalled',()=>{installBtn.textContent='✓ Installé';announce('SFT CHESS est installé !');});
+document.getElementById('installClose').onclick=()=>installOverlay.hidden=true;document.getElementById('installDone').onclick=()=>installOverlay.hidden=true;
+installOverlay.addEventListener('click',e=>{if(e.target===installOverlay)installOverlay.hidden=true;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeArchive();installOverlay.hidden=true;}});
+if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+const __saved=safeRead(SFT_ACTIVE_KEY,null);if(validStored(__saved)){restoreGame(__saved);}else{updateSaveMark('Sauvegarde automatique locale');}
+
+
+/* V5.8 · Navigation réelle, accessible et liée aux outils existants. */
+const SFT_NAV = document.querySelectorAll('[data-go]');
+const sftHub=document.getElementById('hubOverlay'),hubTitle=document.getElementById('hubTitle'),hubIntro=document.getElementById('hubIntro'),hubActions=document.getElementById('hubActions');
+function navActive(page){document.querySelectorAll('.sft-nav').forEach(x=>{const a=x.dataset.go===page;x.classList.toggle('active',a);x.setAttribute('aria-current',a?'page':'false');});}
+function hubClose(){sftHub.hidden=true;}
+function hubOpen(title,intro){hubTitle.textContent=title;hubIntro.textContent=intro;hubActions.replaceChildren();sftHub.hidden=false;}
+function hubButton(label,detail,callback){const b=document.createElement('button');b.type='button';b.className='hub-choice';b.textContent=label;if(detail){const sm=document.createElement('small');sm.textContent=detail;b.appendChild(sm);}b.onclick=()=>{hubClose();callback();};hubActions.appendChild(b);return b;}
+function showBoard(){navActive('jouer');hubClose();document.getElementById('stage').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function showCoachPanel(){navActive('cours');hubClose();document.getElementById('mentorOptions').classList.add('open');document.querySelector('.academy-dock').scrollIntoView({behavior:'smooth',block:'center'});}
+function showArchive(){hubClose();navActive('parties');document.getElementById('savedGamesBtn').click();}
+function showExercises(){navActive('exercices');hubOpen('Exercices du Maître','Choisis un exercice ; le plateau s’ouvrira directement sur la position à résoudre. Les leçons sont guidées et la partie libre reste disponible.');lessons.forEach((x,i)=>hubButton('Exercice '+(i+1)+' · '+x.topic,'Voir la situation en 3D et demander les indices.',()=>{startLesson(i);showBoard();}));}
+function showHome(){navActive('accueil');hubOpen('Bienvenue à SFT CHESS','Un véritable échiquier 3D et un professeur encore expérimental. Commence une partie, découvre les leçons ou retrouve ta dernière partie.');hubButton('♟ Jouer contre l’IA','Niveau réglable · conseils pédagogiques',()=>{document.getElementById('modeAI').click();showBoard();});hubButton('♙ Deux joueurs','Sur le même appareil, pas encore en ligne',()=>{document.getElementById('modeLocal').click();showBoard();});hubButton('🎓 Académie','11 exercices guidés et un dictionnaire',showCoachPanel);hubButton('▤ Mes parties','Reprise de ta partie et archives locales',showArchive);}
+function showTournaments(){navActive('tournois');hubOpen('Tournois · En préparation','Les tournois en ligne, salons privés et classements ne sont pas encore implémentés. Tu peux déjà faire une partie à deux sur le même appareil.');const st=document.createElement('div');st.className='hub-status';st.textContent='À venir : comptes joueurs, parties en ligne synchronisées, matchmaking, tournois et historique partagé. Aucune inscription ni partie distante n’est active aujourd’hui.';hubActions.appendChild(st);hubButton('Jouer à deux localement','Même écran et règles officielles',()=>{document.getElementById('modeLocal').click();showBoard();});}
+function showSettings(){navActive('reglages');hubOpen('Réglages du jeu','Modifie les options déjà disponibles dans SFT CHESS. La sauvegarde de ta partie est locale à ce navigateur.');const box=document.createElement('div');box.className='hub-settings';const field=(name,id,from)=>{const l=document.createElement('label');l.textContent=name;const select=document.createElement('select');select.id=id;for(const o of from){const opt=document.createElement('option');opt.value=o[0];opt.textContent=o[1];select.appendChild(opt);}l.appendChild(select);box.appendChild(l);return select;};const profile=field('Le Maître s’adresse à :','sftPrefProfile',[['child','Enfant · simple et amusant'],['adult','Adulte · précis']]);profile.value=document.getElementById('studentType').value;profile.onchange=()=>{const x=document.getElementById('studentType');x.value=profile.value;x.dispatchEvent(new Event('change',{bubbles:true}));};const difficulty=field('Force de l’adversaire :','sftPrefDifficulty',[['apprenti','Apprenti'],['club','Club'],['tacticien','Tacticien']]);difficulty.value=document.getElementById('difficulty').value;difficulty.onchange=()=>{const x=document.getElementById('difficulty');x.value=difficulty.value;x.dispatchEvent(new Event('change',{bubbles:true}));};hubActions.appendChild(box);hubButton('♟ Afficher les noms des cases',showCoords?'Désactiver les noms sur les 64 cases':'Afficher les noms sur toutes les cases',()=>{document.getElementById('coordsToggle').click();showSettings();});hubButton('★ Mémoriser la vue actuelle','Conserver l’angle et la position de la caméra',()=>{document.getElementById('savecam').click();showBoard();});}
+function sftNavigate(page){switch(page){case 'accueil':showHome();break;case 'jouer':showBoard();break;case 'cours':showCoachPanel();break;case 'exercices':showExercises();break;case 'parties':showArchive();break;case 'tournois':showTournaments();break;case 'reglages':showSettings();break;}}
+SFT_NAV.forEach(x=>x.addEventListener('click',()=>sftNavigate(x.dataset.go)));
+document.getElementById('railNewGame').onclick=()=>{document.getElementById('newgame').click();showBoard();};
+document.getElementById('railCoach').onclick=()=>{navActive('cours');document.querySelector('.academy-dock').scrollIntoView({behavior:'smooth',block:'center'});};
+document.getElementById('railInstall').onclick=()=>document.getElementById('installBtn').click();
+document.getElementById('hubClose').onclick=hubClose;
+sftHub.addEventListener('click',e=>{if(e.target===sftHub)hubClose();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')hubClose();});
+// Keep the navigation highlight synced when the player starts a lesson from the Maître.
+document.getElementById('startLesson').addEventListener('click',()=>navActive('cours'));
+// The real board and real coach are always visible in the responsive page, not images or placeholder panels.
+navActive('jouer');
+
 refresh();syncCameraUI();requestAnimationFrame(render);
-window.SFTCHESS={newGame,legal,apply,current,commit,index,parseFen,moveKey,setScenario,showFilmStep,scenarioSummary,get focusScenario(){return focusScenario;},startLesson,stopLesson,lessonMove,lessons,showHintArrow,selectSquare,dangerAfterMove,riskAfterMove,exposureText,getThreats,getReport,exchangeGain,bestTeachingMove,gameHistory:()=>gameHistory,view:{get angle(){return camera.az;},get elevation(){return camera.el;},get distance(){return camera.dist;},get target(){return [...camera.target];},get locked(){return cameraLocked;},get saved(){return cameraPreset&&{...cameraPreset,target:[...cameraPreset.target]};},get fullscreen(){return appShell.classList.contains('immersive');}}};
+window.SFTCHESS={newGame,legal,apply,current,commit,index,parseFen,moveKey,setScenario,showFilmStep,scenarioSummary,get focusScenario(){return focusScenario;},startLesson,stopLesson,lessonMove,lessons,showHintArrow,selectSquare,dangerAfterMove,riskAfterMove,exposureText,getThreats,threatsForSide,threatsAfterMove,getReport,exchangeGain,bestTeachingMove,gameHistory:()=>gameHistory,view:{get moveMode(){return panToolActive;},get angle(){return camera.az;},get elevation(){return camera.el;},get distance(){return camera.dist;},get target(){return [...camera.target];},get locked(){return cameraLocked;},get saved(){return cameraPreset&&{...cameraPreset,target:[...cameraPreset.target]};},get fullscreen(){return appShell.classList.contains('immersive');}}};
 </script>
 </body></html>

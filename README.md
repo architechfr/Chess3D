@@ -1,40 +1,19 @@
-# SFT CHESS 3D
+# SFT CHESS 3D — V5.9.2
 
-Jeu d’échecs 3D sur navigateur pour SALES FILS.
+Jeu d’échecs 3D avec l’Académie et le Maître tacticien.
 
-## Version publiée
+## Démarrage
 
-**V5.6 — Le Maître pédagogue**
+Servir le dossier à la racine d’un hébergement HTTPS ou en local avec un serveur HTTP. Les icônes d’installation et le service worker nécessitent une origine HTTPS (ou localhost).
 
-Le jeu est actuellement contenu dans `index.html` sur la branche `main`.
+## Contenu
 
-## Lancer le jeu
+- `index.html` : jeu, navigation et Maître tacticien.
+- `manifest.webmanifest` : installation web.
+- `service-worker.js` : mise en cache et ouverture hors ligne après chargement initial.
+- `icons/logo.svg` : nouveau logo vectoriel, dame d’échecs dorée.
+- `icons/icon-192.png`, `icons/icon-512.png`, `icons/apple-touch-icon.png` : icônes pour téléphone et ordinateur.
 
-Ouvrir `index.html` dans un navigateur récent avec WebGL, ou le servir comme page statique par un hébergeur compatible. Le dépôt GitHub seul ne publie pas de site jouable.
+## Limitations
 
-## Fonctionnalités
-
-- Échiquier et pièces en 3D, interface tactile et souris, zoom, caméra orientable, angle verrouillable et plein écran.
-- Jeu local contre IA expérimentale ou deux joueurs sur le même appareil.
-- Historique et export PGN.
-- Maître : détection de certaines captures et reprises **légales**, avertissement avant un coup risqué, flèches pédagogiques.
-- Nouveau mini-tutoriel **en trois étapes** : « ton coup », « sa réponse », « ta reprise ». Les coups sont montrés sans modifier la partie.
-- **11 leçons**, dont une consacrée au cavalier A3 vers B5 attaqué par un cavalier noir D4 et défendu par un pion blanc C4.
-- Gravure des coordonnées en capitales A–H sur le bord du plateau.
-
-## Ce que le Maître distingue
-
-- Une case légale n'est pas nécessairement sûre.
-- Une pièce attaquée n'est pas automatiquement perdue.
-- Un échange équilibré doit être expliqué **même sans perte nette**.
-- Une variante est possible, mais l'adversaire n'est pas forcé de la jouer.
-
-Lire [MAITRE_ECHECS_SPEC.md](MAITRE_ECHECS_SPEC.md) pour le contrat de qualité et les scénarios testés.
-
-## Limites explicites
-
-- Analyse tactique de courte portée, **pas encore** un moteur expert Stockfish.
-- Modèles 3D et textures non définitifs.
-- Pas de multijoueur en ligne ni de sauvegarde de profils hébergés.
-- Tests logiques navigateur effectués pour la V5.6 avec WebGL simulé ; tests graphiques sur appareils mobiles réels encore nécessaires.
-- Pas de déploiement automatique sur SALESFILS.COM.
+Sauvegardes uniquement sur le navigateur courant. Jeu en ligne et vraie IA experte toujours en développement.

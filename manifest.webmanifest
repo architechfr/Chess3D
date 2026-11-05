@@ -1,0 +1,27 @@
+{
+  "id": "./",
+  "name": "SFT CHESS 3D — Le Maître d'échecs",
+  "short_name": "SFT CHESS",
+  "description": "SFT CHESS 3D — jeu d’échecs et Maître pédagogue, parties locales, apprentissage et sauvegardes.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09111c",
+  "theme_color": "#101b27",
+  "orientation": "any",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
