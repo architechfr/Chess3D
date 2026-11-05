@@ -1,11 +1,11 @@
 /* SFT Chess - isolated browser loader for Stockfish.js 19 Lite Single.
  * Stockfish.js and its WASM engine are GPL-3.0 licensed:
  * https://github.com/nmrugg/stockfish.js
- * The CDN is a temporary online distribution path; a self-hosted vendor copy
- * of the two matching files is recommended for reliable/offline production.
+ * The matching .js and .wasm binaries are copied from the npm package at build
+ * time and hosted on the same origin; no cross-origin worker scripts are needed.
  */
 'use strict';
-const SFT_STOCKFISH_BASE='https://cdn.jsdelivr.net/npm/stockfish@19.0.1/bin/';
+const SFT_STOCKFISH_BASE='./vendor/stockfish/';
 const SFT_STOCKFISH_NAME='stockfish-19-lite-single.js';
 var Module={
   locateFile:function(path){return SFT_STOCKFISH_BASE+path;},
