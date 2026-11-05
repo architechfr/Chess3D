@@ -49,6 +49,29 @@ test('Stockfish 19 Lite starts in a real browser worker', {timeout:75000},async(
   },null,{timeout:25000});
   const report=await page.locator('#deepEngineReport').textContent();
   assert.match(report,/proposition|Variante|coup|moteur/i);
+  // Camera regression: panning must translate camera eye AND target, no rotation.
+  const cameraCheck=await page.evaluate(()=>{
+    const before={az:camera.az,el:camera.el,dist:camera.dist,target:[...camera.target]};
+    updateCamera();
+    const eyeOffsetBefore=[eye[0]-camera.target[0],eye[2]-camera.target[2]];
+    moveCameraByPixels(75,0);
+    updateCamera();
+    const eyeOffsetAfter=[eye[0]-camera.target[0],eye[2]-camera.target[2]];
+    const translated=[...camera.target];
+    const angleUnchanged=camera.az===before.az&&camera.el===before.el;
+    const xTranslated=translated[0]!==before.target[0];
+    const offsetPreserved=eyeOffsetAfter.every((x,i)=>Math.abs(x-eyeOffsetBefore[i])<1e-8);
+    document.getElementById('resetcam').click();
+    const recentered=Math.abs(camera.target[0])<1e-8&&Math.abs(camera.target[2])<1e-8;
+    const viewPreserved=camera.az===before.az&&camera.dist===before.dist;
+    document.getElementById('rotate').click();
+    const deliberateRotation=!panToolActive;
+    const targetBeforeRotate=[...camera.target];
+    moveCameraByPixels(0,25); // Translation math remains valid independently of mode.
+    document.getElementById('panbtn').click();
+    return {angleUnchanged,xTranslated,offsetPreserved,recentered,viewPreserved,deliberateRotation,panReturned:panToolActive,panModeDefault:before.az!==undefined};
+  });
+  for(const [name,ok] of Object.entries(cameraCheck))assert(ok,name+' camera regression');
   // Enter focused 2D mode and make sure the board, coach, and exit are visible.
   await page.locator('#sftViewToggle').click();
   // Some mobile browsers (notably iOS) deny the native Fullscreen API.
