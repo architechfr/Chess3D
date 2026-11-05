@@ -1271,6 +1271,37 @@ function tacticalForecast(s){
  return '🔎 Aucune perte nette immédiate détectée. Attention : des cases peuvent être attaquées même lorsqu’un échange permet de reprendre. Sélectionne une pièce pour examiner ces réponses.';
 }
 
+// Show the actual attacking piece whenever the king is in check, not only a warning badge.
+function sftCheckAttacker(s){
+ const king=s.b.indexOf(s.t===1?'K':'k');
+ if(king<0||!checked(s))return null;
+ const enemy=-s.t;
+ for(let f=0;f<128;f++){
+  if(!on(f)||side(s.b[f])!==enemy)continue;
+  const p=s.b[f].toLowerCase();
+  if(p==='p'){
+   if(king===f-16*enemy-1||king===f-16*enemy+1)return {from:f,to:king,piece:p};
+   continue;
+  }
+  for(const d of (dirs[p]||dirs.k)){
+   for(let t=f+d;on(t);t+=d){
+    if(t===king)return {from:f,to:king,piece:p};
+    if(s.b[t]!=='.'||p==='n'||p==='k')break;
+   }
+  }
+ }
+ return null;
+}
+function sftShowCheckOrigin(s){
+ const threat=sftCheckAttacker(s);
+ if(!threat)return false;
+ showThreatArrow([threat.from,threat.to]);
+ const piece=pname[threat.piece]||'pièce';
+ const message='ÉCHEC ! Ton roi en '+sq(threat.to).toUpperCase()+' est attaqué par le '+piece+' adverse en '+sq(threat.from).toUpperCase()+'. Suis la flèche rouge. Tu dois protéger ton roi : déplacer le roi, capturer la pièce attaquante ou bloquer son attaque si cela est légal.';
+ showCoach(message);
+ if(mode==='lesson')sftMissionNotice(message,true);
+ return true;
+}
 function refresh(){let s=current(),st=status(gameHistory);sftDrawMission();const playHud=document.getElementById('sftPlayHud'),turnHud=document.getElementById('sftHudTurn');if(playHud&&turnHud){playHud.classList.toggle('danger',checked(s));playHud.classList.toggle('win',lessonFinished);turnHud.textContent=lessonFinished?'MISSION RÉUSSIE':st.done?'FIN DE PARTIE':checked(s)?'ÉCHEC !':mode==='lesson'?'MISSION '+(activeLesson+1):s.t===1?'À TOI DE JOUER':mode==='ai'?'L’IA JOUE':'AUX NOIRS DE JOUER';}document.getElementById('turnDot').classList.toggle('black',s.t===-1);document.getElementById('turnText').textContent=lessonFinished?'Exercice réussi':st.done?'Partie terminée':s.t===1?'Aux Blancs de jouer':'Aux Noirs de jouer';document.getElementById('statusText').textContent=mode==='lesson'?'Académie · '+lessons[activeLesson].topic:(st.message||(mode==='ai'?'Mode professeur · contre IA':'Duel local · deux joueurs'));document.getElementById('mentorMode').textContent=mode==='lesson'?'· Exercice '+(activeLesson+1)+'/'+lessons.length:'· Conseils en direct';if((mode==='local'||s.t===1)&&!st.done){currentThreats=getThreats(s);}else currentThreats=[];
  const urgent=mode!=='lesson'&&(mode==='local'||s.t===1)&&!st.done?currentThreats.find(x=>x.loss>.3):null;
  showCoach(mode==='lesson'?(coachMove||lessonIntro(lessons[activeLesson])):st.done?'Partie terminée. Analyse tes coups, puis rejoue pour progresser.':urgent?threatMessage(urgent,studentType==='child'):coachMove||'Le Maître observe le plateau : essaie d’occuper le centre et garde tes pièces en sécurité.');document.getElementById('plyCount').textContent=movesSAN.length+' demi-coups';let h=document.getElementById('history');h.innerHTML=movesSAN.length?movesSAN.map((s,i)=>'<span>'+(i%2===0?'<strong>'+ (Math.floor(i/2)+1)+'.</strong> ':'&nbsp;&nbsp;')+s+'</span>').join(''):'<span class="empty">Les coups apparaîtront ici.</span>';h.scrollTop=h.scrollHeight;let score=evalPos(s),pct=Math.round(Math.min(97,Math.max(3,50+45*Math.tanh(score/8))));document.getElementById('evalFill').style.width=pct+'%';document.getElementById('evalText').textContent=pct+' / '+(100-pct);document.getElementById('undo').disabled=gameHistory.length===1;
@@ -1284,6 +1315,8 @@ function refresh(){let s=current(),st=status(gameHistory);sftDrawMission();const
  document.getElementById('mentorQuestion').textContent=lessonActive?(lessonFinished?'Sais-tu expliquer pourquoi ce coup fonctionne ?':'Lis la mission, puis utilise un indice si besoin.'):
  checked(s)?'Comment répondre à cet échec ?':major?'Peux-tu sauver cette pièce, la défendre, ou capturer son attaquant ?':'Avant ton coup : que pourrais-tu prendre, et comment ton adversaire pourrait-il répondre ?';
  document.getElementById('mentorValue').textContent=lessonActive?'':major?`Toutes les attaques : ${threats.length} pièce(s) · ${threats.reduce((v,x)=>v+x.attackers.length,0)} attaque(s) légale(s) recensée(s) · valeurs de référence : pion 1, cavalier 3, fou 3, tour 5, dame 9`:'Valeurs de référence : pion 1 · cavalier 3 · fou 3 · tour 5 · dame 9';
+ 
+ sftShowCheckOrigin(s);
 
  }
 function cancelAI(){clearTimeout(aiTimer);busy=false;clearFilm();showThreatArrow(null);anim=[];selected=-1;legalTargets=[];pending=null;clearDanger();lastPlayerThreat=null;document.getElementById('promoModal').style.display='none';}
