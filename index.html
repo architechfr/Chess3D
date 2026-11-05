@@ -229,7 +229,7 @@ html,body{overscroll-behavior-y:contain}
 }
 /* V5.5 : accents tactiques visibles, sans recouvrir les figurines */
 .mentor-value{font-size:11px;color:#e4c996;line-height:1.45;margin-top:8px;padding:8px 10px;border-left:3px solid #be9b63;background:#a8853a0d;border-radius:4px}
-.threat-arrow{stroke:#f16a60;stroke-width:4;filter:drop-shadow(0 1px 4px #000a)}
+.threat-arrow{stroke:#f16a60;stroke-width:2.8;filter:drop-shadow(0 1px 3px #0008)}
 .tactical-brief{margin-top:8px;font-size:12px;line-height:1.55;color:#e5e9d9}
 /* V5.6 : l'analyse devient un mini-tutoriel interactif, pas un simple avertissement. */
 .exchange-film{border:1px solid #d6a86878;border-radius:14px;background:linear-gradient(135deg,#24313b,#13242d);padding:13px;margin:12px 0;color:#f1e7d6}
@@ -548,6 +548,44 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
 .sft-board2d[data-piece-style="prestige"] .sft-piece-art{filter:drop-shadow(0 3px 1px #0009) drop-shadow(0 0 1px #e8c37d)}
 .sft-board2d[data-piece-style="modern"] .sft-piece-art{filter:drop-shadow(0 1px 0 #0008)}
 .sft-board2d[data-piece-style="classic"] .sft-piece-art{filter:drop-shadow(0 2px 1px #0007)}
+
+/* Dedicated uncluttered landscape layout for the playable 2D board. */
+.sft-2d-full-btn{border:1px solid #f2d08d;border-radius:9px;background:#253d47;color:#ffe4aa;font-size:12px;font-weight:800;padding:9px 11px;white-space:nowrap;min-height:40px;cursor:pointer}
+.sft-2d-full-btn[hidden],.install-top[hidden],#railInstall[hidden]{display:none!important}
+.shell.immersive.sft-immersive-2d>header,.shell.immersive.sft-immersive-2d>footer,.shell.immersive.sft-immersive-2d .sft-rail,.shell.immersive.sft-immersive-2d .panel{display:none!important}
+.shell.immersive.sft-immersive-2d main{display:grid!important;grid-template-columns:minmax(0,1fr) clamp(230px,30vw,360px)!important;gap:0!important;height:100dvh!important;overflow:hidden!important}
+.shell.immersive.sft-immersive-2d .board-column{height:100dvh!important;min-width:0!important;min-height:0!important}
+.shell.immersive.sft-immersive-2d .stage{height:calc(100dvh - 48px)!important;min-height:0!important;width:100%!important;flex:1 1 0!important}
+.shell.immersive.sft-immersive-2d .sft-board2d{padding:4px!important}
+.shell.immersive.sft-immersive-2d .sft-board2d-frame{width:min(calc(100% - 6px),calc(100dvh - 58px))!important;max-width:100%!important;max-height:100%!important;aspect-ratio:1!important;flex:0 0 auto!important;--sft-coord-gutter:clamp(14px,2.8dvh,24px);padding:var(--sft-coord-gutter)!important}
+.shell.immersive.sft-immersive-2d .board-toolbar{height:48px!important;min-height:48px!important;flex:0 0 48px!important;justify-content:flex-start!important;gap:8px!important;padding:4px 8px!important}
+.shell.immersive.sft-immersive-2d .camera-tools,.shell.immersive.sft-immersive-2d .compact-controls,.shell.immersive.sft-immersive-2d .toolbar-label,.shell.immersive.sft-immersive-2d .compact-pan-help,.shell.immersive.sft-immersive-2d .sft-piece-style-control{display:none!important}
+.shell.immersive.sft-immersive-2d .sft-2d-full-btn{display:inline-flex!important;align-items:center;justify-content:center;order:10;margin-left:auto;min-height:37px}
+.shell.immersive.sft-immersive-2d .quick-undo{display:inline-flex!important;min-height:37px}
+.shell.immersive.sft-immersive-2d .sft-right-column{display:flex!important;grid-column:2!important;width:100%!important;height:100dvh!important;min-height:0!important;overflow:hidden!important}
+.shell.immersive.sft-immersive-2d .academy-dock{width:100%!important;height:100%!important;min-height:0!important;overflow-y:auto!important;margin:0!important;border-radius:0!important;padding:8px!important;overscroll-behavior:contain}
+.shell.immersive.sft-immersive-2d .mentor-avatar,.shell.immersive.sft-immersive-2d .mentor-details,.shell.immersive.sft-immersive-2d #mentorOptions,.shell.immersive.sft-immersive-2d #glossaryPanel,.shell.immersive.sft-immersive-2d .mentor-value{display:none!important}
+.shell.immersive.sft-immersive-2d .mentor-name{font-size:13px!important}
+.shell.immersive.sft-immersive-2d .mentor-controls{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important}
+.shell.immersive.sft-immersive-2d .mentor-controls .mbtn{font-size:11px!important;padding:7px 4px!important;min-height:34px}
+.shell.immersive.sft-immersive-2d #lessonMenu,.shell.immersive.sft-immersive-2d #glossaryBtn,.shell.immersive.sft-immersive-2d #nextLesson{display:none!important}
+.shell.immersive.sft-immersive-2d .mentor-threats{margin:6px 0;padding:8px}
+.install-guide{padding-left:23px;margin:10px 0;display:grid;gap:9px;color:#f1e5d0;font-size:13px;line-height:1.5}
+.install-note{font-size:12px;line-height:1.5;color:#c5d8d7;border-left:3px solid #e8bd74;padding:9px 10px;background:#0b2434}
+.install-copy-link{border:1px solid #6b9c9d;border-radius:9px;background:#173a46;color:#dff8f1;padding:10px 12px;font-weight:700;margin:7px 0}
+@media(orientation:landscape) and (max-height:570px){
+.shell.immersive.sft-immersive-2d main{grid-template-columns:minmax(0,1fr) clamp(215px,33vw,300px)!important}
+.shell.immersive.sft-immersive-2d .sft-board2d-frame{width:min(calc(100% - 4px),calc(100dvh - 54px))!important;--sft-coord-gutter:14px}
+.shell.immersive.sft-immersive-2d .academy-dock{padding:6px!important}
+.shell.immersive.sft-immersive-2d .mentor-threat-intro{display:none!important}
+}
+@media(orientation:portrait) and (max-width:770px){
+.shell.immersive.sft-immersive-2d main{display:flex!important;flex-direction:column!important}
+.shell.immersive.sft-immersive-2d .board-column{height:63dvh!important;flex:0 0 63dvh!important}
+.shell.immersive.sft-immersive-2d .stage{height:calc(63dvh - 48px)!important}
+.shell.immersive.sft-immersive-2d .sft-board2d-frame{width:min(calc(100% - 6px),calc(63dvh - 58px))!important}
+.shell.immersive.sft-immersive-2d .sft-right-column{height:37dvh!important;flex:1 1 auto!important;overflow-y:auto!important}
+}
 </style>
 </head>
 <body>
@@ -577,8 +615,8 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
 <button type="button" class="rail-btn" id="railInstall">↓ Installer le jeu</button>
 <div class="rail-foot"><strong>SALES FILS · CHESS</strong><small>11 leçons, sauvegarde locale et analyse pédagogique expérimentale. Pas de partie en ligne actuellement.</small></div>
 </aside>
-<div class="board-column"><section class="stage" id="stage" aria-label="Échiquier 3D interactif"><canvas id="gl" aria-label="Jeu d'échecs 3D : toucher une pièce puis une destination"></canvas><div class="board-label-layer" id="boardLabels" aria-hidden="true"></div><div id="sftBoard2D" class="sft-board2d" hidden aria-label="Échiquier 2D interactif"><div class="sft-board2d-frame"><div class="sft-board2d-grid" id="sftBoard2DGrid" role="grid" aria-label="Plateau classique 2D"></div><div class="sft-2d-files" aria-hidden="true">ABCDEFGH</div><div class="sft-2d-ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div></div></div><svg class="mentor-overlay" id="mentorSvg" aria-hidden="true"><defs><marker id="mentorArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#91eac4"/></marker><marker id="threatArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#f16a60"/></marker><marker id="replyArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#58c3e7"/></marker></defs><path id="mentorPath" class="mentor-arrow" marker-end="url(#mentorArrowHead)" style="display:none"/><path id="threatPath" class="mentor-arrow threat-arrow" marker-end="url(#threatArrowHead)" style="display:none"/><path id="replyPath" class="mentor-arrow reply-arrow" marker-end="url(#replyArrowHead)" style="display:none"/></svg><div id="mentorFrom" class="mentor-point"></div><div id="mentorTo" class="mentor-point to"></div><div class="stage-top"><div class="eyebrow">SFT CHESS · L'ARÈNE DES STRATÈGES</div><div class="stage-title">À toi de jouer !</div></div>
-<div id="sftMissionBanner" class="sft-mission-banner" hidden aria-live="polite"><span class="sft-mission-tag" id="sftMissionTag">🎯 MISSION</span><strong id="sftMissionGoal">Trouve le meilleur coup</strong><small id="sftMissionPrompt">Sélectionne une pièce, puis sa case d'arrivée sur le plateau.</small></div><div class="sft-play-hud" id="sftPlayHud" aria-live="polite"><span class="hud-beacon"></span><span id="sftHudTurn">PRÊT À JOUER</span></div><div class="sft-game-moment" id="sftGameMoment" hidden aria-live="polite"><span class="sft-moment-symbol" id="sftMomentIcon">✨</span><span id="sftMomentText"></span></div><div class="notice" id="notice"></div><div class="edition-stamp" aria-hidden="true">ATELIER · ÉDITION NOYER & LAITON</div></section><nav class="board-toolbar" aria-label="Commandes de partie et caméra"><button type="button" id="sftViewToggle" class="sft-view-toggle" aria-label="Passer en vue 2D classique" aria-pressed="false">♟ Vue 2D · Classique</button><label class="sft-piece-style-control" id="sftPieceStyleControl" hidden>♛ Pièces <select id="sftPieceStyle" aria-label="Choisir le style des pièces 2D"><option value="classic">Classique</option><option value="prestige">Staunton Prestige</option><option value="modern">Minimaliste moderne</option></select></label><button type="button" id="quickUndo" class="quick-undo" aria-label="Annuler le dernier coup" title="Annuler le dernier coup" disabled><span aria-hidden="true">↶</span><span class="undo-word">Annuler</span></button><div class="toolbar-label">◈ <span>CAMÉRA</span><small>✋ tire le plateau vers toi · 🔒 angle fixe · 🤏 zoom · ⌂ retour à ma vue</small></div><span class="compact-pan-help" aria-hidden="true">✋ Tire le plateau</span><div class="compact-controls" aria-label="Caméra simplifiée"><button class="compact-btn" id="homeMini" aria-label="Revenir à ma vue mémorisée" title="Ma vue">⌂</button><button class="compact-btn" id="fullMini" aria-label="Basculer le plein écran" title="Plein écran">⛶</button><button class="compact-btn" id="camExpand" aria-label="Afficher les réglages caméra" title="Réglages de caméra">⚙</button></div><div class="camera-tools"><button class="cam-btn" id="rotate" title="Tourner le plateau" aria-label="Tourner le plateau">↻</button><button class="cam-btn" id="panbtn" title="Déplacer le plateau sans tourner la caméra (clic-glisser ou doigt)" aria-label="Activer le déplacement du plateau" aria-pressed="false">✋</button><button class="cam-btn" id="camCollapse" title="Masquer les outils caméra" aria-label="Masquer les outils de caméra">▾</button><button class="cam-btn" id="lockcam" title="Verrouiller la caméra" aria-label="Verrouiller la caméra" aria-pressed="false">🔓</button><button class="cam-btn" id="resetcam" title="Retour à ma vue (ou caméra initiale)" aria-label="Retour à ma vue">⌂</button><button class="cam-btn" id="savecam" title="Enregistrer cette position et cet angle comme ma vue" aria-label="Mémoriser la position actuelle du plateau">★</button><button class="cam-btn" id="zoomout" title="Éloigner" aria-label="Zoom arrière">−</button><button class="cam-btn" id="zoomin" title="Rapprocher" aria-label="Zoom avant">+</button><button class="cam-btn" id="viewbtn" title="Alterner vue de jeu et vue 3D" aria-label="Passer en vue cinématique">◩</button><button class="cam-btn fs" id="fullbtn" title="Plein écran" aria-label="Passer en plein écran">⛶</button></div></nav>
+<div class="board-column"><section class="stage" id="stage" aria-label="Échiquier 3D interactif"><canvas id="gl" aria-label="Jeu d'échecs 3D : toucher une pièce puis une destination"></canvas><div class="board-label-layer" id="boardLabels" aria-hidden="true"></div><div id="sftBoard2D" class="sft-board2d" hidden aria-label="Échiquier 2D interactif"><div class="sft-board2d-frame"><div class="sft-board2d-grid" id="sftBoard2DGrid" role="grid" aria-label="Plateau classique 2D"></div><div class="sft-2d-files" aria-hidden="true">ABCDEFGH</div><div class="sft-2d-ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div></div></div><svg class="mentor-overlay" id="mentorSvg" aria-hidden="true"><defs><marker id="mentorArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#91eac4"/></marker><marker id="threatArrowHead" markerUnits="userSpaceOnUse" markerWidth="17" markerHeight="14" refX="14" refY="7" orient="auto"><path d="M0 1L14 7L0 13Z" fill="#f16a60"/></marker><marker id="replyArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#58c3e7"/></marker></defs><path id="mentorPath" class="mentor-arrow" marker-end="url(#mentorArrowHead)" style="display:none"/><path id="threatPath" class="mentor-arrow threat-arrow" marker-end="url(#threatArrowHead)" style="display:none"/><path id="replyPath" class="mentor-arrow reply-arrow" marker-end="url(#replyArrowHead)" style="display:none"/></svg><div id="mentorFrom" class="mentor-point"></div><div id="mentorTo" class="mentor-point to"></div><div class="stage-top"><div class="eyebrow">SFT CHESS · L'ARÈNE DES STRATÈGES</div><div class="stage-title">À toi de jouer !</div></div>
+<div id="sftMissionBanner" class="sft-mission-banner" hidden aria-live="polite"><span class="sft-mission-tag" id="sftMissionTag">🎯 MISSION</span><strong id="sftMissionGoal">Trouve le meilleur coup</strong><small id="sftMissionPrompt">Sélectionne une pièce, puis sa case d'arrivée sur le plateau.</small></div><div class="sft-play-hud" id="sftPlayHud" aria-live="polite"><span class="hud-beacon"></span><span id="sftHudTurn">PRÊT À JOUER</span></div><div class="sft-game-moment" id="sftGameMoment" hidden aria-live="polite"><span class="sft-moment-symbol" id="sftMomentIcon">✨</span><span id="sftMomentText"></span></div><div class="notice" id="notice"></div><div class="edition-stamp" aria-hidden="true">ATELIER · ÉDITION NOYER & LAITON</div></section><nav class="board-toolbar" aria-label="Commandes de partie et caméra"><button type="button" id="sftViewToggle" class="sft-view-toggle" aria-label="Passer en vue 2D classique" aria-pressed="false">♟ Vue 2D · Classique</button><button type="button" id="sft2dFullscreen" class="sft-2d-full-btn" hidden aria-pressed="false">⛶ Plein écran paysage</button><label class="sft-piece-style-control" id="sftPieceStyleControl" hidden>♛ Pièces <select id="sftPieceStyle" aria-label="Choisir le style des pièces 2D"><option value="classic">Classique</option><option value="prestige">Staunton Prestige</option><option value="modern">Minimaliste moderne</option></select></label><button type="button" id="quickUndo" class="quick-undo" aria-label="Annuler le dernier coup" title="Annuler le dernier coup" disabled><span aria-hidden="true">↶</span><span class="undo-word">Annuler</span></button><div class="toolbar-label">◈ <span>CAMÉRA</span><small>✋ tire le plateau vers toi · 🔒 angle fixe · 🤏 zoom · ⌂ retour à ma vue</small></div><span class="compact-pan-help" aria-hidden="true">✋ Tire le plateau</span><div class="compact-controls" aria-label="Caméra simplifiée"><button class="compact-btn" id="homeMini" aria-label="Revenir à ma vue mémorisée" title="Ma vue">⌂</button><button class="compact-btn" id="fullMini" aria-label="Basculer le plein écran" title="Plein écran">⛶</button><button class="compact-btn" id="camExpand" aria-label="Afficher les réglages caméra" title="Réglages de caméra">⚙</button></div><div class="camera-tools"><button class="cam-btn" id="rotate" title="Tourner le plateau" aria-label="Tourner le plateau">↻</button><button class="cam-btn" id="panbtn" title="Déplacer le plateau sans tourner la caméra (clic-glisser ou doigt)" aria-label="Activer le déplacement du plateau" aria-pressed="false">✋</button><button class="cam-btn" id="camCollapse" title="Masquer les outils caméra" aria-label="Masquer les outils de caméra">▾</button><button class="cam-btn" id="lockcam" title="Verrouiller la caméra" aria-label="Verrouiller la caméra" aria-pressed="false">🔓</button><button class="cam-btn" id="resetcam" title="Retour à ma vue (ou caméra initiale)" aria-label="Retour à ma vue">⌂</button><button class="cam-btn" id="savecam" title="Enregistrer cette position et cet angle comme ma vue" aria-label="Mémoriser la position actuelle du plateau">★</button><button class="cam-btn" id="zoomout" title="Éloigner" aria-label="Zoom arrière">−</button><button class="cam-btn" id="zoomin" title="Rapprocher" aria-label="Zoom avant">+</button><button class="cam-btn" id="viewbtn" title="Alterner vue de jeu et vue 3D" aria-label="Passer en vue cinématique">◩</button><button class="cam-btn fs" id="fullbtn" title="Plein écran" aria-label="Passer en plein écran">⛶</button></div></nav>
 </div>
 <div class="sft-right-column"><section class="academy-dock" aria-label="Maître d'échecs interactif">
 <section class="sft-mission-dock" id="sftMissionDock" hidden aria-label="Exercice en cours">
@@ -594,8 +632,8 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
 </div>
 </section>
 <div class="mentor-top"><div class="mentor-avatar">♛</div><div class="mentor-content"><div class="mentor-name">♛ Le Maître tacticien <span id="mentorMode">· Conseils en direct</span><small class="mentor-engine-label">● Analyse locale · menaces multiples · expérimentale</small></div><p id="coach" aria-live="polite">Bienvenue ! Apprenons les échecs ensemble. Tu peux commencer un cours ou jouer librement.</p></div></div>
-<div class="mentor-controls"><button class="mbtn primary" id="hint">💡 Un indice</button><button class="mbtn" id="showMove">↗ Voir le coup</button><button class="mbtn" id="whyBtn">❔ Pourquoi ?</button><button class="mbtn" id="lessonMenu">📚 Cours</button><button class="mbtn" id="glossaryBtn" aria-expanded="false">📖 Les mots</button><button class="mbtn" id="nextLesson">Leçon suivante →</button></div>
-<section id="exchangeFilm" class="exchange-film" hidden aria-label="Leçon tactique en trois temps"><strong>♘ Le regard du Maître · Trois coups à imaginer</strong><p class="film-sub" id="exchangeFilmIntro"></p><div class="film-steps"><button type="button" class="film-step" data-step="1">1 · Ton coup</button><button type="button" class="film-step" data-step="2">2 · Sa réponse</button><button type="button" class="film-step" data-step="3">3 · Ta reprise</button></div><p class="film-result" id="exchangeFilmResult" aria-live="polite"></p></section><div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
+<div class="mentor-controls"><button class="mbtn primary" id="hint">💡 Un indice</button><button class="mbtn" id="showMove">↗ Voir le coup</button><button class="mbtn" id="whyBtn">❔ Pourquoi ?</button><button class="mbtn" id="tacticScan">🔍 Diagnostic tactique</button><button class="mbtn" id="deepAnalyze">♟ Analyser avec Stockfish</button><button class="mbtn" id="lessonMenu">📚 Cours</button><button class="mbtn" id="glossaryBtn" aria-expanded="false">📖 Les mots</button><button class="mbtn" id="nextLesson">Leçon suivante →</button></div>
+<section id="exchangeFilm" class="exchange-film" hidden aria-label="Leçon tactique en trois temps"><strong>♘ Le regard du Maître · Trois coups à imaginer</strong><p class="film-sub" id="exchangeFilmIntro"></p><div class="film-steps"><button type="button" class="film-step" data-step="1">1 · Ton coup</button><button type="button" class="film-step" data-step="2">2 · Sa réponse</button><button type="button" class="film-step" data-step="3">3 · Ta reprise</button></div><p class="film-result" id="exchangeFilmResult" aria-live="polite"></p></section><div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div id="mentorImmediate" class="warning-box" role="status" aria-live="polite" style="display:none;background:#2d3030;border:1px solid #d4a860;color:#fff1d6;margin-top:8px"></div><section class="mentor-threats" style="margin:9px 0" aria-label="Analyse approfondie Stockfish"><div class="mentor-threats-head"><strong>♟ Analyse approfondie · Stockfish 19 Lite</strong><small id="deepEngineStatus" aria-live="polite">Non chargé</small></div><label style="display:flex;gap:9px;align-items:center;margin:7px 0;color:#d5e6dd;font-size:12px">Niveau <select id="deepProfile" style="flex:1;min-width:0;background:#142c34;color:#f8e8c5;padding:7px;border:1px solid #6b7881;border-radius:7px"><option value="beginner">Débutant · conseils simples</option><option value="club" selected>Intermédiaire · variantes</option><option value="advanced">Avancé · analyse détaillée</option></select></label><div id="deepEngineReport" style="font-size:12px;line-height:1.65;white-space:pre-line;color:#d1e4e2" aria-live="polite">Le diagnostic tactique local fonctionne sans connexion. Pour une analyse sur plusieurs coups, appuie sur « Analyser avec Stockfish ».</div><small style="color:#a9bfbd">Moteur libre GPL‑3.0 · calcul dans le navigateur · premier chargement connecté. Les évaluations sont indicatives.</small></section><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
 <div class="glossary-panel" id="glossaryPanel" hidden>
  <strong>Le dictionnaire du Maître — les mots expliqués simplement</strong>
  <div class="glossary-grid">
@@ -639,9 +677,10 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
 </div>
 <div class="archive-overlay" id="installOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="installTitle">
  <div class="archive-card"><div class="archive-title"><h2 id="installTitle">Installer SFT CHESS</h2><button id="installClose" type="button" aria-label="Fermer">✕</button></div>
- <p id="installInstructions">Ouvre ce jeu depuis son adresse HTTPS dans Chrome, Edge ou Safari pour l’ajouter à ton écran d’accueil.</p>
+ <p id="installInstructions">Installe SFT CHESS sur ton appareil.</p><ol id="installSteps" class="install-guide"></ol><p id="installBrowserTip" class="install-note"></p><button id="installCopyLink" class="install-copy-link" type="button">Copier le lien pour Chrome ou Safari</button>
  <button class="btn primary" id="installDone" type="button">Compris</button></div>
 </div>
+<script src="./stockfish-bridge.js" defer></script>
 <script>
 'use strict';
 // SFT Chess: self-contained legal chess rules + procedural WebGL 3D renderer.
@@ -857,7 +896,7 @@ function updateMentorOverlay(t){if(t-lastOverlayUpdate<70)return;lastOverlayUpda
  el.textContent=sq(i);if(!p){el.style.display='none';continue;}el.style.display='block';el.style.left=p.x+'px';el.style.top=p.y+'px';}
  const path=document.getElementById('mentorPath'),svg=document.getElementById('mentorSvg'),from=document.getElementById('mentorFrom'),to=document.getElementById('mentorTo');
  const redPath=document.getElementById('threatPath'),bluePath=document.getElementById('replyPath');
- if(threatArrow){let p=squareOnScreen(threatArrow[0]),q=squareOnScreen(threatArrow[1]);if(p&&q){let dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy)||1;redPath.style.display='';redPath.setAttribute('d',`M ${p.x+dx/len*18} ${p.y+dy/len*18} L ${q.x-dx/len*23} ${q.y-dy/len*23}`);}else redPath.style.display='none';}else redPath.style.display='none';
+ if(threatArrow){let p=squareOnScreen(threatArrow[0]),q=squareOnScreen(threatArrow[1]);if(p&&q){let dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy)||1;redPath.style.display='';redPath.setAttribute('d',`M ${p.x+dx/len*24} ${p.y+dy/len*24} L ${q.x-dx/len*42} ${q.y-dy/len*42}`);}else redPath.style.display='none';}else redPath.style.display='none';
  if(replyArrow){let p=squareOnScreen(replyArrow[0]),q=squareOnScreen(replyArrow[1]);if(p&&q){let dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy)||1;bluePath.style.display='';bluePath.setAttribute('d',`M ${p.x+dx/len*16} ${p.y+dy/len*16} L ${q.x-dx/len*24} ${q.y-dy/len*24}`);}else bluePath.style.display='none';}else bluePath.style.display='none';
  svg.setAttribute('viewBox',`0 0 ${canvas.clientWidth} ${canvas.clientHeight}`);
  if(!mentorArrow){path.style.display='none';from.style.display='none';to.style.display='none';return;}
@@ -1001,6 +1040,107 @@ function tacticalThreats(s){return threatsForSide(s,s.t);}
 // Sert à inspecter toutes les menaces possibles après un coup envisagé,
 // au lieu de ne regarder que l'attaque de la pièce déplacée.
 function threatsAfterMove(s,m){return threatsForSide(apply(s,m),s.t);}
+
+/* Tactical observatory: legal moves are used for captures; geometric rays for pins
+   and possible skewers. These motifs are not a complete engine evaluation. */
+function mateInOne(s){
+ const moves=legal(s);
+ for(const m of moves){
+  const next=apply(s,m);
+  if(checked(next)&&legal(next).length===0)return m;
+ }
+ return null;
+}
+function pinnedPieces(s,victimSide){
+ const king=s.b.indexOf(victimSide===1?'K':'k'),out=[];
+ if(king<0)return out;
+ for(const d of [...dirs.r,...dirs.b]){
+  let blocker=-1;
+  for(let i=king+d;on(i);i+=d){
+   const piece=s.b[i];if(piece==='.')continue;
+   if(blocker<0){if(side(piece)===victimSide){blocker=i;continue;}break;}
+   const slider=piece.toLowerCase(),matches=dirs.r.includes(d)?slider==='r'||slider==='q':slider==='b'||slider==='q';
+   if(side(piece)===-victimSide&&matches)out.push({from:i,to:blocker,king,piece:s.b[blocker].toLowerCase(),attacker:slider});
+   break;
+  }
+ }
+ return out;
+}
+function doubleAttacks(s,victimSide){
+ const grouped=new Map();
+ for(const threat of threatsForSide(s,victimSide)){
+  for(const a of threat.attackers){
+   if(threat.points<3)continue;
+   if(!grouped.has(a.from))grouped.set(a.from,[]);
+   grouped.get(a.from).push(threat.to);
+  }
+ }
+ const out=[];
+ for(const [from,targets] of grouped){
+  const unique=[...new Set(targets)];
+  if(unique.length>=2)out.push({from,targets:unique,piece:s.b[from].toLowerCase()});
+ }
+ return out;
+}
+function potentialSkewers(s,victimSide){
+ const found=[],enemy=-victimSide;
+ for(let f=0;f<128;f++){
+  if(!on(f)||side(s.b[f])!==enemy)continue;
+  const attacker=s.b[f].toLowerCase();
+  const rays=attacker==='q'?[...dirs.r,...dirs.b]:attacker==='r'?dirs.r:attacker==='b'?dirs.b:[];
+  for(const d of rays){
+   let front=-1;
+   for(let i=f+d;on(i);i+=d){
+    if(s.b[i]==='.')continue;
+    if(side(s.b[i])!==victimSide)break;
+    if(front<0){front=i;continue;}
+    if(mp(s.b[front])>mp(s.b[i])&&mp(s.b[i])>=3)found.push({from:f,to:front,behind:i,attacker});
+    break;
+   }
+  }
+ }
+ return found;
+}
+function defensiveCandidates(s,threat,limit=2){
+ if(!threat)return [];
+ const piece=s.b[threat.to],options=[];
+ for(const m of legal(s)){
+  const after=apply(s,m),place=m[0]===threat.to?m[1]:threat.to;
+  if(after.b[place]!==piece)continue;
+  const threats=threatsForSide(after,s.t),risk=threats.find(x=>x.to===place);
+  const newLoss=risk?risk.loss:0;
+  // Saving a piece is a tactical idea only if the attack disappears
+  // or if the material consequences really improve.
+  if(risk&&newLoss>=threat.loss-.3)continue;
+  if(threats.some(x=>x.to!==place&&x.loss>Math.max(3,threat.loss+2)))continue;
+  if(mateInOne(after))continue;
+  const counter=isCapture(s,m)&&m[1]===threat.from;
+  options.push({move:m,score:(risk?0:3)+(threat.loss-newLoss)*2+(counter?2:0),kind:counter?'capture de l’attaquant':m[0]===threat.to?'déplacement':'protection ou interception'});
+ }
+ return options.sort((a,b)=>b.score-a.score).slice(0,limit);
+}
+function tacticalPicture(s){
+ const color=s.t,pins=pinnedPieces(s,color),forks=doubleAttacks(s,color),skewers=potentialSkewers(s,color);
+ const attackedNow=getThreats(s),lines=[];
+ const mate=mateInOne(s);
+ if(checked(s))lines.push('🚨 ÉCHEC : il faut d’abord répondre à l’attaque contre ton roi.');
+ if(mate)lines.push('♛ Mat en un coup possible : '+sq(mate[0]).toUpperCase()+' → '+sq(mate[1]).toUpperCase()+'.');
+ if(attackedNow.length){
+  lines.push('⚠ '+attackedNow.length+' pièce(s) actuellement attaquée(s), dont '+attackedNow.filter(x=>x.loss>.3).length+' perte(s) matérielle(s) possibles.');
+  for(const t of attackedNow.slice(0,3))lines.push('• '+pname[t.piece]+' '+sq(t.to).toUpperCase()+' : '+pname[t.by]+' '+sq(t.from).toUpperCase()+(t.loss>.3?' (perte possible ~'+t.loss.toFixed(1)+' pts)':' (reprise ou échange possible)'));
+  const options=defensiveCandidates(s,attackedNow[0],2);
+  if(options.length)lines.push('Pistes de parade à vérifier : '+options.map(x=>sq(x.move[0]).toUpperCase()+' → '+sq(x.move[1]).toUpperCase()+' ('+x.kind+')').join(' ; ')+'.');
+ }
+ for(const p of pins.slice(0,2))lines.push('📌 Clouage : '+pname[p.piece]+' '+sq(p.to).toUpperCase()+' devant ton roi, par '+pname[p.attacker]+' '+sq(p.from).toUpperCase()+'.');
+ for(const f of forks.slice(0,2))lines.push('♞ Double attaque : '+pname[f.piece]+' '+sq(f.from).toUpperCase()+' attaque '+f.targets.map(sq).join(' et ').toUpperCase()+'.');
+ for(const p of skewers.slice(0,2))lines.push('↗ Enfilade potentielle : '+pname[p.attacker]+' '+sq(p.from).toUpperCase()+' vise '+sq(p.to).toUpperCase()+' devant '+sq(p.behind).toUpperCase()+'.');
+ if(!lines.length)lines.push('Aucun mat immédiat ni motif tactique évident identifié. Cela ne prouve pas que la position soit sans danger.');
+ lines.push('Analyse locale courte : les combinaisons forcées à plusieurs coups restent à vérifier.');
+ const first=attackedNow[0];
+ const focus=first?[first.from,first.to]:pins[0]?[pins[0].from,pins[0].to]:forks[0]?[forks[0].from,forks[0].targets[0]]:skewers[0]?[skewers[0].from,skewers[0].to]:null;
+ return {text:lines.join('\n'),focus,pins,forks,skewers,mate};
+}
+
 function urgentThreat(s){return getThreats(s).find(x=>x.loss>.3)||null;}
 function riskAfterMove(s,m){
  const next=apply(s,m),piece=next.b[m[1]];
@@ -1104,7 +1244,14 @@ function recomputeDanger(){
 }
 function pendingSafety(m){
  if(mode==='lesson'||mode==='local'||current().t!==1)return false;
- let s=current(),r=dangerAfterMove(s,m),exposure=riskAfterMove(s,m),report=getReport(s,m),best=bestTeachingMove(s);
+ let s=current();
+ const nextCandidate=apply(s,m),forcedReply=mateInOne(nextCandidate);
+ if(forcedReply){if(dangerPending===moveKey(m)){dangerPending='';return false;}
+  dangerPending=moveKey(m);
+  const msg='🚨 DANGER DE MAT : après ce coup, l’adversaire peut faire échec et mat immédiatement avec '+pname[nextCandidate.b[forcedReply[0]].toLowerCase()]+' '+sq(forcedReply[0]).toUpperCase()+' → '+sq(forcedReply[1]).toUpperCase()+'. Appuie une seconde fois sur la case si tu souhaites jouer malgré cette menace.';
+  showThreatArrow([forcedReply[0],forcedReply[1]]);say(msg);dangerNotice(msg);return true;
+ }
+ let r=dangerAfterMove(s,m),exposure=riskAfterMove(s,m),report=getReport(s,m),best=bestTeachingMove(s);
  let danger=r;
  const anticipated=threatsAfterMove(s,m);
  const previous=getThreats(s);
@@ -1174,22 +1321,118 @@ function sftMoment(label,icon='✨',kind=''){
  if(kind==='win'&&sftFxEnabled){const stage=document.getElementById('stage');stage.classList.remove('sft-win-flash');void stage.offsetWidth;stage.classList.add('sft-win-flash');setTimeout(()=>stage.classList.remove('sft-win-flash'),1650);}
  el._timer=setTimeout(()=>el.hidden=true,kind==='win'?3000:2000);
 }
+
+/* Stockfish 19 Lite: opt-in worker search, asynchronous and non-blocking.
+   Profiles affect the clarity and depth of explanation, not guarantees. */
+const deepEngineSettings={
+ beginner:{depth:9,time:450,multiPV:1},
+ club:{depth:12,time:850,multiPV:2},
+ advanced:{depth:16,time:1800,multiPV:3}
+};
+let deepBridge=null,deepResult=null,deepFen='',deepGeneration=0,deepBusy=false;
+let deepAutoEnabled=false,deepRefreshTimer=null;
+function serializeFen(s){
+ let ranks=[];
+ for(let r=0;r<8;r++){
+  let row='',empty=0;
+  for(let c=0;c<8;c++){const p=s.b[r*16+c];if(p==='.')empty++;else{if(empty){row+=empty;empty=0;}row+=p;}}
+  if(empty)row+=empty;ranks.push(row);
+ }
+ const castle=(s.c&1?'K':'')+(s.c&2?'Q':'')+(s.c&4?'k':'')+(s.c&8?'q':'');
+ return ranks.join('/')+' '+(s.t===1?'w':'b')+' '+(castle||'-')+' '+(s.ep>=0?sq(s.ep):'-')+' '+s.half+' '+s.full;
+}
+function deepMoveFromUCI(s,uci){
+ return legal(s).find(m=>moveKey(m).toLowerCase()===String(uci).toLowerCase())||null;
+}
+function deepDescribePV(s,items,maxMoves){
+ let currentState=s,names=[];
+ for(const uci of (items||[]).slice(0,maxMoves)){
+  const move=deepMoveFromUCI(currentState,uci);if(!move)break;
+  names.push((currentState.t===1?currentState.full+'. ':'... ')+san(currentState,move));
+  currentState=apply(currentState,move);
+ }
+ return names.join(' ');
+}
+function deepScoreLabel(s,v){
+ if(v.mate!==null)return v.mate>0?'mat annoncé en '+v.mate+' pour le camp au trait':'mat subi annoncé en '+Math.abs(v.mate);
+ if(v.cp===null)return 'évaluation indisponible';
+ const own=v.cp/100,white=own*(s.t===1?1:-1);
+ return 'évaluation '+(white>=0?'+':'')+white.toFixed(2)+' (Blancs)';
+}
+function deepTeachingText(s,result){
+ const profile=result.profile,primary=result.variations.find(x=>x.multiPV===1)||result.variations[0];
+ const firstMove=deepMoveFromUCI(s,result.bestmove);
+ if(!primary||!firstMove)return 'Le moteur a répondu sans variante exploitable. Le conseiller local reste disponible.';
+ const best=sq(firstMove[0]).toUpperCase()+' → '+sq(firstMove[1]).toUpperCase();
+ const line=deepDescribePV(s,primary.pv,profile==='beginner'?2:profile==='advanced'?8:5);
+ const score=deepScoreLabel(s,primary);
+ if(profile==='beginner')return 'Le moteur suggère '+best+'.\n'+(checked(s)?'Priorité : protéger ton roi.\n':'')+'Observe comment ton adversaire pourrait répondre : '+line+'.\nC’est une proposition, pas un coup obligatoire.';
+ const content=['Meilleure proposition : '+best+' · '+score+'.','Variante principale (coups possibles) : '+line+'.'];
+ if(profile==='advanced')content.push('Profondeur : '+primary.depth+' demi-coups, calcul local Stockfish 19 Lite.');
+ else content.push('Compare la réponse adverse avant de déplacer ta pièce.');
+ for(const v of result.variations.filter(x=>x.multiPV!==1).slice(0,profile==='advanced'?2:1)){
+  content.push('Alternative '+v.multiPV+' : '+deepDescribePV(s,v.pv,profile==='advanced'?8:4)+' · '+deepScoreLabel(s,v)+'.');
+ }
+ content.push('L’adversaire peut choisir d’autres réponses ; une évaluation n’est pas une certitude.');
+ return content.join('\n');
+}
+async function deepAnalyzePosition(showDetails=true){
+ const statusEl=document.getElementById('deepEngineStatus'),reportEl=document.getElementById('deepEngineReport');
+ if(!window.SFTStockfishBridge){deepAutoEnabled=false;statusEl.textContent='Indisponible';reportEl.textContent='Le module Stockfish n’a pas été chargé. Le diagnostic tactique local reste utilisable.';return;}
+ const position=current(),fen=serializeFen(position),generation=++deepGeneration;
+ if(!showDetails&&mode==='ai'&&position.t===-1)return;
+ const profile=document.getElementById('deepProfile').value,settings=deepEngineSettings[profile]||deepEngineSettings.club;
+ statusEl.textContent='Analyse en cours…';deepBusy=true;
+ if(showDetails)reportEl.textContent='Chargement du moteur et examen des réponses adverses…';
+ try{
+  if(!deepBridge)deepBridge=new SFTStockfishBridge('./vendor/stockfish/stockfish-19-lite-single.js');
+  const result=await deepBridge.analyze({...settings,fen,profile});
+  if(generation!==deepGeneration||serializeFen(current())!==fen||!result)return;
+  deepResult=result;deepFen=fen;deepBusy=false;
+  const main=result.variations.find(x=>x.multiPV===1)||result.variations[0];
+  statusEl.textContent=main?'Prêt · profondeur '+main.depth:'Prêt';
+  reportEl.textContent=deepTeachingText(position,result);
+  if(showDetails&&result.bestmove!=='(none)'){
+   const move=deepMoveFromUCI(position,result.bestmove);
+   if(move)showHintArrow(move);
+  }
+ }catch(err){
+  if(generation!==deepGeneration)return;
+  deepBusy=false;deepResult=null;deepFen='';deepAutoEnabled=false;
+  statusEl.textContent='Moteur externe indisponible';
+  reportEl.textContent='Stockfish ne peut pas démarrer ('+(err?.message||'chargement réseau')+'). Le Maître Tacticien local et ses alertes restent disponibles.';
+ }
+}
+document.getElementById('deepAnalyze').onclick=()=>{deepAutoEnabled=true;deepAnalyzePosition(true);};
+document.getElementById('deepProfile').onchange=()=>{deepResult=null;deepFen='';deepAnalyzePosition(true);};
+function deepScheduleRefresh(s){
+ if(!deepAutoEnabled)return;
+ clearTimeout(deepRefreshTimer);
+ if(status(gameHistory).done||mode==='lesson'||(mode==='ai'&&s.t===-1))return;
+ if(deepFen===serializeFen(s)&&deepResult)return;
+ deepRefreshTimer=setTimeout(()=>deepAnalyzePosition(false),250);
+}
+function deepBestMove(s){
+ if(deepResult&&deepFen===serializeFen(s))return deepMoveFromUCI(s,deepResult.bestmove);
+ return null;
+}
+
 function selectedHint(){
  if(mode==='lesson')return lessonMove();
- return bestTeachingMove(current())?.m||null;
+ return deepBestMove(current())||bestTeachingMove(current())?.m||null;
 }
 function mentorHint(){
  if(focusScenario&&focusScenario.state===current()&&mode!=='lesson'){showFilmStep(Math.min(3,filmStep+1||1));say('Le Maître détaille une réponse possible, sans jouer à ta place. Regarde le trajet affiché et compare les valeurs des pièces.');return;}
  const s=current(),m=selectedHint();if(!m){say('La partie est terminée : aucun coup disponible.');return;}
  hintLevel=Math.min(3,hintLevel+1);
- const l=mode==='lesson'?lessons[activeLesson]:null,urgent=!l?urgentThreat(s):null;
+ const l=mode==='lesson'?lessons[activeLesson]:null,urgent=!l?getThreats(s)[0]:null;
  if(l){
   if(hintLevel===1){say(l.h1);showHintArrow(null);showThreatArrow(null);}
   else if(hintLevel===2){say(l.h2);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(null);}
   else{say('Observe le trajet sur le plateau. '+l.why);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(m);}return;
  }
  if(urgent){
-  if(hintLevel===1){say(studentType==='child'?`Un danger se cache sur le plateau ! Regarde ton ${pname[urgent.piece]} : peut-il se faire manger ?`:`Avant de développer une autre pièce, examine ton ${pname[urgent.piece]} en ${sq(urgent.to).toUpperCase()}. Quel adversaire le menace ?`);showHintArrow(null);showThreatArrow(null);}
+  if(hintLevel===1){say(studentType==='child'?`Une pièce est attaquée ! Regarde ton ${pname[urgent.piece]} : peut-il se faire manger ?`:`Avant de développer une autre pièce, examine ton ${pname[urgent.piece]} en ${sq(urgent.to).toUpperCase()}. Quel adversaire le menace ?`);showHintArrow(null);showThreatArrow(null);}
   else if(hintLevel===2){say(threatMessage(urgent,studentType==='child'));showHintArrow(null);showThreatArrow(urgent.attacker);}
   else{say(threatMessage(urgent,studentType==='child')+` Une réponse raisonnable est de déplacer ${namedPiece(pname[s.b[m[0]].toLowerCase()])} vers ${sq(m[1]).toUpperCase()}. Je montre la flèche verte sur l’échiquier.`);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(m);showThreatArrow(urgent.attacker);}
   return;
@@ -1215,7 +1458,7 @@ function mentorWhy(){
  const urgent=getThreats(s)[0];
  if(focusScenario&&focusScenario.state===s){say(exposureText(focusScenario.r,s,focusScenario.m)+' Utilise le film des trois coups pour voir l’attaque et la reprise.');showFilmStep(2);return;}
  if(selected>=0&&exchangeTargets.length){const e=exchangeTargets[0];say(exposureText(e.r,s,e.m));showThreatArrow([e.r.attacker,e.r.to]);return;}
- if(!check&&urgent){say(threatMessage(urgent,studentType==='child')+' Une pièce peut être attaquée tout en étant défendue ; ici le calcul des reprises indique une perte possible. Le Maître ne connaît pas encore tous les pièges à plusieurs coups.');showThreatArrow(urgent.attacker);return;}
+ if(!check&&urgent){say(threatMessage(urgent,studentType==='child')+' Une attaque peut conduire à une perte ou à un échange : le Maître examine les reprises légales, sans garantir une analyse profonde.');showThreatArrow([urgent.from,urgent.to]);return;}
  if(check){say('Ton roi est en échec : la priorité absolue est de le sauver. Tu peux le déplacer, capturer la pièce menaçante ou bloquer la ligne d’attaque, si les règles le permettent.');return;}
  if(movesSAN.length===0){say(studentType==='child'?'Imagine le plateau comme un château : protège ton roi, ouvre des chemins à tes pièces et prends le centre avant de partir à l’aventure.':'Au début : contrôle le centre, développe cavaliers et fous, puis mets ton roi à l’abri grâce au roque. Évite les sorties prématurées de la dame.');return;}
  let pre=gameHistory[gameHistory.length-2],m=pre?legal(pre).find(x=>sq(x[1])===sq(lastMove?.[1])&&sq(x[0])===sq(lastMove?.[0])):null;
@@ -1223,6 +1466,7 @@ function mentorWhy(){
  say('Observe la position : quelles pièces sont attaquées, lesquelles sont protégées et quelles cases du centre peux-tu contrôler ?');
 }
 document.getElementById('whyBtn').onclick=mentorWhy;
+document.getElementById('tacticScan').onclick=()=>{if(mode==='lesson'&&lessonFinished)return;const view=tacticalPicture(current());say(view.text);if(view.focus)showThreatArrow(view.focus);else showThreatArrow(null);};
 document.getElementById('hint').onclick=mentorHint;
 document.getElementById('showMove').onclick=demonstrate;
 document.getElementById('lessonMenu').onclick=()=>document.getElementById('mentorOptions').classList.toggle('open');
@@ -1275,7 +1519,7 @@ function selectSquare(i){
   if(prev!==selected)recomputeDanger();
   if(selected>=0&&mode!=='lesson'){
    let urgent=getThreats(s)[0];
-   if(urgent){say(threatMessage(urgent,studentType==='child')+' Les pastilles des mouvements sélectionnés restent visibles.');return;}
+   if(urgent){say(threatMessage(urgent,studentType==='child')+' Cette alerte concerne la position actuelle, indépendamment des cases proposées.');showThreatArrow([urgent.from,urgent.to]);return;}
    let name=pname[s.b[selected].toLowerCase()];
    if(exchangeTargets.length){let e=exchangeTargets[0];say('Tu as choisi ton '+name+'. '+exposureText(e.r,s,e.m)+' Les cases orange cerclées de rouge ne sont pas sans risque.');}
    else if(captureTargets.length){let c=legal(s).find(m=>m[0]===selected&&isCapture(s,m));say('Tu as choisi ton '+name+'. Vert : déplacement libre. Orange : pièce que tu peux prendre. Rouge : risque de reprise. '+(c?captureText(s,c):''));}
@@ -1316,6 +1560,10 @@ function tacticalForecast(s){
  if(mate)return `♛ Échec et mat possible en un coup ! Demande un indice pour découvrir quelle pièce peut gagner.`;
  const threats=getThreats(s);
  if(threats.length){const danger=threats.filter(x=>x.loss>.3),first=danger[0]||threats[0];return `${threats.length} pièce(s) attaquée(s), dont ${danger.length} avec perte matérielle potentielle. `+threatMessage(first,studentType==='child')+' Examine les alertes une par une dans « Vue d’ensemble des menaces ».';}
+ const pins=pinnedPieces(s,s.t),forks=doubleAttacks(s,s.t),skewers=potentialSkewers(s,s.t);
+ if(pins.length)return '📌 Pièce clouée : '+pname[pins[0].piece]+' '+sq(pins[0].to).toUpperCase()+' est aligné sur ton roi et '+pname[pins[0].attacker]+' '+sq(pins[0].from).toUpperCase()+'.';
+ if(forks.length)return '♞ Double attaque : '+pname[forks[0].piece]+' '+sq(forks[0].from).toUpperCase()+' attaque plusieurs de tes pièces. Utilise Diagnostic tactique.';
+ if(skewers.length)return '↗ Enfilade potentielle sur '+sq(skewers[0].to).toUpperCase()+'. Utilise Diagnostic tactique.';
  const safe=moves.filter(m=>isCapture(s,m)&&!dangerAfterMove(s,m));
  if(safe.length){const m=safe.sort((a,b)=>capturePoints(s,b)-capturePoints(s,a))[0];return '🟠 Prise possible : '+captureText(s,m);}
  return '🔎 Aucune perte nette immédiate détectée. Attention : des cases peuvent être attaquées même lorsqu’un échange permet de reprendre. Sélectionne une pièce pour examiner ces réponses.';
@@ -1353,7 +1601,12 @@ function sftShowCheckOrigin(s){
  return true;
 }
 function refresh(){let s=current(),st=status(gameHistory);sftDrawMission();const playHud=document.getElementById('sftPlayHud'),turnHud=document.getElementById('sftHudTurn');if(playHud&&turnHud){playHud.classList.toggle('danger',checked(s));playHud.classList.toggle('win',lessonFinished);turnHud.textContent=lessonFinished?'MISSION RÉUSSIE':st.done?'FIN DE PARTIE':checked(s)?'ÉCHEC !':mode==='lesson'?'MISSION '+(activeLesson+1):s.t===1?'À TOI DE JOUER':mode==='ai'?'L’IA JOUE':'AUX NOIRS DE JOUER';}document.getElementById('turnDot').classList.toggle('black',s.t===-1);document.getElementById('turnText').textContent=lessonFinished?'Exercice réussi':st.done?'Partie terminée':s.t===1?'Aux Blancs de jouer':'Aux Noirs de jouer';document.getElementById('statusText').textContent=mode==='lesson'?'Académie · '+lessons[activeLesson].topic:(st.message||(mode==='ai'?'Mode professeur · contre IA':'Duel local · deux joueurs'));document.getElementById('mentorMode').textContent=mode==='lesson'?'· Exercice '+(activeLesson+1)+'/'+lessons.length:'· Conseils en direct';if((mode==='local'||s.t===1)&&!st.done){currentThreats=getThreats(s);}else currentThreats=[];
- const urgent=mode!=='lesson'&&(mode==='local'||s.t===1)&&!st.done?currentThreats.find(x=>x.loss>.3):null;
+ if(deepFen&&deepFen!==serializeFen(s)){deepResult=null;deepFen='';document.getElementById('deepEngineStatus').textContent='Position modifiée · relancer l’analyse';document.getElementById('deepEngineReport').textContent='La position a changé. Appuie sur « Analyser avec Stockfish » pour recalculer les variantes.';}
+ deepScheduleRefresh(s);
+ const urgent=mode!=='lesson'&&(mode==='local'||s.t===1)&&!st.done?currentThreats[0]:null;
+ const immediate=document.getElementById('mentorImmediate');
+ if(immediate){const alerts=!st.done&&(mode==='local'||s.t===1)&&mode!=='lesson'?currentThreats:[];immediate.style.display=alerts.length?'block':'none';immediate.textContent=alerts.length?(alerts.length>1?'⚠ '+alerts.length+' de tes pièces sont attaquées. Première alerte : ':'⚠ Pièce attaquée : ')+threatMessage(alerts[0],studentType==='child')+' Une pièce défendue reste attaquée : vérifie les échanges avant de jouer.':'';}
+ if(!st.done&&!checked(s)&&urgent&&!focusScenario)showThreatArrow([urgent.from,urgent.to]);
  showCoach(mode==='lesson'?(coachMove||lessonIntro(lessons[activeLesson])):st.done?'Partie terminée. Analyse tes coups, puis rejoue pour progresser.':urgent?threatMessage(urgent,studentType==='child'):coachMove||'Le Maître observe le plateau : essaie d’occuper le centre et garde tes pièces en sécurité.');document.getElementById('plyCount').textContent=movesSAN.length+' demi-coups';let h=document.getElementById('history');h.innerHTML=movesSAN.length?movesSAN.map((s,i)=>'<span>'+(i%2===0?'<strong>'+ (Math.floor(i/2)+1)+'.</strong> ':'&nbsp;&nbsp;')+s+'</span>').join(''):'<span class="empty">Les coups apparaîtront ici.</span>';h.scrollTop=h.scrollHeight;let score=evalPos(s),pct=Math.round(Math.min(97,Math.max(3,50+45*Math.tanh(score/8))));document.getElementById('evalFill').style.width=pct+'%';document.getElementById('evalText').textContent=pct+' / '+(100-pct);document.getElementById('undo').disabled=gameHistory.length===1;
  document.getElementById('quickUndo').disabled=gameHistory.length===1&&mode!=='lesson';
  document.getElementById('mentorForecast').textContent=tacticalForecast(s);
@@ -1495,7 +1748,7 @@ document.getElementById('viewbtn').onclick=()=>{
  document.getElementById('viewbtn').textContent=cinemaView?'▣':'◩';
 };
 const appShell=document.querySelector('.shell');
-function updateFullscreenButton(active){let btn=document.getElementById('fullbtn');btn.textContent=active?'⤢':'⛶';btn.setAttribute('aria-label',active?'Quitter le plein écran':'Passer en plein écran');btn.setAttribute('aria-pressed',String(active));}
+function updateFullscreenButton(active){let btn=document.getElementById('fullbtn');btn.textContent=active?'⤢':'⛶';btn.setAttribute('aria-label',active?'Quitter le plein écran':'Passer en plein écran');btn.setAttribute('aria-pressed',String(active));if(typeof window.sftSync2DImmersive==='function')window.sftSync2DImmersive();}
 /* V5.9.6 — Sleep/wake aware landscape controller. Camera does not change on resize. */
 let sftLandscapeSession=false,sftNativeFullscreenSeen=false,sftResumeNeeded=false,sftScreenWasHidden=false;
 const SFT_WAKE_SESSION='sft_chess_mobile_landscape_session_v1';
@@ -1575,6 +1828,7 @@ function toggleFullscreen(force){
   if(document.fullscreenElement)try{Promise.resolve(document.exitFullscreen()).catch(()=>{});}catch(_){}
  }
  sftRememberSession();sftInvalidateViewport();sftSyncLandscapePrompt();
+ if(typeof window.sftSync2DImmersive==='function')window.sftSync2DImmersive();
 }
 document.getElementById('fullbtn').onclick=()=>toggleFullscreen();
 document.addEventListener('fullscreenchange',()=>{
@@ -1621,8 +1875,9 @@ document.getElementById('sftContinueLandscape').onclick=()=>{
  if(sftPortraitNow())return;
  sftResumeNeeded=false;sftInvalidateViewport();sftSyncLandscapePrompt();
 };
+document.getElementById('sftExitLandscape').textContent='✕ Quitter le plein écran';
 document.getElementById('sftExitLandscape').onclick=()=>{
- toggleFullscreen(false);navActive('accueil');
+ toggleFullscreen(false);navActive('jouer');
 };
 function sftRestoreWakeSession(){
  if(!sftMobileDevice())return;
@@ -1675,10 +1930,69 @@ document.getElementById('archiveClose').onclick=closeArchive;document.getElement
 document.getElementById('archiveOverlay').addEventListener('click',e=>{if(e.target.id==='archiveOverlay')closeArchive();});
 let installEvent=null;
 const installBtn=document.getElementById('installBtn'),installOverlay=document.getElementById('installOverlay');
-function showInstallHelp(){let ios=/iPhone|iPad|iPod/.test(navigator.userAgent),inApp=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;let instruction=inApp?'SFT CHESS est déjà ouvert comme une application.':ios?'Dans Safari, appuie sur Partager, puis « Sur l’écran d’accueil » et « Ajouter ».':location.protocol==='file:'?'L’installation nécessite une version hébergée en HTTPS. Ouvre ensuite le site dans Chrome ou Edge et choisis « Installer l’application » dans le menu.':'Ouvre le menu de Chrome ou Edge puis « Installer l’application » (ou « Ajouter à l’écran d’accueil »). Si l’option n’apparaît pas, vérifie que tu utilises bien une adresse HTTPS.';document.getElementById('installInstructions').textContent=instruction;installOverlay.hidden=false;}
-installBtn.addEventListener('click',async()=>{if(installEvent){const evt=installEvent;installEvent=null;try{await evt.prompt();const choice=await evt.userChoice;if(choice.outcome==='accepted')announce('Installation acceptée.');}catch(_){showInstallHelp();}return;}showInstallHelp();});
-window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installEvent=event;installBtn.textContent='⬇ Installer';});
-window.addEventListener('appinstalled',()=>{installBtn.textContent='✓ Installé';announce('SFT CHESS est installé !');});
+const railInstall=document.getElementById('railInstall');
+const installAlreadyKey='sft_chess_install_confirmed_v1';
+function sftStandalone(){
+ return !!(window.matchMedia('(display-mode: standalone)').matches||window.matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true);
+}
+function sftInstallKnown(){
+ // Browsers cannot reliably detect a previously installed app from an unrelated tab.
+ // Hide the CTA in installed application windows and after verified installation event.
+ let confirmed=false;try{confirmed=localStorage.getItem(installAlreadyKey)==='1';}catch(_){}
+ return sftStandalone()||confirmed;
+}
+function refreshInstallCTA(){
+ const installed=sftInstallKnown();
+ installBtn.hidden=installed;
+ if(railInstall)railInstall.hidden=installed;
+ if(installed)installOverlay.hidden=true;
+}
+function showInstallHelp(){
+ if(sftInstallKnown()){refreshInstallCTA();return;}
+ const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+ const safari=/Safari/i.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+ const chrome=/Chrome|CriOS/i.test(ua)&&!/Edg|OPR|SamsungBrowser/i.test(ua);
+ const android=/Android/i.test(ua);
+ const steps=ios?[
+ 'Ouvre ce jeu dans Safari sur ton iPhone ou iPad.',
+ 'Appuie sur Partager (le carré avec une flèche vers le haut).',
+ 'Choisis « Sur l’écran d’accueil » ou « Ajouter à l’écran d’accueil ».',
+ 'Appuie sur Ajouter, puis ouvre SFT CHESS depuis sa nouvelle icône.'
+ ]:android?[
+ 'Pour une installation plus simple, ouvre ce jeu dans Google Chrome.',
+ 'Ouvre le menu ⋮ de Chrome.',
+ 'Choisis « Installer l’application » ou « Ajouter à l’écran d’accueil ».',
+ 'Confirme, puis ouvre SFT CHESS depuis l’icône installée.'
+ ]:[
+ 'Ouvre le jeu dans Chrome ou Edge sur ton ordinateur.',
+ 'Ouvre le menu du navigateur et choisis « Installer SFT CHESS » si proposé.',
+ 'Après installation, lance le jeu avec son icône.'
+ ];
+ document.getElementById('installInstructions').textContent=ios?'Installation sur iPhone / iPad':android?'Installation sur Android':'Installation sur ordinateur';
+ const list=document.getElementById('installSteps');list.replaceChildren();
+ steps.forEach(label=>{const item=document.createElement('li');item.textContent=label;list.appendChild(item);});
+ document.getElementById('installBrowserTip').textContent=ios?(
+ safari?'Tu es déjà dans Safari : suis les étapes ci-dessus. Sur iPhone, le bouton Installer ne déclenche pas de fenêtre automatique.':'Sur iPhone, Safari est le navigateur conseillé pour ajouter le jeu à l’écran d’accueil. Copie son lien et ouvre-le directement dans Safari.'):android?(
+ chrome?'Tu utilises Chrome : c’est le navigateur recommandé pour installer SFT CHESS.':'Pour Android, Chrome est recommandé. Les navigateurs intégrés à WhatsApp, Brave ou d’autres applications ne proposent pas toujours l’installation. Ouvre le lien dans Chrome.'):
+ 'L’installation dépend des possibilités de ton navigateur. La connexion HTTPS est nécessaire.';
+ installOverlay.hidden=false;
+}
+installBtn.addEventListener('click',async()=>{
+ if(sftInstallKnown()){refreshInstallCTA();return;}
+ if(installEvent){const evt=installEvent;installEvent=null;try{await evt.prompt();const choice=await evt.userChoice;if(choice.outcome==='accepted')announce('Installation acceptée. Tu peux ouvrir le jeu depuis son icône.');else showInstallHelp();}catch(_){showInstallHelp();}return;}
+ showInstallHelp();
+});
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installEvent=event;refreshInstallCTA();});
+window.addEventListener('appinstalled',()=>{try{localStorage.setItem(installAlreadyKey,'1');}catch(_){}installEvent=null;refreshInstallCTA();announce('SFT CHESS est installé !');});
+window.addEventListener('pageshow',refreshInstallCTA);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshInstallCTA();});
+try{window.matchMedia('(display-mode: standalone)').addEventListener('change',refreshInstallCTA);}catch(_){}
+document.getElementById('installCopyLink').onclick=async()=>{
+ const url=location.href.split('#')[0].split('?')[0];
+ try{await navigator.clipboard.writeText(url);announce('Lien du jeu copié. Ouvre-le dans Chrome ou Safari.');}
+ catch(_){document.getElementById('installBrowserTip').textContent='Copie ce lien dans Chrome ou Safari : '+url;}
+};
+refreshInstallCTA();
 document.getElementById('installClose').onclick=()=>installOverlay.hidden=true;document.getElementById('installDone').onclick=()=>installOverlay.hidden=true;
 installOverlay.addEventListener('click',e=>{if(e.target===installOverlay)installOverlay.hidden=true;});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeArchive();installOverlay.hidden=true;}});
@@ -1730,13 +2044,18 @@ for(let row=0;row<8;row++)for(let col=0;col<8;col++){
 }
 const sft2dSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
 sft2dSvg.setAttribute('viewBox','0 0 800 800');sft2dSvg.setAttribute('class','sft-board2d-lines');
-sft2dSvg.innerHTML='<defs><marker id="sft2dRedTip" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#e93642"/></marker><marker id="sft2dGreenTip" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#17b886"/></marker></defs>';
+sft2dSvg.innerHTML='<defs><marker id="sft2dRedTip" markerUnits="userSpaceOnUse" markerWidth="22" markerHeight="18" refX="18" refY="9" orient="auto"><path d="M0 2 L18 9 L0 16 Z" fill="#e93642"/></marker><marker id="sft2dGreenTip" markerUnits="userSpaceOnUse" markerWidth="22" markerHeight="18" refX="18" refY="9" orient="auto"><path d="M0 2 L18 9 L0 16 Z" fill="#17b886"/></marker></defs>';
 sft2dGrid.appendChild(sft2dSvg);
 function sft2dLine(from,to,color){
  if(!on(from)||!on(to))return;
- const x1=((from&7)+.5)*100,y1=((from>>4)+.5)*100,x2=((to&7)+.5)*100,y2=((to>>4)+.5)*100;
+ const sx=((from&7)+.5)*100,sy=((from>>4)+.5)*100,tx=((to&7)+.5)*100,ty=((to>>4)+.5)*100;
+ const dx=tx-sx,dy=ty-sy,len=Math.hypot(dx,dy);if(len<1)return;
+ const ux=dx/len,uy=dy/len;
+ // Keep the arrowhead outside the target piece's silhouette, even on mobile.
+ const startInset=Math.min(25,len*.2),targetInset=Math.min(44,len*.36);
+ const x1=sx+ux*startInset,y1=sy+uy*startInset,x2=tx-ux*targetInset,y2=ty-uy*targetInset;
  const line=document.createElementNS('http://www.w3.org/2000/svg','line');
- for(const [k,v] of Object.entries({x1,y1,x2,y2,stroke:color==='red'?'#e93642':'#17b886','stroke-width':9,'stroke-linecap':'round','stroke-opacity':.9,'marker-end':color==='red'?'url(#sft2dRedTip)':'url(#sft2dGreenTip)'}))line.setAttribute(k,String(v));
+ for(const [k,v] of Object.entries({x1,y1,x2,y2,stroke:color==='red'?'#e93642':'#17b886','stroke-width':7,'stroke-linecap':'round','stroke-opacity':.9,'marker-end':color==='red'?'url(#sft2dRedTip)':'url(#sft2dGreenTip)'}))line.setAttribute(k,String(v));
  sft2dSvg.appendChild(line);
 }
 
@@ -1776,7 +2095,7 @@ function sftPieceSVG(p){
 function sft2dPaint(){
  if(!sft2dEnabled)return;
  const s=current();let checkOrigin=checked(s)?sftCheckAttacker(s):null;
- const sig=s.b.join('')+'|'+selected+'|'+legalTargets.join(',')+'|'+(lastMove||[]).join(',')+'|'+(mentorArrow||[]).join(',')+'|'+(threatArrow||[]).join(',')+'|'+(replyArrow||[]).join(',')+'|'+(checkOrigin?[checkOrigin.from,checkOrigin.to].join(','):'');
+ const sig=s.b.join('')+'|'+currentThreats.map(t=>t.to+':'+t.loss).join(',')+'|'+selected+'|'+legalTargets.join(',')+'|'+(lastMove||[]).join(',')+'|'+(mentorArrow||[]).join(',')+'|'+(threatArrow||[]).join(',')+'|'+(replyArrow||[]).join(',')+'|'+(checkOrigin?[checkOrigin.from,checkOrigin.to].join(','):'');
  if(sig===sft2dSignature)return;sft2dSignature=sig;
  for(const {i,b} of sft2dCells){
   const p=s.b[i],white=side(p)===1;
@@ -1784,10 +2103,12 @@ function sft2dPaint(){
   if(lastMove&&lastMove.includes(i))b.classList.add('last');
   if(i===selected)b.classList.add('selected');
   if(checkOrigin&&i===checkOrigin.to)b.classList.add('check');
+  const ownThreat=currentThreats.find(t=>t.to===i);
+  if(ownThreat)b.classList.add('sft-current-threat');
   b.replaceChildren();
   if(legalTargets.includes(i)){const dot=document.createElement('span');dot.className=p==='.'?'sft-2d-dot':'sft-2d-capture';b.append(dot);}
   if(p!=='.'){const piece=document.createElement('span');piece.className='sft-2d-piece '+(white?'white':'black');piece.innerHTML=sftPieceSVG(p);b.append(piece);}
-  if(checkOrigin&&i===checkOrigin.from){const danger=document.createElement('span');danger.className='sft-2d-danger';b.append(danger);}
+  if((checkOrigin&&i===checkOrigin.from)||ownThreat){const danger=document.createElement('span');danger.className='sft-2d-danger';if(ownThreat&&ownThreat.loss<=.3)danger.style.borderColor='#f1bb5c';b.append(danger);}
   b.setAttribute('aria-label',sq(i)+' '+(p==='.'?'case vide':(white?'blanc ':'noir ')+pname[p.toLowerCase()]));
  }
  sft2dSvg.querySelectorAll('line').forEach(x=>x.remove());
@@ -1802,8 +2123,20 @@ function sft2dSet(enabled){
  sft2dToggle.textContent=sft2dEnabled?'♞ Vue 3D · Prestige':'♟ Vue 2D · Classique';
  sft2dToggle.setAttribute('aria-label',sft2dEnabled?'Passer en vue 3D prestige':'Passer en vue 2D classique');
  try{localStorage.setItem('sft-chess-view',sft2dEnabled?'2d':'3d');}catch(_){}
- sft2dSignature='';sft2dPaint();
+ sft2dSignature='';sftSync2DImmersive();sft2dPaint();
 }
+const sft2dFullscreen=document.getElementById('sft2dFullscreen');
+function sftSync2DImmersive(){
+ const active=sft2dEnabled&&document.querySelector('.shell').classList.contains('immersive');
+ document.querySelector('.shell').classList.toggle('sft-immersive-2d',active);
+ sft2dFullscreen.hidden=!sft2dEnabled;
+ sft2dFullscreen.textContent=active?'✕ Quitter le plein écran':'⛶ Plein écran paysage';
+ sft2dFullscreen.setAttribute('aria-label',active?'Quitter le plein écran 2D':'Passer en plein écran paysage 2D');
+ sft2dFullscreen.setAttribute('aria-pressed',String(active));
+ sft2dSignature='';
+}
+window.sftSync2DImmersive=sftSync2DImmersive;
+sft2dFullscreen.addEventListener('click',()=>{toggleFullscreen(!document.querySelector('.shell').classList.contains('immersive'));sftSync2DImmersive();});
 sft2dToggle.addEventListener('click',()=>sft2dSet(!sft2dEnabled));
 try{sft2dSet(localStorage.getItem('sft-chess-view')==='2d');}catch(_){sft2dSet(false);}
 const sftPieceStyleSelect=document.getElementById('sftPieceStyle');
