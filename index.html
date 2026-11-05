@@ -595,7 +595,7 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
 </section>
 <div class="mentor-top"><div class="mentor-avatar">♛</div><div class="mentor-content"><div class="mentor-name">♛ Le Maître tacticien <span id="mentorMode">· Conseils en direct</span><small class="mentor-engine-label">● Analyse locale · menaces multiples · expérimentale</small></div><p id="coach" aria-live="polite">Bienvenue ! Apprenons les échecs ensemble. Tu peux commencer un cours ou jouer librement.</p></div></div>
 <div class="mentor-controls"><button class="mbtn primary" id="hint">💡 Un indice</button><button class="mbtn" id="showMove">↗ Voir le coup</button><button class="mbtn" id="whyBtn">❔ Pourquoi ?</button><button class="mbtn" id="lessonMenu">📚 Cours</button><button class="mbtn" id="glossaryBtn" aria-expanded="false">📖 Les mots</button><button class="mbtn" id="nextLesson">Leçon suivante →</button></div>
-<section id="exchangeFilm" class="exchange-film" hidden aria-label="Leçon tactique en trois temps"><strong>♘ Le regard du Maître · Trois coups à imaginer</strong><p class="film-sub" id="exchangeFilmIntro"></p><div class="film-steps"><button type="button" class="film-step" data-step="1">1 · Ton coup</button><button type="button" class="film-step" data-step="2">2 · Sa réponse</button><button type="button" class="film-step" data-step="3">3 · Ta reprise</button></div><p class="film-result" id="exchangeFilmResult" aria-live="polite"></p></section><div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
+<section id="exchangeFilm" class="exchange-film" hidden aria-label="Leçon tactique en trois temps"><strong>♘ Le regard du Maître · Trois coups à imaginer</strong><p class="film-sub" id="exchangeFilmIntro"></p><div class="film-steps"><button type="button" class="film-step" data-step="1">1 · Ton coup</button><button type="button" class="film-step" data-step="2">2 · Sa réponse</button><button type="button" class="film-step" data-step="3">3 · Ta reprise</button></div><p class="film-result" id="exchangeFilmResult" aria-live="polite"></p></section><div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div id="mentorImmediate" class="warning-box" role="status" aria-live="polite" style="display:none;background:#2d3030;border:1px solid #d4a860;color:#fff1d6;margin-top:8px"></div><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
 <div class="glossary-panel" id="glossaryPanel" hidden>
  <strong>Le dictionnaire du Maître — les mots expliqués simplement</strong>
  <div class="glossary-grid">
@@ -1182,14 +1182,14 @@ function mentorHint(){
  if(focusScenario&&focusScenario.state===current()&&mode!=='lesson'){showFilmStep(Math.min(3,filmStep+1||1));say('Le Maître détaille une réponse possible, sans jouer à ta place. Regarde le trajet affiché et compare les valeurs des pièces.');return;}
  const s=current(),m=selectedHint();if(!m){say('La partie est terminée : aucun coup disponible.');return;}
  hintLevel=Math.min(3,hintLevel+1);
- const l=mode==='lesson'?lessons[activeLesson]:null,urgent=!l?urgentThreat(s):null;
+ const l=mode==='lesson'?lessons[activeLesson]:null,urgent=!l?getThreats(s)[0]:null;
  if(l){
   if(hintLevel===1){say(l.h1);showHintArrow(null);showThreatArrow(null);}
   else if(hintLevel===2){say(l.h2);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(null);}
   else{say('Observe le trajet sur le plateau. '+l.why);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(m);}return;
  }
  if(urgent){
-  if(hintLevel===1){say(studentType==='child'?`Un danger se cache sur le plateau ! Regarde ton ${pname[urgent.piece]} : peut-il se faire manger ?`:`Avant de développer une autre pièce, examine ton ${pname[urgent.piece]} en ${sq(urgent.to).toUpperCase()}. Quel adversaire le menace ?`);showHintArrow(null);showThreatArrow(null);}
+  if(hintLevel===1){say(studentType==='child'?`Une pièce est attaquée ! Regarde ton ${pname[urgent.piece]} : peut-il se faire manger ?`:`Avant de développer une autre pièce, examine ton ${pname[urgent.piece]} en ${sq(urgent.to).toUpperCase()}. Quel adversaire le menace ?`);showHintArrow(null);showThreatArrow(null);}
   else if(hintLevel===2){say(threatMessage(urgent,studentType==='child'));showHintArrow(null);showThreatArrow(urgent.attacker);}
   else{say(threatMessage(urgent,studentType==='child')+` Une réponse raisonnable est de déplacer ${namedPiece(pname[s.b[m[0]].toLowerCase()])} vers ${sq(m[1]).toUpperCase()}. Je montre la flèche verte sur l’échiquier.`);selected=m[0];legalTargets=legal(s).filter(x=>x[0]===m[0]).map(x=>x[1]);recomputeDanger();showHintArrow(m);showThreatArrow(urgent.attacker);}
   return;
@@ -1215,7 +1215,7 @@ function mentorWhy(){
  const urgent=getThreats(s)[0];
  if(focusScenario&&focusScenario.state===s){say(exposureText(focusScenario.r,s,focusScenario.m)+' Utilise le film des trois coups pour voir l’attaque et la reprise.');showFilmStep(2);return;}
  if(selected>=0&&exchangeTargets.length){const e=exchangeTargets[0];say(exposureText(e.r,s,e.m));showThreatArrow([e.r.attacker,e.r.to]);return;}
- if(!check&&urgent){say(threatMessage(urgent,studentType==='child')+' Une pièce peut être attaquée tout en étant défendue ; ici le calcul des reprises indique une perte possible. Le Maître ne connaît pas encore tous les pièges à plusieurs coups.');showThreatArrow(urgent.attacker);return;}
+ if(!check&&urgent){say(threatMessage(urgent,studentType==='child')+' Une attaque peut conduire à une perte ou à un échange : le Maître examine les reprises légales, sans garantir une analyse profonde.');showThreatArrow([urgent.from,urgent.to]);return;}
  if(check){say('Ton roi est en échec : la priorité absolue est de le sauver. Tu peux le déplacer, capturer la pièce menaçante ou bloquer la ligne d’attaque, si les règles le permettent.');return;}
  if(movesSAN.length===0){say(studentType==='child'?'Imagine le plateau comme un château : protège ton roi, ouvre des chemins à tes pièces et prends le centre avant de partir à l’aventure.':'Au début : contrôle le centre, développe cavaliers et fous, puis mets ton roi à l’abri grâce au roque. Évite les sorties prématurées de la dame.');return;}
  let pre=gameHistory[gameHistory.length-2],m=pre?legal(pre).find(x=>sq(x[1])===sq(lastMove?.[1])&&sq(x[0])===sq(lastMove?.[0])):null;
@@ -1275,7 +1275,7 @@ function selectSquare(i){
   if(prev!==selected)recomputeDanger();
   if(selected>=0&&mode!=='lesson'){
    let urgent=getThreats(s)[0];
-   if(urgent){say(threatMessage(urgent,studentType==='child')+' Les pastilles des mouvements sélectionnés restent visibles.');return;}
+   if(urgent){say(threatMessage(urgent,studentType==='child')+' Cette alerte concerne la position actuelle, indépendamment des cases proposées.');showThreatArrow([urgent.from,urgent.to]);return;}
    let name=pname[s.b[selected].toLowerCase()];
    if(exchangeTargets.length){let e=exchangeTargets[0];say('Tu as choisi ton '+name+'. '+exposureText(e.r,s,e.m)+' Les cases orange cerclées de rouge ne sont pas sans risque.');}
    else if(captureTargets.length){let c=legal(s).find(m=>m[0]===selected&&isCapture(s,m));say('Tu as choisi ton '+name+'. Vert : déplacement libre. Orange : pièce que tu peux prendre. Rouge : risque de reprise. '+(c?captureText(s,c):''));}
@@ -1353,7 +1353,10 @@ function sftShowCheckOrigin(s){
  return true;
 }
 function refresh(){let s=current(),st=status(gameHistory);sftDrawMission();const playHud=document.getElementById('sftPlayHud'),turnHud=document.getElementById('sftHudTurn');if(playHud&&turnHud){playHud.classList.toggle('danger',checked(s));playHud.classList.toggle('win',lessonFinished);turnHud.textContent=lessonFinished?'MISSION RÉUSSIE':st.done?'FIN DE PARTIE':checked(s)?'ÉCHEC !':mode==='lesson'?'MISSION '+(activeLesson+1):s.t===1?'À TOI DE JOUER':mode==='ai'?'L’IA JOUE':'AUX NOIRS DE JOUER';}document.getElementById('turnDot').classList.toggle('black',s.t===-1);document.getElementById('turnText').textContent=lessonFinished?'Exercice réussi':st.done?'Partie terminée':s.t===1?'Aux Blancs de jouer':'Aux Noirs de jouer';document.getElementById('statusText').textContent=mode==='lesson'?'Académie · '+lessons[activeLesson].topic:(st.message||(mode==='ai'?'Mode professeur · contre IA':'Duel local · deux joueurs'));document.getElementById('mentorMode').textContent=mode==='lesson'?'· Exercice '+(activeLesson+1)+'/'+lessons.length:'· Conseils en direct';if((mode==='local'||s.t===1)&&!st.done){currentThreats=getThreats(s);}else currentThreats=[];
- const urgent=mode!=='lesson'&&(mode==='local'||s.t===1)&&!st.done?currentThreats.find(x=>x.loss>.3):null;
+ const urgent=mode!=='lesson'&&(mode==='local'||s.t===1)&&!st.done?currentThreats[0]:null;
+ const immediate=document.getElementById('mentorImmediate');
+ if(immediate){const alerts=!st.done&&(mode==='local'||s.t===1)&&mode!=='lesson'?currentThreats:[];immediate.style.display=alerts.length?'block':'none';immediate.textContent=alerts.length?(alerts.length>1?'⚠ '+alerts.length+' de tes pièces sont attaquées. Première alerte : ':'⚠ Pièce attaquée : ')+threatMessage(alerts[0],studentType==='child')+' Une pièce défendue reste attaquée : vérifie les échanges avant de jouer.':'';}
+ if(!st.done&&!checked(s)&&urgent&&!focusScenario)showThreatArrow([urgent.from,urgent.to]);
  showCoach(mode==='lesson'?(coachMove||lessonIntro(lessons[activeLesson])):st.done?'Partie terminée. Analyse tes coups, puis rejoue pour progresser.':urgent?threatMessage(urgent,studentType==='child'):coachMove||'Le Maître observe le plateau : essaie d’occuper le centre et garde tes pièces en sécurité.');document.getElementById('plyCount').textContent=movesSAN.length+' demi-coups';let h=document.getElementById('history');h.innerHTML=movesSAN.length?movesSAN.map((s,i)=>'<span>'+(i%2===0?'<strong>'+ (Math.floor(i/2)+1)+'.</strong> ':'&nbsp;&nbsp;')+s+'</span>').join(''):'<span class="empty">Les coups apparaîtront ici.</span>';h.scrollTop=h.scrollHeight;let score=evalPos(s),pct=Math.round(Math.min(97,Math.max(3,50+45*Math.tanh(score/8))));document.getElementById('evalFill').style.width=pct+'%';document.getElementById('evalText').textContent=pct+' / '+(100-pct);document.getElementById('undo').disabled=gameHistory.length===1;
  document.getElementById('quickUndo').disabled=gameHistory.length===1&&mode!=='lesson';
  document.getElementById('mentorForecast').textContent=tacticalForecast(s);
@@ -1776,7 +1779,7 @@ function sftPieceSVG(p){
 function sft2dPaint(){
  if(!sft2dEnabled)return;
  const s=current();let checkOrigin=checked(s)?sftCheckAttacker(s):null;
- const sig=s.b.join('')+'|'+selected+'|'+legalTargets.join(',')+'|'+(lastMove||[]).join(',')+'|'+(mentorArrow||[]).join(',')+'|'+(threatArrow||[]).join(',')+'|'+(replyArrow||[]).join(',')+'|'+(checkOrigin?[checkOrigin.from,checkOrigin.to].join(','):'');
+ const sig=s.b.join('')+'|'+currentThreats.map(t=>t.to+':'+t.loss).join(',')+'|'+selected+'|'+legalTargets.join(',')+'|'+(lastMove||[]).join(',')+'|'+(mentorArrow||[]).join(',')+'|'+(threatArrow||[]).join(',')+'|'+(replyArrow||[]).join(',')+'|'+(checkOrigin?[checkOrigin.from,checkOrigin.to].join(','):'');
  if(sig===sft2dSignature)return;sft2dSignature=sig;
  for(const {i,b} of sft2dCells){
   const p=s.b[i],white=side(p)===1;
@@ -1784,10 +1787,12 @@ function sft2dPaint(){
   if(lastMove&&lastMove.includes(i))b.classList.add('last');
   if(i===selected)b.classList.add('selected');
   if(checkOrigin&&i===checkOrigin.to)b.classList.add('check');
+  const ownThreat=currentThreats.find(t=>t.to===i);
+  if(ownThreat)b.classList.add('sft-current-threat');
   b.replaceChildren();
   if(legalTargets.includes(i)){const dot=document.createElement('span');dot.className=p==='.'?'sft-2d-dot':'sft-2d-capture';b.append(dot);}
   if(p!=='.'){const piece=document.createElement('span');piece.className='sft-2d-piece '+(white?'white':'black');piece.innerHTML=sftPieceSVG(p);b.append(piece);}
-  if(checkOrigin&&i===checkOrigin.from){const danger=document.createElement('span');danger.className='sft-2d-danger';b.append(danger);}
+  if((checkOrigin&&i===checkOrigin.from)||ownThreat){const danger=document.createElement('span');danger.className='sft-2d-danger';if(ownThreat&&ownThreat.loss<=.3)danger.style.borderColor='#f1bb5c';b.append(danger);}
   b.setAttribute('aria-label',sq(i)+' '+(p==='.'?'case vide':(white?'blanc ':'noir ')+pname[p.toLowerCase()]));
  }
  sft2dSvg.querySelectorAll('line').forEach(x=>x.remove());
