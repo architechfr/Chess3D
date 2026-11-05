@@ -51,6 +51,10 @@ test('Stockfish 19 Lite starts in a real browser worker', {timeout:75000},async(
   assert.match(report,/proposition|Variante|coup|moteur/i);
   // Enter focused 2D mode and make sure the board, coach, and exit are visible.
   await page.locator('#sftViewToggle').click();
+  // Some mobile browsers (notably iOS) deny the native Fullscreen API.
+  // Exercise the application's own immersive layout instead of Chromium window mode.
+  await page.evaluate(()=>{document.querySelector('.shell').requestFullscreen=()=>Promise.reject(new Error('Fullscreen unsupported in test'));});
+  await page.setViewportSize({width:900,height:400});
   await page.locator('#sft2dFullscreen').click();
   await page.waitForFunction(()=>document.querySelector('.shell')?.classList.contains('sft-immersive-2d'));
   assert.equal(await page.locator('header').isVisible(),false);
@@ -58,7 +62,6 @@ test('Stockfish 19 Lite starts in a real browser worker', {timeout:75000},async(
   assert.equal(await page.locator('.academy-dock').isVisible(),true);
   assert.equal(await page.locator('#sft2dFullscreen').isVisible(),true);
   // Simulate a phone rotated to landscape: board and coach remain side by side.
-  await page.setViewportSize({width:900,height:400});
   const boardBox=await page.locator('.sft-board2d-frame').boundingBox();
   const coachBox=await page.locator('.academy-dock').boundingBox();
   assert(boardBox&&coachBox,'2D board and tutor must be laid out');
