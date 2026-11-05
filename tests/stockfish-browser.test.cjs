@@ -30,7 +30,7 @@ test('Stockfish 19 Lite starts in a real browser worker', {timeout:75000},async(
   await page.goto('http://127.0.0.1:'+port+'/index.html',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>typeof window.SFTStockfishBridge==='function',{timeout:15000});
   const data=await page.evaluate(async()=>{
-   const bridge=new window.SFTStockfishBridge('./stockfish-worker.js');
+   const bridge=new window.SFTStockfishBridge('./vendor/stockfish/stockfish-19-lite-single.js');
    try{
     const result=await bridge.analyze({
      fen:'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
