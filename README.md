@@ -42,3 +42,7 @@ Le moteur **Stockfish** et la distribution JavaScript/WebAssembly **Stockfish.js
 - Jeu en ligne non finalisé.
 
 Ne pas fusionner la branche sur `main` avant validation d’utilisation.
+
+## Prévisualisation sans barre Vercel
+
+La prévisualisation SFT Chess utilise la variable Vercel `VERCEL_PREVIEW_FEEDBACK_ENABLED=0` ciblant la branche `fix/maitre-tacticien-menaces-20261105`, en complément du réglage de projet qui désactive le feedback. Cette configuration évite que le bouton flottant Vercel recouvre l'échiquier sur mobile. Après modification des variables de projet, une nouvelle prévisualisation doit être construite pour appliquer le réglage.
