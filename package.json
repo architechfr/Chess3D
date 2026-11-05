@@ -1,0 +1,13 @@
+{
+  "name": "sft-chess",
+  "version": "5.9.8",
+  "private": true,
+  "description": "Jeu d'echecs SFT avec moteur Stockfish 19 Lite local",
+  "scripts": {
+    "build": "node scripts/build-static.cjs",
+    "test": "node --test tests/stockfish-bridge.test.cjs tests/verify-app.test.cjs tests/stockfish-engine.test.cjs"
+  },
+  "dependencies": {
+    "stockfish": "19.0.1"
+  }
+}
