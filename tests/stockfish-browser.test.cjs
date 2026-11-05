@@ -10,8 +10,9 @@ function startServer(){
  return new Promise((resolve)=>{
   const server=http.createServer((req,res)=>{
    const pathname=decodeURI(new URL(req.url,'http://localhost').pathname);
-   const safe=path.resolve(process.cwd(),'.'+(pathname==='/'?'/index.html':pathname));
-   if(!safe.startsWith(process.cwd()+path.sep)){res.writeHead(403);res.end();return;}
+   const siteRoot=path.join(process.cwd(),'dist');
+   const safe=path.resolve(siteRoot,'.'+(pathname==='/'?'/index.html':pathname));
+   if(!safe.startsWith(siteRoot+path.sep)){res.writeHead(403);res.end();return;}
    fs.readFile(safe,(err,bytes)=>{if(err){res.writeHead(404);res.end();return;}
     res.writeHead(200,{'Content-Type':mime[path.extname(safe)]||'application/octet-stream'});res.end(bytes);
    });
