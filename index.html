@@ -594,7 +594,7 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
 </div>
 </section>
 <div class="mentor-top"><div class="mentor-avatar">♛</div><div class="mentor-content"><div class="mentor-name">♛ Le Maître tacticien <span id="mentorMode">· Conseils en direct</span><small class="mentor-engine-label">● Analyse locale · menaces multiples · expérimentale</small></div><p id="coach" aria-live="polite">Bienvenue ! Apprenons les échecs ensemble. Tu peux commencer un cours ou jouer librement.</p></div></div>
-<div class="mentor-controls"><button class="mbtn primary" id="hint">💡 Un indice</button><button class="mbtn" id="showMove">↗ Voir le coup</button><button class="mbtn" id="whyBtn">❔ Pourquoi ?</button><button class="mbtn" id="lessonMenu">📚 Cours</button><button class="mbtn" id="glossaryBtn" aria-expanded="false">📖 Les mots</button><button class="mbtn" id="nextLesson">Leçon suivante →</button></div>
+<div class="mentor-controls"><button class="mbtn primary" id="hint">💡 Un indice</button><button class="mbtn" id="showMove">↗ Voir le coup</button><button class="mbtn" id="whyBtn">❔ Pourquoi ?</button><button class="mbtn" id="tacticScan">🔍 Diagnostic tactique</button><button class="mbtn" id="lessonMenu">📚 Cours</button><button class="mbtn" id="glossaryBtn" aria-expanded="false">📖 Les mots</button><button class="mbtn" id="nextLesson">Leçon suivante →</button></div>
 <section id="exchangeFilm" class="exchange-film" hidden aria-label="Leçon tactique en trois temps"><strong>♘ Le regard du Maître · Trois coups à imaginer</strong><p class="film-sub" id="exchangeFilmIntro"></p><div class="film-steps"><button type="button" class="film-step" data-step="1">1 · Ton coup</button><button type="button" class="film-step" data-step="2">2 · Sa réponse</button><button type="button" class="film-step" data-step="3">3 · Ta reprise</button></div><p class="film-result" id="exchangeFilmResult" aria-live="polite"></p></section><div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div id="mentorImmediate" class="warning-box" role="status" aria-live="polite" style="display:none;background:#2d3030;border:1px solid #d4a860;color:#fff1d6;margin-top:8px"></div><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
 <div class="glossary-panel" id="glossaryPanel" hidden>
  <strong>Le dictionnaire du Maître — les mots expliqués simplement</strong>
@@ -1001,6 +1001,87 @@ function tacticalThreats(s){return threatsForSide(s,s.t);}
 // Sert à inspecter toutes les menaces possibles après un coup envisagé,
 // au lieu de ne regarder que l'attaque de la pièce déplacée.
 function threatsAfterMove(s,m){return threatsForSide(apply(s,m),s.t);}
+
+/* Tactical observatory: legal moves are used for captures; geometric rays for pins
+   and possible skewers. These motifs are not a complete engine evaluation. */
+function mateInOne(s){
+ const moves=legal(s);
+ for(const m of moves){
+  const next=apply(s,m);
+  if(checked(next)&&legal(next).length===0)return m;
+ }
+ return null;
+}
+function pinnedPieces(s,victimSide){
+ const king=s.b.indexOf(victimSide===1?'K':'k'),out=[];
+ if(king<0)return out;
+ for(const d of [...dirs.r,...dirs.b]){
+  let blocker=-1;
+  for(let i=king+d;on(i);i+=d){
+   const piece=s.b[i];if(piece==='.')continue;
+   if(blocker<0){if(side(piece)===victimSide){blocker=i;continue;}break;}
+   const slider=piece.toLowerCase(),matches=dirs.r.includes(d)?slider==='r'||slider==='q':slider==='b'||slider==='q';
+   if(side(piece)===-victimSide&&matches)out.push({from:i,to:blocker,king,piece:s.b[blocker].toLowerCase(),attacker:slider});
+   break;
+  }
+ }
+ return out;
+}
+function doubleAttacks(s,victimSide){
+ const grouped=new Map();
+ for(const threat of threatsForSide(s,victimSide)){
+  for(const a of threat.attackers){
+   if(threat.points<3)continue;
+   if(!grouped.has(a.from))grouped.set(a.from,[]);
+   grouped.get(a.from).push(threat.to);
+  }
+ }
+ const out=[];
+ for(const [from,targets] of grouped){
+  const unique=[...new Set(targets)];
+  if(unique.length>=2)out.push({from,targets:unique,piece:s.b[from].toLowerCase()});
+ }
+ return out;
+}
+function potentialSkewers(s,victimSide){
+ const found=[],enemy=-victimSide;
+ for(let f=0;f<128;f++){
+  if(!on(f)||side(s.b[f])!==enemy)continue;
+  const attacker=s.b[f].toLowerCase();
+  const rays=attacker==='q'?[...dirs.r,...dirs.b]:attacker==='r'?dirs.r:attacker==='b'?dirs.b:[];
+  for(const d of rays){
+   let front=-1;
+   for(let i=f+d;on(i);i+=d){
+    if(s.b[i]==='.')continue;
+    if(side(s.b[i])!==victimSide)break;
+    if(front<0){front=i;continue;}
+    if(mp(s.b[front])>mp(s.b[i])&&mp(s.b[i])>=3)found.push({from:f,to:front,behind:i,attacker});
+    break;
+   }
+  }
+ }
+ return found;
+}
+function tacticalPicture(s){
+ const color=s.t,pins=pinnedPieces(s,color),forks=doubleAttacks(s,color),skewers=potentialSkewers(s,color);
+ const attackedNow=getThreats(s),lines=[];
+ const mate=mateInOne(s);
+ if(checked(s))lines.push('🚨 ÉCHEC : il faut d’abord répondre à l’attaque contre ton roi.');
+ if(mate)lines.push('♛ Mat en un coup possible : '+sq(mate[0]).toUpperCase()+' → '+sq(mate[1]).toUpperCase()+'.');
+ if(attackedNow.length){
+  lines.push('⚠ '+attackedNow.length+' pièce(s) actuellement attaquée(s), dont '+attackedNow.filter(x=>x.loss>.3).length+' perte(s) matérielle(s) possibles.');
+  for(const t of attackedNow.slice(0,3))lines.push('• '+pname[t.piece]+' '+sq(t.to).toUpperCase()+' : '+pname[t.by]+' '+sq(t.from).toUpperCase()+(t.loss>.3?' (perte possible ~'+t.loss.toFixed(1)+' pts)':' (reprise ou échange possible)'));
+ }
+ for(const p of pins.slice(0,2))lines.push('📌 Clouage : '+pname[p.piece]+' '+sq(p.to).toUpperCase()+' devant ton roi, par '+pname[p.attacker]+' '+sq(p.from).toUpperCase()+'.');
+ for(const f of forks.slice(0,2))lines.push('♞ Double attaque : '+pname[f.piece]+' '+sq(f.from).toUpperCase()+' attaque '+f.targets.map(sq).join(' et ').toUpperCase()+'.');
+ for(const p of skewers.slice(0,2))lines.push('↗ Enfilade potentielle : '+pname[p.attacker]+' '+sq(p.from).toUpperCase()+' vise '+sq(p.to).toUpperCase()+' devant '+sq(p.behind).toUpperCase()+'.');
+ if(!lines.length)lines.push('Aucun mat immédiat ni motif tactique évident identifié. Cela ne prouve pas que la position soit sans danger.');
+ lines.push('Analyse locale courte : les combinaisons forcées à plusieurs coups restent à vérifier.');
+ const first=attackedNow[0];
+ const focus=first?[first.from,first.to]:pins[0]?[pins[0].from,pins[0].to]:forks[0]?[forks[0].from,forks[0].targets[0]]:skewers[0]?[skewers[0].from,skewers[0].to]:null;
+ return {text:lines.join('\n'),focus,pins,forks,skewers,mate};
+}
+
 function urgentThreat(s){return getThreats(s).find(x=>x.loss>.3)||null;}
 function riskAfterMove(s,m){
  const next=apply(s,m),piece=next.b[m[1]];
@@ -1104,7 +1185,14 @@ function recomputeDanger(){
 }
 function pendingSafety(m){
  if(mode==='lesson'||mode==='local'||current().t!==1)return false;
- let s=current(),r=dangerAfterMove(s,m),exposure=riskAfterMove(s,m),report=getReport(s,m),best=bestTeachingMove(s);
+ let s=current();
+ const nextCandidate=apply(s,m),forcedReply=mateInOne(nextCandidate);
+ if(forcedReply){if(dangerPending===moveKey(m)){dangerPending='';return false;}
+  dangerPending=moveKey(m);
+  const msg='🚨 DANGER DE MAT : après ce coup, l’adversaire peut faire échec et mat immédiatement avec '+pname[nextCandidate.b[forcedReply[0]].toLowerCase()]+' '+sq(forcedReply[0]).toUpperCase()+' → '+sq(forcedReply[1]).toUpperCase()+'. Appuie une seconde fois sur la case si tu souhaites jouer malgré cette menace.';
+  showThreatArrow([forcedReply[0],forcedReply[1]]);say(msg);dangerNotice(msg);return true;
+ }
+ let r=dangerAfterMove(s,m),exposure=riskAfterMove(s,m),report=getReport(s,m),best=bestTeachingMove(s);
  let danger=r;
  const anticipated=threatsAfterMove(s,m);
  const previous=getThreats(s);
@@ -1223,6 +1311,7 @@ function mentorWhy(){
  say('Observe la position : quelles pièces sont attaquées, lesquelles sont protégées et quelles cases du centre peux-tu contrôler ?');
 }
 document.getElementById('whyBtn').onclick=mentorWhy;
+document.getElementById('tacticScan').onclick=()=>{if(mode==='lesson'&&lessonFinished)return;const view=tacticalPicture(current());say(view.text);if(view.focus)showThreatArrow(view.focus);else showThreatArrow(null);};
 document.getElementById('hint').onclick=mentorHint;
 document.getElementById('showMove').onclick=demonstrate;
 document.getElementById('lessonMenu').onclick=()=>document.getElementById('mentorOptions').classList.toggle('open');
@@ -1316,6 +1405,10 @@ function tacticalForecast(s){
  if(mate)return `♛ Échec et mat possible en un coup ! Demande un indice pour découvrir quelle pièce peut gagner.`;
  const threats=getThreats(s);
  if(threats.length){const danger=threats.filter(x=>x.loss>.3),first=danger[0]||threats[0];return `${threats.length} pièce(s) attaquée(s), dont ${danger.length} avec perte matérielle potentielle. `+threatMessage(first,studentType==='child')+' Examine les alertes une par une dans « Vue d’ensemble des menaces ».';}
+ const pins=pinnedPieces(s,s.t),forks=doubleAttacks(s,s.t),skewers=potentialSkewers(s,s.t);
+ if(pins.length)return '📌 Pièce clouée : '+pname[pins[0].piece]+' '+sq(pins[0].to).toUpperCase()+' est aligné sur ton roi et '+pname[pins[0].attacker]+' '+sq(pins[0].from).toUpperCase()+'.';
+ if(forks.length)return '♞ Double attaque : '+pname[forks[0].piece]+' '+sq(forks[0].from).toUpperCase()+' attaque plusieurs de tes pièces. Utilise Diagnostic tactique.';
+ if(skewers.length)return '↗ Enfilade potentielle sur '+sq(skewers[0].to).toUpperCase()+'. Utilise Diagnostic tactique.';
  const safe=moves.filter(m=>isCapture(s,m)&&!dangerAfterMove(s,m));
  if(safe.length){const m=safe.sort((a,b)=>capturePoints(s,b)-capturePoints(s,a))[0];return '🟠 Prise possible : '+captureText(s,m);}
  return '🔎 Aucune perte nette immédiate détectée. Attention : des cases peuvent être attaquées même lorsqu’un échange permet de reprendre. Sélectionne une pièce pour examiner ces réponses.';
