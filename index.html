@@ -1930,10 +1930,69 @@ document.getElementById('archiveClose').onclick=closeArchive;document.getElement
 document.getElementById('archiveOverlay').addEventListener('click',e=>{if(e.target.id==='archiveOverlay')closeArchive();});
 let installEvent=null;
 const installBtn=document.getElementById('installBtn'),installOverlay=document.getElementById('installOverlay');
-function showInstallHelp(){let ios=/iPhone|iPad|iPod/.test(navigator.userAgent),inApp=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;let instruction=inApp?'SFT CHESS est déjà ouvert comme une application.':ios?'Dans Safari, appuie sur Partager, puis « Sur l’écran d’accueil » et « Ajouter ».':location.protocol==='file:'?'L’installation nécessite une version hébergée en HTTPS. Ouvre ensuite le site dans Chrome ou Edge et choisis « Installer l’application » dans le menu.':'Ouvre le menu de Chrome ou Edge puis « Installer l’application » (ou « Ajouter à l’écran d’accueil »). Si l’option n’apparaît pas, vérifie que tu utilises bien une adresse HTTPS.';document.getElementById('installInstructions').textContent=instruction;installOverlay.hidden=false;}
-installBtn.addEventListener('click',async()=>{if(installEvent){const evt=installEvent;installEvent=null;try{await evt.prompt();const choice=await evt.userChoice;if(choice.outcome==='accepted')announce('Installation acceptée.');}catch(_){showInstallHelp();}return;}showInstallHelp();});
-window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installEvent=event;installBtn.textContent='⬇ Installer';});
-window.addEventListener('appinstalled',()=>{installBtn.textContent='✓ Installé';announce('SFT CHESS est installé !');});
+const railInstall=document.getElementById('railInstall');
+const installAlreadyKey='sft_chess_install_confirmed_v1';
+function sftStandalone(){
+ return !!(window.matchMedia('(display-mode: standalone)').matches||window.matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true);
+}
+function sftInstallKnown(){
+ // Browsers cannot reliably detect a previously installed app from an unrelated tab.
+ // Hide the CTA in installed application windows and after verified installation event.
+ let confirmed=false;try{confirmed=localStorage.getItem(installAlreadyKey)==='1';}catch(_){}
+ return sftStandalone()||confirmed;
+}
+function refreshInstallCTA(){
+ const installed=sftInstallKnown();
+ installBtn.hidden=installed;
+ if(railInstall)railInstall.hidden=installed;
+ if(installed)installOverlay.hidden=true;
+}
+function showInstallHelp(){
+ if(sftInstallKnown()){refreshInstallCTA();return;}
+ const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+ const safari=/Safari/i.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+ const chrome=/Chrome|CriOS/i.test(ua)&&!/Edg|OPR|SamsungBrowser/i.test(ua);
+ const android=/Android/i.test(ua);
+ const steps=ios?[
+ 'Ouvre ce jeu dans Safari sur ton iPhone ou iPad.',
+ 'Appuie sur Partager (le carré avec une flèche vers le haut).',
+ 'Choisis « Sur l’écran d’accueil » ou « Ajouter à l’écran d’accueil ».',
+ 'Appuie sur Ajouter, puis ouvre SFT CHESS depuis sa nouvelle icône.'
+ ]:android?[
+ 'Pour une installation plus simple, ouvre ce jeu dans Google Chrome.',
+ 'Ouvre le menu ⋮ de Chrome.',
+ 'Choisis « Installer l’application » ou « Ajouter à l’écran d’accueil ».',
+ 'Confirme, puis ouvre SFT CHESS depuis l’icône installée.'
+ ]:[
+ 'Ouvre le jeu dans Chrome ou Edge sur ton ordinateur.',
+ 'Ouvre le menu du navigateur et choisis « Installer SFT CHESS » si proposé.',
+ 'Après installation, lance le jeu avec son icône.'
+ ];
+ document.getElementById('installInstructions').textContent=ios?'Installation sur iPhone / iPad':android?'Installation sur Android':'Installation sur ordinateur';
+ const list=document.getElementById('installSteps');list.replaceChildren();
+ steps.forEach(label=>{const item=document.createElement('li');item.textContent=label;list.appendChild(item);});
+ document.getElementById('installBrowserTip').textContent=ios?(
+ safari?'Tu es déjà dans Safari : suis les étapes ci-dessus. Sur iPhone, le bouton Installer ne déclenche pas de fenêtre automatique.':'Sur iPhone, Safari est le navigateur conseillé pour ajouter le jeu à l’écran d’accueil. Copie son lien et ouvre-le directement dans Safari.'):android?(
+ chrome?'Tu utilises Chrome : c’est le navigateur recommandé pour installer SFT CHESS.':'Pour Android, Chrome est recommandé. Les navigateurs intégrés à WhatsApp, Brave ou d’autres applications ne proposent pas toujours l’installation. Ouvre le lien dans Chrome.'):
+ 'L’installation dépend des possibilités de ton navigateur. La connexion HTTPS est nécessaire.';
+ installOverlay.hidden=false;
+}
+installBtn.addEventListener('click',async()=>{
+ if(sftInstallKnown()){refreshInstallCTA();return;}
+ if(installEvent){const evt=installEvent;installEvent=null;try{await evt.prompt();const choice=await evt.userChoice;if(choice.outcome==='accepted')announce('Installation acceptée. Tu peux ouvrir le jeu depuis son icône.');else showInstallHelp();}catch(_){showInstallHelp();}return;}
+ showInstallHelp();
+});
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installEvent=event;refreshInstallCTA();});
+window.addEventListener('appinstalled',()=>{try{localStorage.setItem(installAlreadyKey,'1');}catch(_){}installEvent=null;refreshInstallCTA();announce('SFT CHESS est installé !');});
+window.addEventListener('pageshow',refreshInstallCTA);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshInstallCTA();});
+try{window.matchMedia('(display-mode: standalone)').addEventListener('change',refreshInstallCTA);}catch(_){}
+document.getElementById('installCopyLink').onclick=async()=>{
+ const url=location.href.split('#')[0].split('?')[0];
+ try{await navigator.clipboard.writeText(url);announce('Lien du jeu copié. Ouvre-le dans Chrome ou Safari.');}
+ catch(_){document.getElementById('installBrowserTip').textContent='Copie ce lien dans Chrome ou Safari : '+url;}
+};
+refreshInstallCTA();
 document.getElementById('installClose').onclick=()=>installOverlay.hidden=true;document.getElementById('installDone').onclick=()=>installOverlay.hidden=true;
 installOverlay.addEventListener('click',e=>{if(e.target===installOverlay)installOverlay.hidden=true;});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeArchive();installOverlay.hidden=true;}});
