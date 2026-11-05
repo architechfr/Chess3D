@@ -11,9 +11,9 @@ Jeu d’échecs 2D/3D avec Académie, détection des menaces et analyse tactique
 - Bouton **Voir le coup** : utilise la suggestion du moteur quand elle correspond à la position courante, sinon conserve l’analyse locale.
 - En cas de chargement impossible, le conseiller local reste utilisable.
 
-L’analyse Stockfish nécessite une connexion au premier lancement dans cette branche : le worker de même origine `stockfish-worker.js` charge `stockfish-19-lite-single.js` et son fichier WebAssembly correspondant depuis jsDelivr (`stockfish@19.0.1`). Les moteurs complets sont plus volumineux ; cette édition utilise explicitement le moteur **Lite mono-thread** (pas de SharedArrayBuffer ni d’en-têtes COOP/COEP obligatoires).
+L’analyse Stockfish utilise désormais les deux fichiers du moteur **servis depuis le même domaine** : `npm install && npm run build` copie automatiquement `stockfish-19-lite-single.js` et `stockfish-19-lite-single.wasm` depuis `stockfish@19.0.1` dans `dist/vendor/stockfish/`. Les moteurs complets sont plus volumineux ; cette édition utilise explicitement le moteur **Lite mono-thread** (pas de SharedArrayBuffer ni d’en-têtes COOP/COEP obligatoires).
 
-**Production/offline :** copier `stockfish-19-lite-single.js` et `stockfish-19-lite-single.wasm` du même package et de la même version dans un dossier `vendor/stockfish/`, et modifier le chargeur pour privilégier les deux fichiers locaux. Cela évitera une dépendance CDN pour un usage hors ligne. Les binaires ne sont **pas inclus** dans cette proposition.
+**Production/offline :** Vercel doit exécuter `npm run build` et servir `dist/` (configuré dans `vercel.json`). Le service worker met également le moteur local en cache dès que l'installation PWA réussit. L'application n'utilise plus de CDN pour Stockfish. Les binaires sont fournis par le package npm pendant le build, ils ne sont pas committés dans Git.
 
 ## Démarrage
 
@@ -23,8 +23,9 @@ Servir le dépôt à la racine d’un hébergement HTTPS ou en local avec un ser
 
 - `index.html` : jeu, navigation, Maître tacticien et panneau Stockfish.
 - `stockfish-bridge.js` : pont UCI asynchrone, arrêt/annulation, MultiPV.
-- `stockfish-worker.js` : charge le moteur sur un worker.
-- `service-worker.js` : cache de l’application (pas du moteur CDN).
+- `stockfish-worker.js` : charge le moteur local sur un worker, depuis `vendor/stockfish/`.
+- `package.json`, `scripts/build-static.cjs`, `vercel.json` : génèrent et déploient une distribution autonome dans `dist/`.
+- `service-worker.js` : cache de l’application et du moteur WASM local.
 - `manifest.webmanifest` et `icons/` : installation de l’application.
 
 ## Licence et transparence
