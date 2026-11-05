@@ -72,6 +72,20 @@ test('Stockfish 19 Lite starts in a real browser worker', {timeout:75000},async(
     return {angleUnchanged,xTranslated,offsetPreserved,recentered,viewPreserved,deliberateRotation,panReturned:panToolActive,panModeDefault:before.az!==undefined};
   });
   for(const [name,ok] of Object.entries(cameraCheck))assert(ok,name+' camera regression');
+  // Actual mouse drag: it must move the board, not orbit or zoom unexpectedly.
+  const dragBefore=await page.evaluate(()=>({az:camera.az,dist:camera.dist,x:camera.target[0],z:camera.target[2]}));
+  const canvasBox=await page.locator('#gl').boundingBox();
+  assert(canvasBox&&canvasBox.width>100,'3D canvas must be visible');
+  const x=canvasBox.x+canvasBox.width*.58,y=canvasBox.y+canvasBox.height*.68;
+  await page.mouse.move(x,y);
+  await page.mouse.down();
+  await page.mouse.move(x+65,y,{steps:8});
+  await page.mouse.up();
+  const dragAfter=await page.evaluate(()=>({az:camera.az,dist:camera.dist,x:camera.target[0],z:camera.target[2]}));
+  assert(Math.abs(dragBefore.x-dragAfter.x)+Math.abs(dragBefore.z-dragAfter.z)>0.01,'Dragging should translate board');
+  assert.equal(dragBefore.az,dragAfter.az,'Dragging should never rotate in default mode');
+  assert.equal(dragBefore.dist,dragAfter.dist,'Dragging should never zoom in default mode');
+  await page.locator('#resetcam').click();
   // Enter focused 2D mode and make sure the board, coach, and exit are visible.
   await page.locator('#sftViewToggle').click();
   // Some mobile browsers (notably iOS) deny the native Fullscreen API.
