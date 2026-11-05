@@ -49,6 +49,27 @@ test('Stockfish 19 Lite starts in a real browser worker', {timeout:75000},async(
   },null,{timeout:25000});
   const report=await page.locator('#deepEngineReport').textContent();
   assert.match(report,/proposition|Variante|coup|moteur/i);
+  // Enter focused 2D mode and make sure the board, coach, and exit are visible.
+  await page.locator('#sftViewToggle').click();
+  await page.locator('#sft2dFullscreen').click();
+  await page.waitForFunction(()=>document.querySelector('.shell')?.classList.contains('sft-immersive-2d'));
+  assert.equal(await page.locator('header').isVisible(),false);
+  assert.equal(await page.locator('.sft-board2d-frame').isVisible(),true);
+  assert.equal(await page.locator('.academy-dock').isVisible(),true);
+  assert.equal(await page.locator('#sft2dFullscreen').isVisible(),true);
+  await page.locator('#sft2dFullscreen').click();
+  await page.waitForFunction(()=>!document.querySelector('.shell')?.classList.contains('immersive'));
+  assert.equal(await page.locator('header').isVisible(),true);
+  // Installation guide must have platform-specific steps and a real copy action.
+  await page.locator('#installBtn').click();
+  assert.equal(await page.locator('#installSteps li').count()>1,true);
+  assert.equal(await page.locator('#installCopyLink').isVisible(),true);
+  await page.locator('#installClose').click();
+  // Simulate an installation event: navigation CTA disappears while gameplay remains.
+  await page.evaluate(()=>window.dispatchEvent(new Event('appinstalled')));
+  assert.equal(await page.locator('#installBtn').isVisible(),false);
+  assert.equal(await page.locator('.sft-board2d-frame').isVisible(),true);
+
 
  }finally{
   await browser.close();
