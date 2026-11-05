@@ -1745,6 +1745,22 @@ function sftPieceSVG(p){
  const white=p===p.toUpperCase(),kind=p.toLowerCase(),style=sft2dBoard.dataset.pieceStyle||'prestige';
  const fill=white?(style==='modern'?'#fffefa':style==='classic'?'#f6f0e4':'#fff1d4'):(style==='modern'?'#101821':style==='classic'?'#242d39':'#15212b');
  const stroke=white?'#564634':'#e2c89a',accent=white?'#b89762':'#526375';
+ const modern={
+ p:'<circle cx="50" cy="27" r="12"/><path d="M39 43 H61 L67 70 H33Z"/>',
+ r:'<path d="M29 22 H71 V36 H64 V70 H36 V36 H29Z"/><path d="M33 22 V30 M45 22 V30 M57 22 V30 M69 22 V30" fill="none"/>',
+ n:'<path d="M32 70 L32 52 L26 43 L37 28 L53 19 L70 25 L73 37 L59 39 L50 33 L45 46 L64 70Z"/><circle cx="53" cy="28" r="3" fill="#c49a52" stroke="none"/>',
+ b:'<path d="M50 17 L64 39 L56 55 L64 70 H36 L44 55 L36 39Z"/><path d="M56 32 L44 46" fill="none" stroke="#c49a52" stroke-width="4"/>',
+ q:'<path d="M23 30 L35 44 L43 22 L50 42 L57 22 L65 44 L77 30 L68 70 H32Z"/><circle cx="23" cy="28" r="3"/><circle cx="43" cy="20" r="3"/><circle cx="57" cy="20" r="3"/><circle cx="77" cy="28" r="3"/>',
+ k:'<path d="M46 13 H54 V22 H63 V30 H54 V39 H46 V30 H37 V22 H46Z M38 42 H62 L65 70 H35Z"/>'
+ };
+ const classic={
+ p:'<circle cx="50" cy="27" r="10"/><path d="M41 40 H59 Q64 43 61 51 L66 70 H34 L39 51 Q36 43 41 40Z"/>',
+ r:'<path d="M29 22 H38 V28 H45 V22 H55 V28 H62 V22 H71 V35 H29Z M36 39 H64 L61 70 H39Z"/>',
+ n:'<path d="M32 70 L34 54 L29 44 Q35 29 50 20 Q66 19 72 33 L62 41 L51 35 L47 46 L64 70Z"/><circle cx="52" cy="29" r="2.8" fill="#b48a53" stroke="none"/>',
+ b:'<path d="M50 17 Q68 31 61 45 L55 54 L64 70 H36 L45 54 L39 45 Q32 31 50 17Z"/><path d="M55 29 L44 47" fill="none" stroke="#b48a53" stroke-width="3"/>',
+ q:'<path d="M24 30 Q30 40 36 43 L43 25 L50 43 L57 25 L64 43 Q70 40 76 30 L68 70 H32Z"/><circle cx="24" cy="27" r="4"/><circle cx="43" cy="22" r="4"/><circle cx="57" cy="22" r="4"/><circle cx="76" cy="27" r="4"/>',
+ k:'<path d="M46 13 H54 V22 H62 V29 H54 V39 H46 V29 H38 V22 H46Z M40 42 Q50 38 60 42 L65 70 H35Z"/>'
+ };
  const top={
  p:'<circle cx="50" cy="29" r="11"/><path d="M36 49 Q33 40 42 39 H58 Q67 40 64 49 L69 70 H31Z"/>',
  r:'<path d="M29 22 V35 H71 V22 H63 V29 H56 V22 H44 V29 H37 V22Z M35 37 H65 L62 70 H38Z"/>',
@@ -1753,7 +1769,9 @@ function sftPieceSVG(p){
  q:'<path d="M23 30 L34 43 L43 24 L50 42 L57 24 L66 43 L77 30 L68 70 H32Z"/><circle cx="23" cy="27" r="4"/><circle cx="43" cy="21" r="4"/><circle cx="57" cy="21" r="4"/><circle cx="77" cy="27" r="4"/>',
  k:'<path d="M46 13 H54 V22 H63 V30 H54 V40 H46 V30 H37 V22 H46Z M38 42 Q50 36 62 42 L66 70 H34Z"/>'
  }[kind]||'';
- return '<svg class="sft-piece-art" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><g fill="'+fill+'" stroke="'+stroke+'" stroke-width="2.8" stroke-linejoin="round">'+top+'<path d="M29 70 H71 L76 79 H24Z M21 81 H79 V88 H21Z"/></g></svg>';
+ const silhouette=style==='modern'?modern[kind]:style==='classic'?classic[kind]:top;
+ const base=style==='modern'?'<path d="M28 70 H72 V78 H24 V87 H76 V78 H72Z"/>':style==='classic'?'<path d="M31 70 H69 L74 79 H26Z M23 82 H77 V88 H23Z"/>':'<path d="M29 70 H71 L76 79 H24Z M21 81 H79 V88 H21Z"/>';
+ return '<svg class="sft-piece-art" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><g fill="'+fill+'" stroke="'+stroke+'" stroke-width="2.8" stroke-linejoin="round">'+silhouette+base+'</g></svg>';
 }
 function sft2dPaint(){
  if(!sft2dEnabled)return;
