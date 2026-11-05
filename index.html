@@ -1062,6 +1062,24 @@ function potentialSkewers(s,victimSide){
  }
  return found;
 }
+function defensiveCandidates(s,threat,limit=2){
+ if(!threat)return [];
+ const piece=s.b[threat.to],options=[];
+ for(const m of legal(s)){
+  const after=apply(s,m),place=m[0]===threat.to?m[1]:threat.to;
+  if(after.b[place]!==piece)continue;
+  const threats=threatsForSide(after,s.t),risk=threats.find(x=>x.to===place);
+  const newLoss=risk?risk.loss:0;
+  // Saving a piece is a tactical idea only if the attack disappears
+  // or if the material consequences really improve.
+  if(risk&&newLoss>=threat.loss-.3)continue;
+  if(threats.some(x=>x.to!==place&&x.loss>Math.max(3,threat.loss+2)))continue;
+  if(mateInOne(after))continue;
+  const counter=isCapture(s,m)&&m[1]===threat.from;
+  options.push({move:m,score:(risk?0:3)+(threat.loss-newLoss)*2+(counter?2:0),kind:counter?'capture de l’attaquant':m[0]===threat.to?'déplacement':'protection ou interception'});
+ }
+ return options.sort((a,b)=>b.score-a.score).slice(0,limit);
+}
 function tacticalPicture(s){
  const color=s.t,pins=pinnedPieces(s,color),forks=doubleAttacks(s,color),skewers=potentialSkewers(s,color);
  const attackedNow=getThreats(s),lines=[];
@@ -1071,6 +1089,8 @@ function tacticalPicture(s){
  if(attackedNow.length){
   lines.push('⚠ '+attackedNow.length+' pièce(s) actuellement attaquée(s), dont '+attackedNow.filter(x=>x.loss>.3).length+' perte(s) matérielle(s) possibles.');
   for(const t of attackedNow.slice(0,3))lines.push('• '+pname[t.piece]+' '+sq(t.to).toUpperCase()+' : '+pname[t.by]+' '+sq(t.from).toUpperCase()+(t.loss>.3?' (perte possible ~'+t.loss.toFixed(1)+' pts)':' (reprise ou échange possible)'));
+  const options=defensiveCandidates(s,attackedNow[0],2);
+  if(options.length)lines.push('Pistes de parade à vérifier : '+options.map(x=>sq(x.move[0]).toUpperCase()+' → '+sq(x.move[1]).toUpperCase()+' ('+x.kind+')').join(' ; ')+'.');
  }
  for(const p of pins.slice(0,2))lines.push('📌 Clouage : '+pname[p.piece]+' '+sq(p.to).toUpperCase()+' devant ton roi, par '+pname[p.attacker]+' '+sq(p.from).toUpperCase()+'.');
  for(const f of forks.slice(0,2))lines.push('♞ Double attaque : '+pname[f.piece]+' '+sq(f.from).toUpperCase()+' attaque '+f.targets.map(sq).join(' et ').toUpperCase()+'.');
