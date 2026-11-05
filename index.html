@@ -1347,7 +1347,7 @@ async function deepAnalyzePosition(showDetails=true){
  statusEl.textContent='Analyse en cours…';deepBusy=true;
  if(showDetails)reportEl.textContent='Chargement du moteur et examen des réponses adverses…';
  try{
-  if(!deepBridge)deepBridge=new SFTStockfishBridge('./stockfish-worker.js');
+  if(!deepBridge)deepBridge=new SFTStockfishBridge('./vendor/stockfish/stockfish-19-lite-single.js');
   const result=await deepBridge.analyze({...settings,fen,profile});
   if(generation!==deepGeneration||serializeFen(current())!==fen||!result)return;
   deepResult=result;deepFen=fen;deepBusy=false;
