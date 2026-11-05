@@ -498,6 +498,32 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
 @media(max-width:770px){.sft-mission-banner{top:8px;left:8px;padding:8px 10px;width:min(270px,60%)}.sft-mission-banner small{font-size:10px}.sft-mission-banner strong{font-size:12px}.sft-mission-dock{padding:11px}.sft-mission-dock h3{font-size:14px}}
 @media(orientation:landscape) and (max-height:560px){.sft-mission-banner{top:5px;left:6px;width:min(230px,50%);padding:7px 9px}.sft-mission-banner small{display:none}.sft-mission-dock h3{font-size:13px;margin:4px 0}.sft-mission-dock p{font-size:10px;line-height:1.3;margin:3px 0 5px}.sft-mission-head{font-size:10px}.sft-mission-status{padding:6px;font-size:10px}.sft-mission-buttons{margin-top:6px}.sft-mission-buttons button{min-height:33px;font-size:10px;padding:5px 4px}}
 
+
+/* SFT CHESS 2D — a fully playable, high-contrast alternative to the 3D scene. */
+.sft-board2d[hidden]{display:none!important}
+.sft-board2d{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;padding:clamp(6px,2vw,24px);background:radial-gradient(ellipse at center,#23323a 0%,#101923 62%,#080f19 100%)}
+.sft-board2d-frame{position:relative;width:min(94%,78vh,740px);aspect-ratio:1;padding:clamp(11px,2.5vw,24px);background:linear-gradient(140deg,#8c5731,#4a291b 30%,#9e6c41 52%,#3a2219 85%);border:2px solid #b9955c;box-shadow:0 0 0 3px #20160e,0 22px 45px #000b,inset 0 0 0 4px #332015;border-radius:7px}
+.sft-board2d-grid{width:100%;height:100%;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));border:2px solid #d7ad70;box-shadow:0 0 0 3px #392519;position:relative}
+.sft-2d-cell{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;border:0;border-radius:0;padding:0;cursor:pointer;touch-action:manipulation;appearance:none}
+.sft-2d-cell.light{background:#f2dcb7}.sft-2d-cell.dark{background:#8a644c}
+.sft-2d-cell.last{box-shadow:inset 0 0 0 999px #e4bc4870}
+.sft-2d-cell.selected{box-shadow:inset 0 0 0 4px #3be5a3,inset 0 0 24px #4cf0bd80}
+.sft-2d-cell.check{box-shadow:inset 0 0 0 4px #f65353,inset 0 0 30px #f3373788}
+.sft-2d-piece{font-family:'DejaVu Sans','Segoe UI Symbol','Noto Sans Symbols 2',serif;font-size:clamp(20px,5.5vw,58px);line-height:1;position:relative;z-index:2;filter:drop-shadow(0 3px 1px #0005);pointer-events:none}
+.sft-2d-piece.white{color:#fffaf0;-webkit-text-stroke:1px #554b42;text-shadow:0 1px 0 #7a695a,1px 2px 2px #413127}
+.sft-2d-piece.black{color:#202632;-webkit-text-stroke:.7px #d2b78b;text-shadow:0 1px 1px #fff5}
+.sft-2d-dot{position:absolute;width:25%;height:25%;border-radius:50%;background:#19b88b99;box-shadow:0 0 0 2px #ddffe2aa;z-index:1}
+.sft-2d-capture{position:absolute;inset:4%;border:4px solid #e56c4d;border-radius:50%;z-index:1}
+.sft-2d-danger{position:absolute;inset:3%;border:3px solid #ff5252;border-radius:50%;pointer-events:none;z-index:3}
+.sft-2d-coord{position:absolute;bottom:2px;right:3px;font-size:clamp(8px,1.2vw,12px);font-weight:800;opacity:.7;pointer-events:none}
+.sft-2d-cell.light .sft-2d-coord{color:#6d4832}.sft-2d-cell.dark .sft-2d-coord{color:#fff1d7}
+.sft-board2d-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:visible}
+.sft-view-toggle{min-height:39px;padding:8px 13px;border:1px solid #d7b66f;border-radius:10px;background:linear-gradient(135deg,#223544,#101c29);color:#ffe5a5;font-weight:800;white-space:nowrap;cursor:pointer}
+.sft-view-toggle[aria-pressed=true]{background:linear-gradient(135deg,#e9c47e,#b58b4b);color:#1c2430}
+.stage.sft-2d-active #gl,.stage.sft-2d-active #boardLabels,.stage.sft-2d-active #mentorSvg,.stage.sft-2d-active #mentorFrom,.stage.sft-2d-active #mentorTo,.stage.sft-2d-active .edition-stamp{visibility:hidden!important}
+.stage.sft-2d-active .stage-top{display:none!important}
+@media(max-width:850px){.sft-board2d-frame{width:min(97%,85vh,680px);padding:10px}.sft-view-toggle{font-size:12px;padding:7px}}
+@media(orientation:landscape) and (max-height:550px){.sft-board2d-frame{width:min(90%,83vh,650px);padding:7px}.sft-2d-piece{font-size:clamp(18px,7vh,48px)}}
 </style>
 </head>
 <body>
@@ -527,8 +553,8 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
 <button type="button" class="rail-btn" id="railInstall">↓ Installer le jeu</button>
 <div class="rail-foot"><strong>SALES FILS · CHESS</strong><small>11 leçons, sauvegarde locale et analyse pédagogique expérimentale. Pas de partie en ligne actuellement.</small></div>
 </aside>
-<div class="board-column"><section class="stage" id="stage" aria-label="Échiquier 3D interactif"><canvas id="gl" aria-label="Jeu d'échecs 3D : toucher une pièce puis une destination"></canvas><div class="board-label-layer" id="boardLabels" aria-hidden="true"></div><svg class="mentor-overlay" id="mentorSvg" aria-hidden="true"><defs><marker id="mentorArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#91eac4"/></marker><marker id="threatArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#f16a60"/></marker><marker id="replyArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#58c3e7"/></marker></defs><path id="mentorPath" class="mentor-arrow" marker-end="url(#mentorArrowHead)" style="display:none"/><path id="threatPath" class="mentor-arrow threat-arrow" marker-end="url(#threatArrowHead)" style="display:none"/><path id="replyPath" class="mentor-arrow reply-arrow" marker-end="url(#replyArrowHead)" style="display:none"/></svg><div id="mentorFrom" class="mentor-point"></div><div id="mentorTo" class="mentor-point to"></div><div class="stage-top"><div class="eyebrow">SFT CHESS · L'ARÈNE DES STRATÈGES</div><div class="stage-title">À toi de jouer !</div></div>
-<div id="sftMissionBanner" class="sft-mission-banner" hidden aria-live="polite"><span class="sft-mission-tag" id="sftMissionTag">🎯 MISSION</span><strong id="sftMissionGoal">Trouve le meilleur coup</strong><small id="sftMissionPrompt">Sélectionne une pièce, puis sa case d'arrivée sur le plateau.</small></div><div class="sft-play-hud" id="sftPlayHud" aria-live="polite"><span class="hud-beacon"></span><span id="sftHudTurn">PRÊT À JOUER</span></div><div class="sft-game-moment" id="sftGameMoment" hidden aria-live="polite"><span class="sft-moment-symbol" id="sftMomentIcon">✨</span><span id="sftMomentText"></span></div><div class="notice" id="notice"></div><div class="edition-stamp" aria-hidden="true">ATELIER · ÉDITION NOYER & LAITON</div></section><nav class="board-toolbar" aria-label="Commandes de partie et caméra"><button type="button" id="quickUndo" class="quick-undo" aria-label="Annuler le dernier coup" title="Annuler le dernier coup" disabled><span aria-hidden="true">↶</span><span class="undo-word">Annuler</span></button><div class="toolbar-label">◈ <span>CAMÉRA</span><small>✋ tire le plateau vers toi · 🔒 angle fixe · 🤏 zoom · ⌂ retour à ma vue</small></div><span class="compact-pan-help" aria-hidden="true">✋ Tire le plateau</span><div class="compact-controls" aria-label="Caméra simplifiée"><button class="compact-btn" id="homeMini" aria-label="Revenir à ma vue mémorisée" title="Ma vue">⌂</button><button class="compact-btn" id="fullMini" aria-label="Basculer le plein écran" title="Plein écran">⛶</button><button class="compact-btn" id="camExpand" aria-label="Afficher les réglages caméra" title="Réglages de caméra">⚙</button></div><div class="camera-tools"><button class="cam-btn" id="rotate" title="Tourner le plateau" aria-label="Tourner le plateau">↻</button><button class="cam-btn" id="panbtn" title="Déplacer le plateau sans tourner la caméra (clic-glisser ou doigt)" aria-label="Activer le déplacement du plateau" aria-pressed="false">✋</button><button class="cam-btn" id="camCollapse" title="Masquer les outils caméra" aria-label="Masquer les outils de caméra">▾</button><button class="cam-btn" id="lockcam" title="Verrouiller la caméra" aria-label="Verrouiller la caméra" aria-pressed="false">🔓</button><button class="cam-btn" id="resetcam" title="Retour à ma vue (ou caméra initiale)" aria-label="Retour à ma vue">⌂</button><button class="cam-btn" id="savecam" title="Enregistrer cette position et cet angle comme ma vue" aria-label="Mémoriser la position actuelle du plateau">★</button><button class="cam-btn" id="zoomout" title="Éloigner" aria-label="Zoom arrière">−</button><button class="cam-btn" id="zoomin" title="Rapprocher" aria-label="Zoom avant">+</button><button class="cam-btn" id="viewbtn" title="Alterner vue de jeu et vue 3D" aria-label="Passer en vue cinématique">◩</button><button class="cam-btn fs" id="fullbtn" title="Plein écran" aria-label="Passer en plein écran">⛶</button></div></nav>
+<div class="board-column"><section class="stage" id="stage" aria-label="Échiquier 3D interactif"><canvas id="gl" aria-label="Jeu d'échecs 3D : toucher une pièce puis une destination"></canvas><div class="board-label-layer" id="boardLabels" aria-hidden="true"></div><div id="sftBoard2D" class="sft-board2d" hidden aria-label="Échiquier 2D interactif"><div class="sft-board2d-frame"><div class="sft-board2d-grid" id="sftBoard2DGrid" role="grid" aria-label="Plateau classique 2D"></div></div></div><svg class="mentor-overlay" id="mentorSvg" aria-hidden="true"><defs><marker id="mentorArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#91eac4"/></marker><marker id="threatArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#f16a60"/></marker><marker id="replyArrowHead" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4Z" fill="#58c3e7"/></marker></defs><path id="mentorPath" class="mentor-arrow" marker-end="url(#mentorArrowHead)" style="display:none"/><path id="threatPath" class="mentor-arrow threat-arrow" marker-end="url(#threatArrowHead)" style="display:none"/><path id="replyPath" class="mentor-arrow reply-arrow" marker-end="url(#replyArrowHead)" style="display:none"/></svg><div id="mentorFrom" class="mentor-point"></div><div id="mentorTo" class="mentor-point to"></div><div class="stage-top"><div class="eyebrow">SFT CHESS · L'ARÈNE DES STRATÈGES</div><div class="stage-title">À toi de jouer !</div></div>
+<div id="sftMissionBanner" class="sft-mission-banner" hidden aria-live="polite"><span class="sft-mission-tag" id="sftMissionTag">🎯 MISSION</span><strong id="sftMissionGoal">Trouve le meilleur coup</strong><small id="sftMissionPrompt">Sélectionne une pièce, puis sa case d'arrivée sur le plateau.</small></div><div class="sft-play-hud" id="sftPlayHud" aria-live="polite"><span class="hud-beacon"></span><span id="sftHudTurn">PRÊT À JOUER</span></div><div class="sft-game-moment" id="sftGameMoment" hidden aria-live="polite"><span class="sft-moment-symbol" id="sftMomentIcon">✨</span><span id="sftMomentText"></span></div><div class="notice" id="notice"></div><div class="edition-stamp" aria-hidden="true">ATELIER · ÉDITION NOYER & LAITON</div></section><nav class="board-toolbar" aria-label="Commandes de partie et caméra"><button type="button" id="sftViewToggle" class="sft-view-toggle" aria-label="Passer en vue 2D classique" aria-pressed="false">♟ Vue 2D · Classique</button><button type="button" id="quickUndo" class="quick-undo" aria-label="Annuler le dernier coup" title="Annuler le dernier coup" disabled><span aria-hidden="true">↶</span><span class="undo-word">Annuler</span></button><div class="toolbar-label">◈ <span>CAMÉRA</span><small>✋ tire le plateau vers toi · 🔒 angle fixe · 🤏 zoom · ⌂ retour à ma vue</small></div><span class="compact-pan-help" aria-hidden="true">✋ Tire le plateau</span><div class="compact-controls" aria-label="Caméra simplifiée"><button class="compact-btn" id="homeMini" aria-label="Revenir à ma vue mémorisée" title="Ma vue">⌂</button><button class="compact-btn" id="fullMini" aria-label="Basculer le plein écran" title="Plein écran">⛶</button><button class="compact-btn" id="camExpand" aria-label="Afficher les réglages caméra" title="Réglages de caméra">⚙</button></div><div class="camera-tools"><button class="cam-btn" id="rotate" title="Tourner le plateau" aria-label="Tourner le plateau">↻</button><button class="cam-btn" id="panbtn" title="Déplacer le plateau sans tourner la caméra (clic-glisser ou doigt)" aria-label="Activer le déplacement du plateau" aria-pressed="false">✋</button><button class="cam-btn" id="camCollapse" title="Masquer les outils caméra" aria-label="Masquer les outils de caméra">▾</button><button class="cam-btn" id="lockcam" title="Verrouiller la caméra" aria-label="Verrouiller la caméra" aria-pressed="false">🔓</button><button class="cam-btn" id="resetcam" title="Retour à ma vue (ou caméra initiale)" aria-label="Retour à ma vue">⌂</button><button class="cam-btn" id="savecam" title="Enregistrer cette position et cet angle comme ma vue" aria-label="Mémoriser la position actuelle du plateau">★</button><button class="cam-btn" id="zoomout" title="Éloigner" aria-label="Zoom arrière">−</button><button class="cam-btn" id="zoomin" title="Rapprocher" aria-label="Zoom avant">+</button><button class="cam-btn" id="viewbtn" title="Alterner vue de jeu et vue 3D" aria-label="Passer en vue cinématique">◩</button><button class="cam-btn fs" id="fullbtn" title="Plein écran" aria-label="Passer en plein écran">⛶</button></div></nav>
 </div>
 <div class="sft-right-column"><section class="academy-dock" aria-label="Maître d'échecs interactif">
 <section class="sft-mission-dock" id="sftMissionDock" hidden aria-label="Exercice en cours">
@@ -1668,4 +1694,59 @@ navActive('jouer');
 refresh();syncCameraUI();sftRestoreWakeSession();requestAnimationFrame(render);
 window.SFTCHESS={newGame,legal,apply,current,commit,index,parseFen,moveKey,setScenario,showFilmStep,scenarioSummary,get focusScenario(){return focusScenario;},startLesson,stopLesson,lessonMove,lessons,showHintArrow,selectSquare,dangerAfterMove,riskAfterMove,exposureText,getThreats,threatsForSide,threatsAfterMove,getReport,exchangeGain,bestTeachingMove,gameHistory:()=>gameHistory,view:{get moveMode(){return panToolActive;},get angle(){return camera.az;},get elevation(){return camera.el;},get distance(){return camera.dist;},get target(){return [...camera.target];},get locked(){return cameraLocked;},get saved(){return cameraPreset&&{...cameraPreset,target:[...cameraPreset.target]};},get fullscreen(){return appShell.classList.contains('immersive');}}};
 </script>
-</body></html>
+<script>
+/* Independent 2D presentation: same legal engine, same game history and teacher. */
+const sft2dSymbols={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+let sft2dEnabled=false,sft2dSignature='';
+const sft2dBoard=document.getElementById('sftBoard2D'),sft2dGrid=document.getElementById('sftBoard2DGrid'),sft2dToggle=document.getElementById('sftViewToggle');
+const sft2dCells=[];
+for(let row=0;row<8;row++)for(let col=0;col<8;col++){
+ const i=row*16+col,b=document.createElement('button');b.type='button';b.className='sft-2d-cell '+((row+col)%2?'dark':'light');b.setAttribute('role','gridcell');b.setAttribute('aria-label',sq(i));b.addEventListener('click',()=>{selectSquare(i);sft2dSignature='';sft2dPaint();});sft2dGrid.appendChild(b);sft2dCells.push({i,b});
+}
+const sft2dSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+sft2dSvg.setAttribute('viewBox','0 0 800 800');sft2dSvg.setAttribute('class','sft-board2d-lines');
+sft2dSvg.innerHTML='<defs><marker id="sft2dRedTip" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#e93642"/></marker><marker id="sft2dGreenTip" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="#17b886"/></marker></defs>';
+sft2dGrid.appendChild(sft2dSvg);
+function sft2dLine(from,to,color){
+ if(!on(from)||!on(to))return;
+ const x1=((from&7)+.5)*100,y1=((from>>4)+.5)*100,x2=((to&7)+.5)*100,y2=((to>>4)+.5)*100;
+ const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+ for(const [k,v] of Object.entries({x1,y1,x2,y2,stroke:color==='red'?'#e93642':'#17b886','stroke-width':9,'stroke-linecap':'round','stroke-opacity':.9,'marker-end':color==='red'?'url(#sft2dRedTip)':'url(#sft2dGreenTip)'}))line.setAttribute(k,String(v));
+ sft2dSvg.appendChild(line);
+}
+function sft2dPaint(){
+ if(!sft2dEnabled)return;
+ const s=current();let checkOrigin=checked(s)?sftCheckAttacker(s):null;
+ const sig=s.b.join('')+'|'+selected+'|'+legalTargets.join(',')+'|'+(lastMove||[]).join(',')+'|'+(mentorArrow||[]).join(',')+'|'+(threatArrow||[]).join(',')+'|'+(replyArrow||[]).join(',')+'|'+(checkOrigin?[checkOrigin.from,checkOrigin.to].join(','):'');
+ if(sig===sft2dSignature)return;sft2dSignature=sig;
+ for(const {i,b} of sft2dCells){
+  const p=s.b[i],white=side(p)===1;
+  b.className='sft-2d-cell '+(((i>>4)+(i&7))%2?'dark':'light');
+  if(lastMove&&lastMove.includes(i))b.classList.add('last');
+  if(i===selected)b.classList.add('selected');
+  if(checkOrigin&&i===checkOrigin.to)b.classList.add('check');
+  b.replaceChildren();
+  if(legalTargets.includes(i)){const dot=document.createElement('span');dot.className=p==='.'?'sft-2d-dot':'sft-2d-capture';b.append(dot);}
+  if(p!=='.'){const piece=document.createElement('span');piece.className='sft-2d-piece '+(white?'white':'black');piece.textContent=sft2dSymbols[p];b.append(piece);}
+  if(checkOrigin&&i===checkOrigin.from){const danger=document.createElement('span');danger.className='sft-2d-danger';b.append(danger);}
+  if((i>>4)===7||(i&7)===0){const coord=document.createElement('span');coord.className='sft-2d-coord';coord.textContent=(i>>4)===7?'ABCDEFGH'[i&7]:String(8-(i>>4));b.append(coord);}
+  b.setAttribute('aria-label',sq(i)+' '+(p==='.'?'case vide':(white?'blanc ':'noir ')+pname[p.toLowerCase()]));
+ }
+ sft2dSvg.querySelectorAll('line').forEach(x=>x.remove());
+ if(mentorArrow)sft2dLine(mentorArrow[0],mentorArrow[1],'green');
+ if(threatArrow)sft2dLine(threatArrow[0],threatArrow[1],'red');
+ if(checkOrigin)sft2dLine(checkOrigin.from,checkOrigin.to,'red');
+}
+function sft2dSet(enabled){
+ sft2dEnabled=!!enabled;sft2dBoard.hidden=!sft2dEnabled;
+ document.getElementById('stage').classList.toggle('sft-2d-active',sft2dEnabled);
+ sft2dToggle.setAttribute('aria-pressed',String(sft2dEnabled));
+ sft2dToggle.textContent=sft2dEnabled?'♞ Vue 3D · Prestige':'♟ Vue 2D · Classique';
+ sft2dToggle.setAttribute('aria-label',sft2dEnabled?'Passer en vue 3D prestige':'Passer en vue 2D classique');
+ try{localStorage.setItem('sft-chess-view',sft2dEnabled?'2d':'3d');}catch(_){}
+ sft2dSignature='';sft2dPaint();
+}
+sft2dToggle.addEventListener('click',()=>sft2dSet(!sft2dEnabled));
+try{sft2dSet(localStorage.getItem('sft-chess-view')==='2d');}catch(_){sft2dSet(false);}
+setInterval(()=>{if(sft2dEnabled)sft2dPaint();},160);
+</script></body></html>
