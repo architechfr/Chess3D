@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no"/>
-<title>SFT CHESS 3D — Le Maître d'échecs | V5.9.2</title>
+<title>SFT CHESS 3D — Le Maître d'échecs | V5.9.6</title>
 <meta name="theme-color" content="#101b27"/>
 <meta name="description" content="SFT CHESS 3D : échecs en 3D, parties sauvegardées et apprentissage avec le Maître."/>
 <meta name="application-name" content="SFT CHESS 3D"/>
@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="SFT CHESS"/>
 <link rel="icon" href="./icons/logo.svg?v=5.9.2" type="image/svg+xml"/>
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png?v=5.9.2"/>
-<link rel="manifest" href="./manifest.webmanifest"/>
+<link rel="manifest" href="./manifest.webmanifest?v=5.9.6"/>
 <style>
 
 :root{--bg:#080e17;--panel:#121b29;--panel2:#192333;--line:#2b3445;--muted:#9ca9bb;--text:#f4eee4;--gold:#dbbb74;--green:#7dcdab}
@@ -455,11 +455,28 @@ header{border-bottom-color:#64d6dd49}
 @media(orientation:landscape) and (max-height:550px){.immersive .stage-top{display:none}.sft-play-hud{top:7px;right:8px;font-size:10px}.sft-game-moment{top:42px;max-width:210px}}
 @media(prefers-reduced-motion:reduce){.sft-game-moment,.stage.sft-win-flash{animation:none!important}.academy-level-track span{transition:none}.sft-nav,.rail-btn,.mbtn,.cam-btn,.compact-btn,.quick-undo{transition:none}}
 
+
+/* V5.9.6 — wake-up recovery with a stable immersive layout, not a forced portrait zoom. */
+#sftLandscapeGate{overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+.sft-landscape-card{max-height:calc(100dvh - 20px);overflow-y:auto}
+#sftContinueLandscape[hidden]{display:none!important}
+#sftContinueLandscape{background:#203646;color:#d6f3f5;border:1px solid #6e9cad}
+.shell.immersive .stage{overflow:hidden!important;touch-action:none}
+html.sft-playing,body.sft-playing{overscroll-behavior:none}
+@media (orientation:landscape) and (max-height:470px){
+ #sftLandscapeGate{padding:6px}
+ .sft-landscape-card{padding:10px 14px;gap:5px}
+ .sft-landscape-icon{display:none}
+ .sft-landscape-card h2{font-size:17px}
+ .sft-landscape-card p{font-size:12px;line-height:1.35}
+ .sft-landscape-card button{min-height:35px;padding:7px 10px}
+}
+
 </style>
 </head>
 <body>
 <div class="shell">
-<div id="sftLandscapeGate" hidden role="alertdialog" aria-modal="true" aria-label="Mode paysage nécessaire"><div class="sft-landscape-card"><div class="sft-landscape-icon" aria-hidden="true">↻</div><h2>Tourne ton téléphone</h2><p>Pour jouer à SFT CHESS 3D, mets ton appareil en <strong>paysage</strong>. Nous demandons le plein écran et le verrouillage paysage quand ton navigateur le permet.</p><button id="sftRetryLandscape" type="button">⛶ Activer paysage et plein écran</button><button id="sftExitLandscape" type="button">Revenir à l'accueil</button></div></div>
+<div id="sftLandscapeGate" hidden role="alertdialog" aria-modal="true" aria-label="Mode paysage nécessaire"><div class="sft-landscape-card"><div class="sft-landscape-icon" aria-hidden="true">↻</div><h2 id="sftGateTitle">Mode paysage</h2><p id="sftGateDescription">Tourne ton téléphone pour reprendre la partie.</p><button id="sftRetryLandscape" type="button">⛶ Reprendre le jeu en plein écran</button><button id="sftContinueLandscape" type="button" hidden>Jouer sans le plein écran du navigateur</button><button id="sftExitLandscape" type="button">Quitter la partie</button></div></div>
 <header><div class="brand"><div class="brand-mark"><img src="./icons/logo.svg?v=5.9.2" width="49" height="49" alt="SFT CHESS — Dame couronnée"/></div><div><h1>SFT <span>CHESS</span></h1><small>Sales Fils · L'Académie</small></div></div><nav class="sft-site-nav" aria-label="Navigation principale">
 <button class="sft-nav active" data-go="accueil" type="button"><span>⌂</span>Accueil</button>
 <button class="sft-nav" data-go="jouer" type="button"><span>♞</span>Jouer</button>
@@ -1316,58 +1333,153 @@ document.getElementById('viewbtn').onclick=()=>{
 };
 const appShell=document.querySelector('.shell');
 function updateFullscreenButton(active){let btn=document.getElementById('fullbtn');btn.textContent=active?'⤢':'⛶';btn.setAttribute('aria-label',active?'Quitter le plein écran':'Passer en plein écran');btn.setAttribute('aria-pressed',String(active));}
-let sftLandscapeSession=false;
-function sftNeedsLandscapePrompt(){
- return sftLandscapeSession && (window.matchMedia('(pointer:coarse)').matches || navigator.maxTouchPoints>0) &&
- window.matchMedia('(orientation: portrait)').matches && window.innerWidth<900;
+/* V5.9.6 — Sleep/wake aware landscape controller. Camera does not change on resize. */
+let sftLandscapeSession=false,sftNativeFullscreenSeen=false,sftResumeNeeded=false,sftScreenWasHidden=false;
+const SFT_WAKE_SESSION='sft_chess_mobile_landscape_session_v1';
+function sftMobileDevice(){
+ return (window.matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0)
+  && Math.min(screen.width||window.innerWidth,screen.height||window.innerHeight)<800;
+}
+function sftDisplayModeFullscreen(){
+ return window.matchMedia('(display-mode: fullscreen)').matches;
+}
+function sftPortraitNow(){
+ return window.matchMedia('(orientation: portrait)').matches;
+}
+function sftInvalidateViewport(){
+ sftFrameSignature='';sftLastFrame=0;lastOverlayUpdate=0;
+ // Avoid continuing an unfinished pinch from before the screen went to sleep.
+ pointerState.clear();gesture=null;
+ requestAnimationFrame(()=>{sftFrameSignature='';lastOverlayUpdate=0;});
+}
+function sftRememberSession(){
+ if(!sftMobileDevice())return;
+ try{
+  if(!sftLandscapeSession){sessionStorage.removeItem(SFT_WAKE_SESSION);return;}
+  sessionStorage.setItem(SFT_WAKE_SESSION,JSON.stringify({active:true,time:Date.now(),camera:cameraSnapshot(),locked:cameraLocked,preset:cameraPreset}));
+ }catch(_){}
 }
 function sftSyncLandscapePrompt(){
  const gate=document.getElementById('sftLandscapeGate');
- if(gate)gate.hidden=!sftNeedsLandscapePrompt();
+ if(!gate)return;
+ const portrait=sftLandscapeSession&&sftMobileDevice()&&sftPortraitNow();
+ const resume=sftLandscapeSession&&sftMobileDevice()&&sftResumeNeeded&&!sftDisplayModeFullscreen()&&!document.fullscreenElement;
+ gate.hidden=!(portrait||resume);
+ const title=document.getElementById('sftGateTitle'),desc=document.getElementById('sftGateDescription');
+ const retry=document.getElementById('sftRetryLandscape'),continueBtn=document.getElementById('sftContinueLandscape');
+ if(portrait){
+  title.textContent='Tourne ton téléphone';
+  desc.textContent='Ta partie et ton cadrage sont conservés. Mets ton téléphone à l’horizontale puis appuie sur Reprendre. Le navigateur peut demander ton autorisation.';
+  retry.textContent='⛶ Reprendre en paysage';
+ }else if(resume){
+  title.textContent='Ta partie est toujours là !';
+  desc.textContent='Le téléphone a quitté le plein écran pendant la veille. Un appui suffit pour essayer de le rétablir, sans déplacer ton échiquier.';
+  retry.textContent='⛶ Reprendre en plein écran';
+ }
+ continueBtn.hidden=portrait||!resume;
 }
 function sftTryLandscapeLock(){
+ if(!sftLandscapeSession||document.visibilityState==='hidden')return;
  if(screen.orientation&&typeof screen.orientation.lock==='function'){
-  try {const result=screen.orientation.lock('landscape');if(result&&typeof result.catch==='function')result.catch(()=>sftSyncLandscapePrompt());}
-  catch(_){sftSyncLandscapePrompt();}
+  try {
+   const result=screen.orientation.lock('landscape');
+   if(result&&typeof result.catch==='function')result.catch(()=>sftSyncLandscapePrompt());
+  }catch(_){sftSyncLandscapePrompt();}
  }
+}
+function sftRequestNativeFullscreen(){
+ if(!appShell.requestFullscreen)return;
+ try{
+  const pending=appShell.requestFullscreen({navigationUI:'hide'});
+  if(pending&&typeof pending.then==='function'){
+   pending.then(()=>{sftNativeFullscreenSeen=true;sftResumeNeeded=false;sftTryLandscapeLock();sftInvalidateViewport();sftSyncLandscapePrompt();}).catch(()=>{sftResumeNeeded=sftNativeFullscreenSeen;sftSyncLandscapePrompt();});
+  }
+ }catch(_){sftResumeNeeded=sftNativeFullscreenSeen;sftSyncLandscapePrompt();}
 }
 function toggleFullscreen(force){
  const active=typeof force==='boolean'?force:!appShell.classList.contains('immersive');
- // Preserve all camera parameters; fullscreen affects layout only.
  appShell.classList.toggle('immersive',active);document.body.style.overflow=active?'hidden':'';
- updateFullscreenButton(active);sftFrameSignature='';lastOverlayUpdate=0;sftLandscapeSession=active;
+ document.body.classList.toggle('sft-playing',active);
+ document.documentElement.classList.toggle('sft-playing',active);
+ sftLandscapeSession=active;updateFullscreenButton(active);
  if(active){
-  // Fullscreen and screen.orientation.lock require an actual user gesture on many mobile browsers.
-  if(appShell.requestFullscreen&&!document.fullscreenElement){
-   try{const result=appShell.requestFullscreen({navigationUI:'hide'});
-    if(result&&typeof result.then==='function')result.then(()=>{sftTryLandscapeLock();sftSyncLandscapePrompt();}).catch(()=>sftSyncLandscapePrompt());
-   }catch(_){sftSyncLandscapePrompt();}
-  }else sftTryLandscapeLock();
- } else {
+  sftResumeNeeded=false;
+  if(!document.fullscreenElement){sftRequestNativeFullscreen();}
+  else sftTryLandscapeLock();
+ }else{
+  sftResumeNeeded=false;sftNativeFullscreenSeen=false;
   if(screen.orientation&&typeof screen.orientation.unlock==='function')try{screen.orientation.unlock();}catch(_){}
-  if(document.fullscreenElement)try{document.exitFullscreen().catch(()=>{});}catch(_){}
+  if(document.fullscreenElement)try{Promise.resolve(document.exitFullscreen()).catch(()=>{});}catch(_){}
  }
- sftSyncLandscapePrompt();
+ sftRememberSession();sftInvalidateViewport();sftSyncLandscapePrompt();
 }
 document.getElementById('fullbtn').onclick=()=>toggleFullscreen();
 document.addEventListener('fullscreenchange',()=>{
- if(!document.fullscreenElement&&appShell.classList.contains('immersive')){
-  appShell.classList.remove('immersive');document.body.style.overflow='';updateFullscreenButton(false);sftFrameSignature='';lastOverlayUpdate=0;sftLandscapeSession=false;
+ if(document.fullscreenElement){
+  sftNativeFullscreenSeen=true;sftResumeNeeded=false;
+  if(sftLandscapeSession)sftTryLandscapeLock();
+ }else if(sftLandscapeSession){
+  // OS sleep, notification shade and browser chrome can drop fullscreen.
+  // Do not tear down immersive layout or camera just because fullscreen was lost.
+  if(sftMobileDevice())sftResumeNeeded=sftNativeFullscreenSeen;
+  else toggleFullscreen(false);
+ }
+ sftInvalidateViewport();sftSyncLandscapePrompt();
+});
+function sftOnWake(){
+ if(document.visibilityState==='hidden')return;
+ sftInvalidateViewport();
+ if(sftLandscapeSession){
+  if(sftMobileDevice()&&sftNativeFullscreenSeen&&!document.fullscreenElement&&!sftDisplayModeFullscreen())sftResumeNeeded=true;
+  if(document.fullscreenElement)sftTryLandscapeLock();
+  sftRememberSession();
  }
  sftSyncLandscapePrompt();
+ sftScreenWasHidden=false;
+}
+document.addEventListener('visibilitychange',()=>{
+ if(document.visibilityState==='hidden'){sftScreenWasHidden=true;sftRememberSession();}
+ else sftOnWake();
 });
-window.addEventListener('resize',sftSyncLandscapePrompt);
-window.addEventListener('orientationchange',sftSyncLandscapePrompt);
+window.addEventListener('pagehide',sftRememberSession);
+window.addEventListener('pageshow',sftOnWake);
+window.addEventListener('focus',()=>{if(sftScreenWasHidden)sftOnWake();});
+window.addEventListener('resize',()=>{sftInvalidateViewport();sftSyncLandscapePrompt();});
+window.addEventListener('orientationchange',()=>{sftInvalidateViewport();sftSyncLandscapePrompt();});
+if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>{sftInvalidateViewport();sftSyncLandscapePrompt();});
+if(typeof ResizeObserver==='function')new ResizeObserver(()=>{sftFrameSignature='';lastOverlayUpdate=0;}).observe(document.getElementById('stage'));
 document.getElementById('sftRetryLandscape').onclick=()=>{
- if(!appShell.classList.contains('immersive'))toggleFullscreen(true);
- else{
-  if(!document.fullscreenElement&&appShell.requestFullscreen){
-   try{Promise.resolve(appShell.requestFullscreen({navigationUI:'hide'})).then(()=>{sftTryLandscapeLock();sftSyncLandscapePrompt();}).catch(()=>sftSyncLandscapePrompt());}catch(_){}
-  }else sftTryLandscapeLock();
- }
+ if(!sftLandscapeSession){toggleFullscreen(true);return;}
+ if(!document.fullscreenElement&&!sftDisplayModeFullscreen())sftRequestNativeFullscreen();
+ else {sftResumeNeeded=false;sftTryLandscapeLock();}
+ sftSyncLandscapePrompt();
 };
-document.getElementById('sftExitLandscape').onclick=()=>{toggleFullscreen(false);navActive('accueil');};
-
+document.getElementById('sftContinueLandscape').onclick=()=>{
+ if(sftPortraitNow())return;
+ sftResumeNeeded=false;sftInvalidateViewport();sftSyncLandscapePrompt();
+};
+document.getElementById('sftExitLandscape').onclick=()=>{
+ toggleFullscreen(false);navActive('accueil');
+};
+function sftRestoreWakeSession(){
+ if(!sftMobileDevice())return;
+ try{
+  const remembered=JSON.parse(sessionStorage.getItem(SFT_WAKE_SESSION)||'null');
+  if(!remembered?.active||Date.now()-remembered.time>12*60*60*1000)return;
+  if(remembered.camera&&Number.isFinite(remembered.camera.az)&&Number.isFinite(remembered.camera.dist)
+   &&Array.isArray(remembered.camera.target)&&remembered.camera.target.length===3){
+   restoreSnapshot(remembered.camera);
+  }
+  cameraLocked=!!remembered.locked;
+  if(remembered.preset&&Array.isArray(remembered.preset.target))cameraPreset=remembered.preset;
+  appShell.classList.add('immersive');
+  document.body.style.overflow='hidden';
+  document.body.classList.add('sft-playing');
+  document.documentElement.classList.add('sft-playing');
+  sftLandscapeSession=true;sftResumeNeeded=true;sftNativeFullscreenSeen=true;
+  updateFullscreenButton(true);sftInvalidateViewport();sftSyncLandscapePrompt();
+ }catch(_){}
+}
 document.getElementById('stage').addEventListener('dblclick',e=>{if(cameraLocked&&cameraPreset){restoreSnapshot(cameraPreset);announce('Vue mémorisée retrouvée.');}});
 
 
@@ -1440,7 +1552,7 @@ document.getElementById('startLesson').addEventListener('click',()=>navActive('c
 // The real board and real coach are always visible in the responsive page, not images or placeholder panels.
 navActive('jouer');
 
-refresh();syncCameraUI();requestAnimationFrame(render);
+refresh();syncCameraUI();sftRestoreWakeSession();requestAnimationFrame(render);
 window.SFTCHESS={newGame,legal,apply,current,commit,index,parseFen,moveKey,setScenario,showFilmStep,scenarioSummary,get focusScenario(){return focusScenario;},startLesson,stopLesson,lessonMove,lessons,showHintArrow,selectSquare,dangerAfterMove,riskAfterMove,exposureText,getThreats,threatsForSide,threatsAfterMove,getReport,exchangeGain,bestTeachingMove,gameHistory:()=>gameHistory,view:{get moveMode(){return panToolActive;},get angle(){return camera.az;},get elevation(){return camera.el;},get distance(){return camera.dist;},get target(){return [...camera.target];},get locked(){return cameraLocked;},get saved(){return cameraPreset&&{...cameraPreset,target:[...cameraPreset.target]};},get fullscreen(){return appShell.classList.contains('immersive');}}};
 </script>
 </body></html>
