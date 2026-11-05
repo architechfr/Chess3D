@@ -49,6 +49,43 @@ test('Stockfish 19 Lite starts in a real browser worker', {timeout:75000},async(
   },null,{timeout:25000});
   const report=await page.locator('#deepEngineReport').textContent();
   assert.match(report,/proposition|Variante|coup|moteur/i);
+  // Camera regression: panning must translate camera eye AND target, no rotation.
+  const cameraCheck=await page.evaluate(()=>{
+    const before={az:camera.az,el:camera.el,dist:camera.dist,target:[...camera.target]};
+    updateCamera();
+    const eyeOffsetBefore=[eye[0]-camera.target[0],eye[2]-camera.target[2]];
+    moveCameraByPixels(75,0);
+    updateCamera();
+    const eyeOffsetAfter=[eye[0]-camera.target[0],eye[2]-camera.target[2]];
+    const translated=[...camera.target];
+    const angleUnchanged=camera.az===before.az&&camera.el===before.el;
+    const xTranslated=translated[0]!==before.target[0];
+    const offsetPreserved=eyeOffsetAfter.every((x,i)=>Math.abs(x-eyeOffsetBefore[i])<1e-8);
+    document.getElementById('resetcam').click();
+    const recentered=Math.abs(camera.target[0])<1e-8&&Math.abs(camera.target[2])<1e-8;
+    const viewPreserved=camera.az===before.az&&camera.dist===before.dist;
+    document.getElementById('rotate').click();
+    const deliberateRotation=!panToolActive;
+    const targetBeforeRotate=[...camera.target];
+    moveCameraByPixels(0,25); // Translation math remains valid independently of mode.
+    document.getElementById('panbtn').click();
+    return {angleUnchanged,xTranslated,offsetPreserved,recentered,viewPreserved,deliberateRotation,panReturned:panToolActive,panModeDefault:before.az!==undefined};
+  });
+  for(const [name,ok] of Object.entries(cameraCheck))assert(ok,name+' camera regression');
+  // Actual mouse drag: it must move the board, not orbit or zoom unexpectedly.
+  const dragBefore=await page.evaluate(()=>({az:camera.az,dist:camera.dist,x:camera.target[0],z:camera.target[2]}));
+  const canvasBox=await page.locator('#gl').boundingBox();
+  assert(canvasBox&&canvasBox.width>100,'3D canvas must be visible');
+  const x=canvasBox.x+canvasBox.width*.58,y=canvasBox.y+canvasBox.height*.68;
+  await page.mouse.move(x,y);
+  await page.mouse.down();
+  await page.mouse.move(x+65,y,{steps:8});
+  await page.mouse.up();
+  const dragAfter=await page.evaluate(()=>({az:camera.az,dist:camera.dist,x:camera.target[0],z:camera.target[2]}));
+  assert(Math.abs(dragBefore.x-dragAfter.x)+Math.abs(dragBefore.z-dragAfter.z)>0.01,'Dragging should translate board');
+  assert.equal(dragBefore.az,dragAfter.az,'Dragging should never rotate in default mode');
+  assert.equal(dragBefore.dist,dragAfter.dist,'Dragging should never zoom in default mode');
+  await page.locator('#resetcam').click();
   // Enter focused 2D mode and make sure the board, coach, and exit are visible.
   await page.locator('#sftViewToggle').click();
   // Some mobile browsers (notably iOS) deny the native Fullscreen API.
