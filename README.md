@@ -23,7 +23,7 @@ Servir le dépôt à la racine d’un hébergement HTTPS ou en local avec un ser
 
 - `index.html` : jeu, navigation, Maître tacticien et panneau Stockfish.
 - `stockfish-bridge.js` : pont UCI asynchrone, arrêt/annulation, MultiPV.
-- `stockfish-worker.js` : charge le moteur local sur un worker, depuis `vendor/stockfish/`.
+- Le moteur est lancé **directement** avec `new Worker('./vendor/stockfish/stockfish-19-lite-single.js')`, méthode officielle de Stockfish.js ; `stockfish-worker.js` reste un ancien chargeur de compatibilité, non utilisé par l’interface.
 - `package.json`, `scripts/build-static.cjs`, `vercel.json` : génèrent et déploient une distribution autonome dans `dist/`.
 - `service-worker.js` : cache de l’application et du moteur WASM local.
 - `manifest.webmanifest` et `icons/` : installation de l’application.
