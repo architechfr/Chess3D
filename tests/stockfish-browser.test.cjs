@@ -62,6 +62,9 @@ test('Stockfish 19 Lite starts in a real browser worker', {timeout:75000},async(
   assert.equal(await page.locator('header').isVisible(),true);
   // Installation guide must have platform-specific steps and a real copy action.
   await page.locator('#installBtn').click();
+  // Chromium may show a native PWA prompt instead of the explanatory dialog.
+  // Force the help dialog to validate its instructions independently.
+  await page.evaluate(()=>window.showInstallHelp());
   assert.equal(await page.locator('#installSteps li').count()>1,true);
   assert.equal(await page.locator('#installCopyLink').isVisible(),true);
   await page.locator('#installClose').click();
