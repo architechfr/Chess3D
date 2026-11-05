@@ -46,3 +46,7 @@ Ne pas fusionner la branche sur `main` avant validation d’utilisation.
 ## Prévisualisation sans barre Vercel
 
 La prévisualisation SFT Chess utilise la variable Vercel `VERCEL_PREVIEW_FEEDBACK_ENABLED=0` ciblant la branche `fix/maitre-tacticien-menaces-20261105`, en complément du réglage de projet qui désactive le feedback. Cette configuration évite que le bouton flottant Vercel recouvre l'échiquier sur mobile. Après modification des variables de projet, une nouvelle prévisualisation doit être construite pour appliquer le réglage.
+
+## Caméra 3D — prévisualisation à valider
+
+La branche `fix/camera-3d-intuitive-recentrage-20261105` contient un correctif du placement œil/cible, le déplacement par glissement en mode par défaut, une rotation volontaire plus douce, un zoom moins sensible et un recentrage sans changer d'angle. Les tests Chromium comprennent un glissement réel ne modifiant ni rotation ni zoom. L'essai tactile sur appareil Android réel reste nécessaire. La prévisualisation Vercel dispose de `VERCEL_PREVIEW_FEEDBACK_ENABLED=0` pour masquer la barre flottante.
