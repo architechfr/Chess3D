@@ -20,6 +20,8 @@ jobs:
           node-version: '22'
       - name: Télécharger le moteur Stockfish 19 Lite pour le test réel UCI
         run: npm install --no-save --no-package-lock stockfish@19.0.1 playwright@1.58.2
+      - name: Construire le site avec le moteur WASM auto-hébergé
+        run: npm run build
       - name: Vérifier les scripts, l'interface et les échanges UCI
         run: node --test tests/stockfish-bridge.test.cjs tests/verify-app.test.cjs tests/stockfish-engine.test.cjs
       - name: Installer Chromium de test
