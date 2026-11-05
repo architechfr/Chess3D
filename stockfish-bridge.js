@@ -15,7 +15,7 @@ function uciInfo(line){
 }
 class SFTStockfishBridge{
  constructor(workerUrl,workerFactory){
-  this.workerUrl=workerUrl||'./stockfish-worker.js';
+  this.workerUrl=workerUrl||'./vendor/stockfish/stockfish-19-lite-single.js';
   this.workerFactory=workerFactory||function(path){return new Worker(path);};
   this.worker=null;this.readyPromise=null;this.active=null;this.pending=null;
   this.ready=false;this.disposed=false;this.version='19 lite single';
