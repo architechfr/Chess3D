@@ -594,8 +594,8 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
 </div>
 </section>
 <div class="mentor-top"><div class="mentor-avatar">♛</div><div class="mentor-content"><div class="mentor-name">♛ Le Maître tacticien <span id="mentorMode">· Conseils en direct</span><small class="mentor-engine-label">● Analyse locale · menaces multiples · expérimentale</small></div><p id="coach" aria-live="polite">Bienvenue ! Apprenons les échecs ensemble. Tu peux commencer un cours ou jouer librement.</p></div></div>
-<div class="mentor-controls"><button class="mbtn primary" id="hint">💡 Un indice</button><button class="mbtn" id="showMove">↗ Voir le coup</button><button class="mbtn" id="whyBtn">❔ Pourquoi ?</button><button class="mbtn" id="tacticScan">🔍 Diagnostic tactique</button><button class="mbtn" id="lessonMenu">📚 Cours</button><button class="mbtn" id="glossaryBtn" aria-expanded="false">📖 Les mots</button><button class="mbtn" id="nextLesson">Leçon suivante →</button></div>
-<section id="exchangeFilm" class="exchange-film" hidden aria-label="Leçon tactique en trois temps"><strong>♘ Le regard du Maître · Trois coups à imaginer</strong><p class="film-sub" id="exchangeFilmIntro"></p><div class="film-steps"><button type="button" class="film-step" data-step="1">1 · Ton coup</button><button type="button" class="film-step" data-step="2">2 · Sa réponse</button><button type="button" class="film-step" data-step="3">3 · Ta reprise</button></div><p class="film-result" id="exchangeFilmResult" aria-live="polite"></p></section><div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div id="mentorImmediate" class="warning-box" role="status" aria-live="polite" style="display:none;background:#2d3030;border:1px solid #d4a860;color:#fff1d6;margin-top:8px"></div><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
+<div class="mentor-controls"><button class="mbtn primary" id="hint">💡 Un indice</button><button class="mbtn" id="showMove">↗ Voir le coup</button><button class="mbtn" id="whyBtn">❔ Pourquoi ?</button><button class="mbtn" id="tacticScan">🔍 Diagnostic tactique</button><button class="mbtn" id="deepAnalyze">♟ Analyser avec Stockfish</button><button class="mbtn" id="lessonMenu">📚 Cours</button><button class="mbtn" id="glossaryBtn" aria-expanded="false">📖 Les mots</button><button class="mbtn" id="nextLesson">Leçon suivante →</button></div>
+<section id="exchangeFilm" class="exchange-film" hidden aria-label="Leçon tactique en trois temps"><strong>♘ Le regard du Maître · Trois coups à imaginer</strong><p class="film-sub" id="exchangeFilmIntro"></p><div class="film-steps"><button type="button" class="film-step" data-step="1">1 · Ton coup</button><button type="button" class="film-step" data-step="2">2 · Sa réponse</button><button type="button" class="film-step" data-step="3">3 · Ta reprise</button></div><p class="film-result" id="exchangeFilmResult" aria-live="polite"></p></section><div class="warning-box" id="dangerWarning" role="status" aria-live="polite" style="display:none"></div><div id="mentorImmediate" class="warning-box" role="status" aria-live="polite" style="display:none;background:#2d3030;border:1px solid #d4a860;color:#fff1d6;margin-top:8px"></div><section class="mentor-threats" style="margin:9px 0" aria-label="Analyse approfondie Stockfish"><div class="mentor-threats-head"><strong>♟ Analyse approfondie · Stockfish 19 Lite</strong><small id="deepEngineStatus" aria-live="polite">Non chargé</small></div><label style="display:flex;gap:9px;align-items:center;margin:7px 0;color:#d5e6dd;font-size:12px">Niveau <select id="deepProfile" style="flex:1;min-width:0;background:#142c34;color:#f8e8c5;padding:7px;border:1px solid #6b7881;border-radius:7px"><option value="beginner">Débutant · conseils simples</option><option value="club" selected>Intermédiaire · variantes</option><option value="advanced">Avancé · analyse détaillée</option></select></label><div id="deepEngineReport" style="font-size:12px;line-height:1.65;white-space:pre-line;color:#d1e4e2" aria-live="polite">Le diagnostic tactique local fonctionne sans connexion. Pour une analyse sur plusieurs coups, appuie sur « Analyser avec Stockfish ».</div><small style="color:#a9bfbd">Moteur libre GPL‑3.0 · calcul dans le navigateur · premier chargement connecté. Les évaluations sont indicatives.</small></section><div class="tactical-brief" id="mentorForecast" aria-live="polite"></div><div id="mentorValue" class="mentor-value" aria-live="polite"></div>
 <div class="glossary-panel" id="glossaryPanel" hidden>
  <strong>Le dictionnaire du Maître — les mots expliqués simplement</strong>
  <div class="glossary-grid">
@@ -642,6 +642,7 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
  <p id="installInstructions">Ouvre ce jeu depuis son adresse HTTPS dans Chrome, Edge ou Safari pour l’ajouter à ton écran d’accueil.</p>
  <button class="btn primary" id="installDone" type="button">Compris</button></div>
 </div>
+<script src="./stockfish-bridge.js" defer></script>
 <script>
 'use strict';
 // SFT Chess: self-contained legal chess rules + procedural WebGL 3D renderer.
@@ -1282,9 +1283,96 @@ function sftMoment(label,icon='✨',kind=''){
  if(kind==='win'&&sftFxEnabled){const stage=document.getElementById('stage');stage.classList.remove('sft-win-flash');void stage.offsetWidth;stage.classList.add('sft-win-flash');setTimeout(()=>stage.classList.remove('sft-win-flash'),1650);}
  el._timer=setTimeout(()=>el.hidden=true,kind==='win'?3000:2000);
 }
+
+/* Stockfish 19 Lite: opt-in worker search, asynchronous and non-blocking.
+   Profiles affect the clarity and depth of explanation, not guarantees. */
+const deepEngineSettings={
+ beginner:{depth:9,time:450,multiPV:1},
+ club:{depth:12,time:850,multiPV:2},
+ advanced:{depth:16,time:1800,multiPV:3}
+};
+let deepBridge=null,deepResult=null,deepFen='',deepGeneration=0,deepBusy=false;
+function serializeFen(s){
+ let ranks=[];
+ for(let r=0;r<8;r++){
+  let row='',empty=0;
+  for(let c=0;c<8;c++){const p=s.b[r*16+c];if(p==='.')empty++;else{if(empty){row+=empty;empty=0;}row+=p;}}
+  if(empty)row+=empty;ranks.push(row);
+ }
+ const castle=(s.c&1?'K':'')+(s.c&2?'Q':'')+(s.c&4?'k':'')+(s.c&8?'q':'');
+ return ranks.join('/')+' '+(s.t===1?'w':'b')+' '+(castle||'-')+' '+(s.ep>=0?sq(s.ep):'-')+' '+s.half+' '+s.full;
+}
+function deepMoveFromUCI(s,uci){
+ return legal(s).find(m=>moveKey(m).toLowerCase()===String(uci).toLowerCase())||null;
+}
+function deepDescribePV(s,items,maxMoves){
+ let currentState=s,names=[];
+ for(const uci of (items||[]).slice(0,maxMoves)){
+  const move=deepMoveFromUCI(currentState,uci);if(!move)break;
+  names.push((currentState.t===1?currentState.full+'. ':'... ')+san(currentState,move));
+  currentState=apply(currentState,move);
+ }
+ return names.join(' ');
+}
+function deepScoreLabel(s,v){
+ if(v.mate!==null)return v.mate>0?'mat annoncé en '+v.mate+' pour le camp au trait':'mat subi annoncé en '+Math.abs(v.mate);
+ if(v.cp===null)return 'évaluation indisponible';
+ const own=v.cp/100,white=own*(s.t===1?1:-1);
+ return 'évaluation '+(white>=0?'+':'')+white.toFixed(2)+' (Blancs)';
+}
+function deepTeachingText(s,result){
+ const profile=result.profile,primary=result.variations.find(x=>x.multiPV===1)||result.variations[0];
+ const firstMove=deepMoveFromUCI(s,result.bestmove);
+ if(!primary||!firstMove)return 'Le moteur a répondu sans variante exploitable. Le conseiller local reste disponible.';
+ const best=sq(firstMove[0]).toUpperCase()+' → '+sq(firstMove[1]).toUpperCase();
+ const line=deepDescribePV(s,primary.pv,profile==='beginner'?2:profile==='advanced'?8:5);
+ const score=deepScoreLabel(s,primary);
+ if(profile==='beginner')return 'Le moteur suggère '+best+'.\n'+(checked(s)?'Priorité : protéger ton roi.\n':'')+'Observe comment ton adversaire pourrait répondre : '+line+'.\nC’est une proposition, pas un coup obligatoire.';
+ const content=['Meilleure proposition : '+best+' · '+score+'.','Variante principale (coups possibles) : '+line+'.'];
+ if(profile==='advanced')content.push('Profondeur : '+primary.depth+' demi-coups, calcul local Stockfish 19 Lite.');
+ else content.push('Compare la réponse adverse avant de déplacer ta pièce.');
+ for(const v of result.variations.filter(x=>x.multiPV!==1).slice(0,profile==='advanced'?2:1)){
+  content.push('Alternative '+v.multiPV+' : '+deepDescribePV(s,v.pv,profile==='advanced'?8:4)+' · '+deepScoreLabel(s,v)+'.');
+ }
+ content.push('L’adversaire peut choisir d’autres réponses ; une évaluation n’est pas une certitude.');
+ return content.join('\n');
+}
+async function deepAnalyzePosition(showDetails=true){
+ const statusEl=document.getElementById('deepEngineStatus'),reportEl=document.getElementById('deepEngineReport');
+ if(!window.SFTStockfishBridge){statusEl.textContent='Indisponible';reportEl.textContent='Le module Stockfish n’a pas été chargé. Le diagnostic tactique local reste utilisable.';return;}
+ const position=current(),fen=serializeFen(position),generation=++deepGeneration;
+ const profile=document.getElementById('deepProfile').value,settings=deepEngineSettings[profile]||deepEngineSettings.club;
+ statusEl.textContent='Analyse en cours…';deepBusy=true;
+ if(showDetails)reportEl.textContent='Chargement du moteur et examen des réponses adverses…';
+ try{
+  if(!deepBridge)deepBridge=new SFTStockfishBridge('./stockfish-worker.js');
+  const result=await deepBridge.analyze({...settings,fen,profile});
+  if(generation!==deepGeneration||serializeFen(current())!==fen||!result)return;
+  deepResult=result;deepFen=fen;deepBusy=false;
+  const main=result.variations.find(x=>x.multiPV===1)||result.variations[0];
+  statusEl.textContent=main?'Prêt · profondeur '+main.depth:'Prêt';
+  reportEl.textContent=deepTeachingText(position,result);
+  if(showDetails&&result.bestmove!=='(none)'){
+   const move=deepMoveFromUCI(position,result.bestmove);
+   if(move)showHintArrow(move);
+  }
+ }catch(err){
+  if(generation!==deepGeneration)return;
+  deepBusy=false;deepResult=null;deepFen='';
+  statusEl.textContent='Moteur externe indisponible';
+  reportEl.textContent='Stockfish ne peut pas démarrer ('+(err?.message||'chargement réseau')+'). Le Maître Tacticien local et ses alertes restent disponibles.';
+ }
+}
+document.getElementById('deepAnalyze').onclick=()=>deepAnalyzePosition(true);
+document.getElementById('deepProfile').onchange=()=>{deepResult=null;deepFen='';deepAnalyzePosition(true);};
+function deepBestMove(s){
+ if(deepResult&&deepFen===serializeFen(s))return deepMoveFromUCI(s,deepResult.bestmove);
+ return null;
+}
+
 function selectedHint(){
  if(mode==='lesson')return lessonMove();
- return bestTeachingMove(current())?.m||null;
+ return deepBestMove(current())||bestTeachingMove(current())?.m||null;
 }
 function mentorHint(){
  if(focusScenario&&focusScenario.state===current()&&mode!=='lesson'){showFilmStep(Math.min(3,filmStep+1||1));say('Le Maître détaille une réponse possible, sans jouer à ta place. Regarde le trajet affiché et compare les valeurs des pièces.');return;}
@@ -1466,6 +1554,7 @@ function sftShowCheckOrigin(s){
  return true;
 }
 function refresh(){let s=current(),st=status(gameHistory);sftDrawMission();const playHud=document.getElementById('sftPlayHud'),turnHud=document.getElementById('sftHudTurn');if(playHud&&turnHud){playHud.classList.toggle('danger',checked(s));playHud.classList.toggle('win',lessonFinished);turnHud.textContent=lessonFinished?'MISSION RÉUSSIE':st.done?'FIN DE PARTIE':checked(s)?'ÉCHEC !':mode==='lesson'?'MISSION '+(activeLesson+1):s.t===1?'À TOI DE JOUER':mode==='ai'?'L’IA JOUE':'AUX NOIRS DE JOUER';}document.getElementById('turnDot').classList.toggle('black',s.t===-1);document.getElementById('turnText').textContent=lessonFinished?'Exercice réussi':st.done?'Partie terminée':s.t===1?'Aux Blancs de jouer':'Aux Noirs de jouer';document.getElementById('statusText').textContent=mode==='lesson'?'Académie · '+lessons[activeLesson].topic:(st.message||(mode==='ai'?'Mode professeur · contre IA':'Duel local · deux joueurs'));document.getElementById('mentorMode').textContent=mode==='lesson'?'· Exercice '+(activeLesson+1)+'/'+lessons.length:'· Conseils en direct';if((mode==='local'||s.t===1)&&!st.done){currentThreats=getThreats(s);}else currentThreats=[];
+ if(deepFen&&deepFen!==serializeFen(s)){deepResult=null;deepFen='';document.getElementById('deepEngineStatus').textContent='Position modifiée · relancer l’analyse';document.getElementById('deepEngineReport').textContent='La position a changé. Appuie sur « Analyser avec Stockfish » pour recalculer les variantes.';}
  const urgent=mode!=='lesson'&&(mode==='local'||s.t===1)&&!st.done?currentThreats[0]:null;
  const immediate=document.getElementById('mentorImmediate');
  if(immediate){const alerts=!st.done&&(mode==='local'||s.t===1)&&mode!=='lesson'?currentThreats:[];immediate.style.display=alerts.length?'block':'none';immediate.textContent=alerts.length?(alerts.length>1?'⚠ '+alerts.length+' de tes pièces sont attaquées. Première alerte : ':'⚠ Pièce attaquée : ')+threatMessage(alerts[0],studentType==='child')+' Une pièce défendue reste attaquée : vérifie les échanges avant de jouer.':'';}
