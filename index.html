@@ -871,7 +871,16 @@ let last=new Mesh();last.box(0,.2,0,.99,.006,.99,[.70,.54,.24]);let lastMesh=las
 let shadow=new Mesh();shadow.cylinder(0,.195,0,.353,.003,[.042,.037,.037],32);let shadowMesh=shadow.compile();
 let pieceMeshes={};for(let p of ['p','r','n','b','q','k'])pieceMeshes[p]=material([.95,.95,.91],[.74,.56,.30],p);
 let camera={az:.12,el:1.22,dist:13.0,target:[0,.30,0]},view,eye,projection;
-function updateCamera(){let {az,el,dist}=camera;eye=[Math.sin(az)*Math.cos(el)*dist,Math.sin(el)*dist+camera.target[1],Math.cos(az)*Math.cos(el)*dist];view=lookAt(eye,camera.target);projection=perspective(Math.PI/4,Math.max(.4,canvas.clientWidth/canvas.clientHeight),.1,100);}
+function updateCamera(){
+ // The eye MUST follow its target on all three axes: previously it ignored
+ // target X/Z, which made horizontal dragging distort the viewing angle.
+ let {az,el,dist}=camera;
+ eye=[camera.target[0]+Math.sin(az)*Math.cos(el)*dist,
+      camera.target[1]+Math.sin(el)*dist,
+      camera.target[2]+Math.cos(az)*Math.cos(el)*dist];
+ view=lookAt(eye,camera.target);
+ projection=perspective(Math.PI/4,Math.max(.4,canvas.clientWidth/canvas.clientHeight),.1,100);
+}
 function renderMesh(mesh,model,tint=[1,1,1],mat=0,opacity=1){gl.bindBuffer(gl.ARRAY_BUFFER,mesh.buf);for(let [a,offset] of [[A.pos,0],[A.norm,3],[A.color,6]]){gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,3,gl.FLOAT,false,36,offset*4);}gl.uniformMatrix4fv(U.model,false,model);gl.uniform3fv(U.tint,tint);gl.uniform1f(U.mat,mat);gl.uniform1f(U.op,opacity);gl.drawArrays(gl.TRIANGLES,0,mesh.count);}
 function pieceTint(ch){return ch===ch.toUpperCase()?[.99,.90,.76]:[.42,.46,.54];}
 function loc(i){return [(i&7)-3.5,(i>>4)-3.5];}
@@ -1630,21 +1639,40 @@ document.getElementById('undo').onclick=()=>{if(mode==='lesson'){startLesson(act
 document.getElementById('quickUndo').onclick=()=>document.getElementById('undo').click();
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!e.altKey&&!e.target.matches('input,textarea,select,[contenteditable]')){e.preventDefault();if(!document.getElementById('quickUndo').disabled)document.getElementById('undo').click();}});
 document.getElementById('export').onclick=()=>{let pgn='[Event "SFT CHESS"]\n[Site "SALESFILS.COM"]\n[Date "'+new Date().toISOString().slice(0,10).replace(/-/g,'.')+'"]\n[White "Blancs"]\n[Black "Noirs"]\n\n'+movesSAN.map((m,i)=>(i%2===0?Math.floor(i/2)+1+'. ':'')+m).join(' ')+' *';let blob=new Blob([pgn],{type:'application/x-chess-pgn'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sft-chess-partie.pgn';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200);announce('Partie exportée en PGN.');};
-let pointerState=new Map(),gesture=null,panToolActive=false;
+let pointerState=new Map(),gesture=null,panToolActive=true; // Default: one finger moves the board, never rotates it.
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 function cameraSnapshot(){return {az:camera.az,el:camera.el,dist:camera.dist,target:[...camera.target]};}
 function restoreSnapshot(snapshot){camera.az=snapshot.az;camera.el=snapshot.el;camera.dist=snapshot.dist;camera.target=[...snapshot.target];sftFrameSignature='';}
+function recenterCamera(){
+ camera.target=[0,.30,0];
+ sftFrameSignature='';lastOverlayUpdate=0;
+ announce('Plateau recentré. Glisse avec un doigt pour le déplacer.');
+}
+function moveCameraByPixels(dx,dy){
+ const height=Math.max(220,canvas.getBoundingClientRect().height);
+ const scale=2*camera.dist*Math.tan(Math.PI/8)/height*.56;
+ const clampedX=clamp(dx,-80,80),clampedY=clamp(dy,-80,80);
+ const rightX=Math.cos(camera.az),rightZ=-Math.sin(camera.az);
+ const verticalScale=1/Math.max(.42,Math.sin(camera.el));
+ const upX=-Math.sin(camera.az),upZ=-Math.cos(camera.az);
+ const nextX=camera.target[0]-rightX*clampedX*scale+upX*clampedY*scale*verticalScale;
+ const nextZ=camera.target[2]-rightZ*clampedX*scale+upZ*clampedY*scale*verticalScale;
+ camera.target[0]=clamp(nextX,-7.5,7.5);
+ camera.target[2]=clamp(nextZ,-7.5,7.5);
+ sftFrameSignature='';
+}
 function updateCameraUI(){
- document.querySelector('.board-toolbar').classList.toggle('camera-is-locked',cameraLocked);
- let panButton=document.getElementById('panbtn');
+ cameraLocked=false; // Legacy fixed-angle state is intentionally retired.
+ document.querySelector('.board-toolbar').classList.remove('camera-is-locked');
+ const panButton=document.getElementById('panbtn');
  panButton.classList.toggle('active',panToolActive);
+ panButton.textContent=panToolActive?'✋ Déplacer':'↻ Pivoter';
+ panButton.title=panToolActive?'Mode déplacer : glisse pour recentrer le plateau':'Mode pivoter : glisse doucement pour changer l’angle';
+ panButton.setAttribute('aria-label',panToolActive?'Mode déplacement actif, toucher pour activer la rotation':'Mode rotation actif, toucher pour activer le déplacement');
  panButton.setAttribute('aria-pressed',String(panToolActive));
- canvas.classList.toggle('pan-enabled',cameraLocked||panToolActive);
- let lock=document.getElementById('lockcam');lock.textContent=cameraLocked?'🔒':'🔓';lock.classList.toggle('active',cameraLocked);
- lock.setAttribute('aria-pressed',String(cameraLocked));lock.setAttribute('aria-label',cameraLocked?'Déverrouiller la rotation':'Verrouiller l’angle de vue');
- document.getElementById('resetcam').title=cameraLocked?'Revenir à ma vue mémorisée':'Caméra initiale';
- ['rotate','viewbtn'].forEach(id=>document.getElementById(id).classList.toggle('is-disabled',cameraLocked));
- ['zoomin','zoomout','resetcam'].forEach(id=>document.getElementById(id).classList.remove('is-disabled'));
+ canvas.classList.toggle('pan-enabled',panToolActive);
+ document.getElementById('resetcam').title='Recentrer le plateau sans changer l’angle';
+ document.getElementById('homeMini').title='Recentrer le plateau';
 }
 function setCameraCompact(compact){
  const toolbar=document.querySelector('.board-toolbar');
@@ -1657,75 +1685,68 @@ document.getElementById('camCollapse').onclick=()=>setCameraCompact(true);
 document.getElementById('homeMini').onclick=()=>document.getElementById('resetcam').click();
 document.getElementById('fullMini').onclick=()=>document.getElementById('fullbtn').click();
 document.getElementById('panbtn').onclick=()=>{
- panToolActive=!panToolActive;
- updateCameraUI();
- announce(panToolActive?'Déplacement activé : fais glisser le plateau vers le bord de la fenêtre.':'Rotation activée : fais glisser pour changer l’angle.');
+ panToolActive=!panToolActive;updateCameraUI();
+ announce(panToolActive?'✋ Déplacer : glisse le plateau pour l’aligner à l’écran.':'↻ Pivoter : glisse doucement. Retouche ↻ pour revenir au déplacement.');
 };
 document.getElementById('savecam').onclick=()=>{
- cameraPreset=cameraSnapshot();cameraLocked=true;panToolActive=false;
- setCameraCompact(true);updateCameraUI();
- announce('Ta position est mémorisée. Tire le plateau pour explorer ; ⌂ retrouve cette vue.');
+ cameraPreset=cameraSnapshot();
+ announce('Vue enregistrée, sans verrouiller les déplacements.');
 };
 function touchPoints(){return [...pointerState.entries()].filter(([id,p])=>p.type==='touch');}
 function touchDistance(a,b){return Math.hypot(b.x-a.x,b.y-a.y);}
-function midpoint(a,b){return {x:(a.x+b.x)/2,y:(a.y+b.y)/2};}
-function floorAt(clientX,clientY){
- updateCamera();const rect=canvas.getBoundingClientRect(),w=rect.width,h=rect.height;
- let nx=(clientX-rect.left)/w*2-1,ny=1-(clientY-rect.top)/h*2;
- let camZ=norm(sub(eye,camera.target)),camX=norm(cross([0,1,0],camZ)),camY=cross(camZ,camX);
- let ray=norm(camX.map((v,i)=>-camZ[i]+v*nx*Math.tan(Math.PI/8)*(w/h)+camY[i]*ny*Math.tan(Math.PI/8)));
- if(ray[1]>-.02)return null;let t=(.22-eye[1])/ray[1];if(t<0)return null;
- return {x:eye[0]+ray[0]*t,z:eye[2]+ray[2]*t};
-}
-function adjustTarget(dx,dz){camera.target[0]=clamp(camera.target[0]+dx,-5.6,5.6);camera.target[2]=clamp(camera.target[2]+dz,-5.6,5.6);}
-function beginPinch(){let pts=touchPoints();if(pts.length<2)return;
- let a=pts[0][1],b=pts[1][1],mid=midpoint(a,b);
- gesture={mode:'pinch',startDist:touchDistance(a,b),startCamera:camera.dist,anchor:floorAt(mid.x,mid.y),suppressTap:true};
+function beginPinch(){
+ const pts=touchPoints();if(pts.length<2)return;
+ const a=pts[0][1],b=pts[1][1];
+ gesture={mode:'pinch',startDist:Math.max(20,touchDistance(a,b)),startCamera:camera.dist,suppressTap:true};
 }
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 canvas.addEventListener('pointerdown',e=>{
  e.preventDefault();canvas.setPointerCapture(e.pointerId);
  pointerState.set(e.pointerId,{x:e.clientX,y:e.clientY,type:e.pointerType});
- if(touchPoints().length===2){beginPinch();return;}
- if(pointerState.size===1)gesture={mode:(cameraLocked||panToolActive||e.button===2||e.shiftKey)?'pan':'rotate',id:e.pointerId,lastX:e.clientX,lastY:e.clientY,startX:e.clientX,startY:e.clientY,startAz:camera.az,startEl:camera.el,moved:false,suppressTap:e.button===2};
+ if(touchPoints().length>=2){beginPinch();return;}
+ if(pointerState.size===1){
+  const rotate=e.button===2||e.shiftKey||!panToolActive;
+  gesture={mode:rotate?'rotate':'pan',id:e.pointerId,lastX:e.clientX,lastY:e.clientY,startX:e.clientX,startY:e.clientY,startAz:camera.az,startEl:camera.el,moved:false,suppressTap:e.button===2};
+ }
 },{passive:false});
 canvas.addEventListener('pointermove',e=>{
  const old=pointerState.get(e.pointerId);if(!old)return;e.preventDefault();
- let x=e.clientX,y=e.clientY;
- let pts=touchPoints();
- // Update pointer coordinates before gesture calculations.
- pointerState.set(e.pointerId,{...old,x,y});pts=touchPoints();
+ const x=e.clientX,y=e.clientY;
+ pointerState.set(e.pointerId,{...old,x,y});
+ const pts=touchPoints();
  if(pts.length>=2){
   if(!gesture||gesture.mode!=='pinch')beginPinch();
-  let a=pts[0][1],b=pts[1][1],mid=midpoint(a,b);
-  camera.dist=clamp(gesture.startCamera*gesture.startDist/Math.max(18,touchDistance(a,b)),6.3,28);
-  let after=floorAt(mid.x,mid.y),before=gesture.anchor;
-  if(before&&after)adjustTarget(before.x-after.x,before.z-after.z);
+  const a=pts[0][1],b=pts[1][1];
+  // Pinch is exclusively zoom: no unpredictable jump or sideways drift.
+  const ratio=gesture.startDist/Math.max(20,touchDistance(a,b));
+  camera.dist=clamp(gesture.startCamera*Math.pow(ratio,.65),6.5,26);
+  sftFrameSignature='';
   return;
  }
  if(!gesture||gesture.id!==e.pointerId||gesture.mode==='pinch')return;
- let dx=x-gesture.startX,dy=y-gesture.startY;
- if(Math.hypot(dx,dy)>7)gesture.moved=true;
- if(gesture.mode==='rotate'&&gesture.moved){
-  camera.az=gesture.startAz-dx*.009;camera.el=clamp(gesture.startEl+dy*.008,.33,1.5);
- }else if(gesture.mode==='pan'&&gesture.moved){
-  let a=floorAt(gesture.lastX,gesture.lastY),b=floorAt(x,y);
-  if(a&&b)adjustTarget(a.x-b.x,a.z-b.z);
+ const totalX=x-gesture.startX,totalY=y-gesture.startY;
+ if(Math.hypot(totalX,totalY)>6)gesture.moved=true;
+ if(gesture.moved){
+  if(gesture.mode==='pan')moveCameraByPixels(x-gesture.lastX,y-gesture.lastY);
+  else if(gesture.mode==='rotate'){
+   camera.az=gesture.startAz-totalX*.0033;
+   camera.el=clamp(gesture.startEl+totalY*.0027,.36,1.47);
+  }
  }
  gesture.lastX=x;gesture.lastY=y;
 },{passive:false});
 function endPointer(e){
- let tap=gesture&&gesture.id===e.pointerId&&gesture.mode!=='pinch'&&!gesture.moved&&!gesture.suppressTap&&e.button!==2;
+ const tap=gesture&&gesture.id===e.pointerId&&gesture.mode!=='pinch'&&!gesture.moved&&!gesture.suppressTap&&e.button!==2;
  pointerState.delete(e.pointerId);
  if(!pointerState.size){if(tap)selectSquare(screenSquare(e.clientX,e.clientY));gesture=null;return;}
- let pts=touchPoints();
- if(pts.length===1){let [id,p]=pts[0];gesture={mode:(cameraLocked||panToolActive)?'pan':'rotate',id,lastX:p.x,lastY:p.y,startX:p.x,startY:p.y,startAz:camera.az,startEl:camera.el,moved:true,suppressTap:true};}
+ const pts=touchPoints();
+ if(pts.length===1){const [id,p]=pts[0];gesture={mode:panToolActive?'pan':'rotate',id,lastX:p.x,lastY:p.y,startX:p.x,startY:p.y,startAz:camera.az,startEl:camera.el,moved:true,suppressTap:true};}
  else if(pts.length>=2)beginPinch();
  else gesture=null;
 }
 canvas.addEventListener('pointerup',endPointer,{passive:false});
 canvas.addEventListener('pointercancel',e=>{pointerState.delete(e.pointerId);gesture=null;},{passive:false});
-canvas.addEventListener('wheel',e=>{e.preventDefault();camera.dist=clamp(camera.dist+e.deltaY*.008,6.3,28);},{passive:false});
+canvas.addEventListener('wheel',e=>{e.preventDefault();camera.dist=clamp(camera.dist+e.deltaY*.0035,6.5,26);sftFrameSignature='';},{passive:false});
 document.getElementById('lockcam').onclick=()=>{
  cameraLocked=!cameraLocked;
  if(cameraLocked){cameraPreset=cameraSnapshot();panToolActive=false;setCameraCompact(true);announce('Angle mémorisé : fais glisser le plateau pour le tirer vers toi, zoom disponible.');}
