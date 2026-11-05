@@ -541,6 +541,13 @@ html.sft-playing,body.sft-playing{overscroll-behavior:none}
 .sft-board2d[data-piece-style="modern"] .sft-2d-piece.white{color:#fffefa;filter:drop-shadow(0 1px 1px #0008)}
 .sft-board2d[data-piece-style="modern"] .sft-2d-piece.black{color:#172330;filter:drop-shadow(0 1px 1px #fff9)}
 @media(max-width:850px){.sft-board2d-frame{--sft-coord-gutter:18px;padding:18px 18px 18px 21px}.sft-piece-style-control{font-size:11px}.sft-piece-style-control select{max-width:115px}}
+
+/* High-contrast vector pieces: stable on Android, iOS and desktop. */
+.sft-2d-piece{width:90%;height:90%;display:flex;align-items:center;justify-content:center;font-size:0!important;filter:none!important;text-shadow:none!important;-webkit-text-stroke:0!important}
+.sft-piece-art{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 2px 1px #0007)}
+.sft-board2d[data-piece-style="prestige"] .sft-piece-art{filter:drop-shadow(0 3px 1px #0009) drop-shadow(0 0 1px #e8c37d)}
+.sft-board2d[data-piece-style="modern"] .sft-piece-art{filter:drop-shadow(0 1px 0 #0008)}
+.sft-board2d[data-piece-style="classic"] .sft-piece-art{filter:drop-shadow(0 2px 1px #0007)}
 </style>
 </head>
 <body>
@@ -1732,6 +1739,22 @@ function sft2dLine(from,to,color){
  for(const [k,v] of Object.entries({x1,y1,x2,y2,stroke:color==='red'?'#e93642':'#17b886','stroke-width':9,'stroke-linecap':'round','stroke-opacity':.9,'marker-end':color==='red'?'url(#sft2dRedTip)':'url(#sft2dGreenTip)'}))line.setAttribute(k,String(v));
  sft2dSvg.appendChild(line);
 }
+
+/* Browser-independent chess artwork: explicit fills, not Unicode font glyph colors. */
+function sftPieceSVG(p){
+ const white=p===p.toUpperCase(),kind=p.toLowerCase(),style=sft2dBoard.dataset.pieceStyle||'prestige';
+ const fill=white?(style==='modern'?'#fffefa':style==='classic'?'#f6f0e4':'#fff1d4'):(style==='modern'?'#101821':style==='classic'?'#242d39':'#15212b');
+ const stroke=white?'#564634':'#e2c89a',accent=white?'#b89762':'#526375';
+ const top={
+ p:'<circle cx="50" cy="29" r="11"/><path d="M36 49 Q33 40 42 39 H58 Q67 40 64 49 L69 70 H31Z"/>',
+ r:'<path d="M29 22 V35 H71 V22 H63 V29 H56 V22 H44 V29 H37 V22Z M35 37 H65 L62 70 H38Z"/>',
+ n:'<path d="M31 70 L35 53 L28 45 L35 31 L48 20 L65 23 L72 35 L61 40 L52 35 L48 47 L65 70Z"/><circle cx="51" cy="29" r="3" fill="'+accent+'" stroke="none"/>',
+ b:'<path d="M50 17 Q66 30 62 43 L55 54 L64 70 H36 L45 54 L38 43 Q34 30 50 17Z"/><path d="M56 29 L43 48" fill="none" stroke="'+accent+'" stroke-width="3"/>',
+ q:'<path d="M23 30 L34 43 L43 24 L50 42 L57 24 L66 43 L77 30 L68 70 H32Z"/><circle cx="23" cy="27" r="4"/><circle cx="43" cy="21" r="4"/><circle cx="57" cy="21" r="4"/><circle cx="77" cy="27" r="4"/>',
+ k:'<path d="M46 13 H54 V22 H63 V30 H54 V40 H46 V30 H37 V22 H46Z M38 42 Q50 36 62 42 L66 70 H34Z"/>'
+ }[kind]||'';
+ return '<svg class="sft-piece-art" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><g fill="'+fill+'" stroke="'+stroke+'" stroke-width="2.8" stroke-linejoin="round">'+top+'<path d="M29 70 H71 L76 79 H24Z M21 81 H79 V88 H21Z"/></g></svg>';
+}
 function sft2dPaint(){
  if(!sft2dEnabled)return;
  const s=current();let checkOrigin=checked(s)?sftCheckAttacker(s):null;
@@ -1745,7 +1768,7 @@ function sft2dPaint(){
   if(checkOrigin&&i===checkOrigin.to)b.classList.add('check');
   b.replaceChildren();
   if(legalTargets.includes(i)){const dot=document.createElement('span');dot.className=p==='.'?'sft-2d-dot':'sft-2d-capture';b.append(dot);}
-  if(p!=='.'){const piece=document.createElement('span');piece.className='sft-2d-piece '+(white?'white':'black');piece.textContent=sft2dSymbols[p];b.append(piece);}
+  if(p!=='.'){const piece=document.createElement('span');piece.className='sft-2d-piece '+(white?'white':'black');piece.innerHTML=sftPieceSVG(p);b.append(piece);}
   if(checkOrigin&&i===checkOrigin.from){const danger=document.createElement('span');danger.className='sft-2d-danger';b.append(danger);}
   b.setAttribute('aria-label',sq(i)+' '+(p==='.'?'case vide':(white?'blanc ':'noir ')+pname[p.toLowerCase()]));
  }
